@@ -4,6 +4,7 @@ use vstd::arithmetic::mul::*;
 use vstd::arithmetic::power2::*;
 use vstd::bits::*;
 use vstd::prelude::*;
+use vstd::calc;
 
 use super::mul_lemmas::*;
 use super::pow_lemmas::*;
@@ -47,12 +48,47 @@ lemma_shift_is_pow2!(lemma_u64_shift_is_pow2, lemma_u64_pow2_le_max, lemma_u64_s
 // =============================================================================
 pub broadcast proof fn lemma_u128_shl_is_mul(x: u128, shift: u128)
     requires
-        0 <= shift < 128,
+        0 <= shift && shift < 128,
         x * pow2(shift as nat) <= u128::MAX,
     ensures
         #[trigger] (x << shift) == x * pow2(shift as nat),
+    decreases shift,
 {
-    assume(false);  // TODO: prove properly when vstd adds this
+    lemma_u128_pow2_le_max(shift as nat);
+    if shift == 0 {
+        assert(x << 0 == x) by (bit_vector);
+        lemma2_to64();
+    } else {
+        assert(x << shift == mul(x << (sub(shift, 1) as u128), 2)) by (bit_vector)
+            requires
+                0 < shift && shift < 128,
+        ;
+        assert((x << (sub(shift, 1) as u128)) == x * pow2(sub(shift, 1) as nat)) by {
+            lemma_pow2_strictly_increases((shift - 1) as nat, shift as nat);
+            lemma_mul_inequality(
+                pow2((shift - 1) as nat) as int,
+                pow2(shift as nat) as int,
+                x as int,
+            );
+            lemma_mul_is_commutative(x as int, pow2((shift - 1) as nat) as int);
+            lemma_mul_is_commutative(x as int, pow2(shift as nat) as int);
+            lemma_u128_shl_is_mul(x, (shift - 1) as u128);
+        };
+        calc!{ (==)
+            ((x << (sub(shift, 1) as u128)) * 2);
+                {}
+            ((x * pow2(sub(shift, 1) as nat)) * 2);
+                {
+                    lemma_mul_is_associative(x as int, pow2(sub(shift, 1) as nat) as int, 2);
+                }
+            (x * ((pow2(sub(shift, 1) as nat)) * 2));
+                {
+                    lemma_pow2_adds((shift - 1) as nat, 1);
+                    lemma2_to64();
+                }
+            (x * pow2(shift as nat));
+        }
+    }
 }
 
 // NOTE: depends on lemma_u128_shl_is_mul which uses assume(false)
@@ -301,18 +337,18 @@ macro_rules! lemma_shr_by_sum {
             assert(pow2(a + b) == pow2(a) * pow2(b)) by {
                 lemma_pow2_adds(a, b);
             }
-            assert(v >> (a + b) == v as nat/ pow2(a + b)) by {
+            assert(v >> (a + b) == (v as nat) / pow2(a + b)) by {
                 $shr_is_div(v, (a + b) as $uN);
             }
-            assert(v >> a == v as nat/ pow2(a)) by {
+            assert(v >> a == (v as nat) / pow2(a)) by {
                 $shr_is_div(v, a as $uN);
             }
 
-            assert((v as nat/ pow2(a)) as $uN >> b == (v as nat/ pow2(a)) / pow2(b)) by {
+            assert(((v as nat) / pow2(a)) as $uN >> b == ((v as nat) / pow2(a)) / pow2(b)) by {
                 $shr_is_div(v / (pow2(a) as $uN), b as $uN);
             }
 
-            assert( (v as nat/ pow2(a)) / pow2(b) == v as nat / pow2(a + b)) by {
+            assert( ((v as nat) / pow2(a)) / pow2(b) == (v as nat) / pow2(a + b)) by {
                 lemma_div_denominator(v as int, pow2(a) as int, pow2(b) as int);
             }
         }
@@ -352,10 +388,10 @@ macro_rules! lemma_shr_le {
                 assert(pow2(k) > 0) by {
                     lemma_pow2_pos(k);
                 }
-                assert(a >> k == a as nat / pow2(k)) by {
+                assert(a >> k == (a as nat) / pow2(k)) by {
                     $shr_is_div(a, k as $uN);
                 }
-                assert(b >> k == b as nat / pow2(k)) by {
+                assert(b >> k == (b as nat) / pow2(k)) by {
                     $shr_is_div(b, k as $uN);
                 }
                 lemma_div_is_ordered(a as int, b as int, pow2(k) as int);
@@ -701,7 +737,7 @@ macro_rules! lemma_right_left_shift {
                     lemma_mod_bound(x as int, pow2(n_nat) as int);
                 }
 
-                // q * 2^n <= x <= MAX, so q * 2^n fits in $uN
+                // q * 2^n <= x && x <= MAX, so q * 2^n fits in $uN
                 // (follows from x == q * 2^n + r and r >= 0)
 
                 // (x >> n) << n == q << n == q * 2^n
