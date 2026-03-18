@@ -300,50 +300,11 @@ impl CompressedEdwardsY {
     {
         let (is_valid_y_coord, X, Y, Z) = decompress::step_1(self);
 
-        proof {
-            assert(choice_is_true(is_valid_y_coord) ==> is_valid_edwards_y_coordinate(
-                field_element_from_bytes(&self.0),
-            ));
-            assert(choice_is_true(is_valid_y_coord) ==> is_on_edwards_curve(
-                fe51_as_canonical_nat(&X),
-                fe51_as_canonical_nat(&Y),
-            ));
-        }
+        proof { admit(); // HOLE R9 block1 }
         if choice_into(is_valid_y_coord) {
             let point = decompress::step_2(self, X, Y, Z);
             let result = Some(point);
-            proof {
-                lemma_unfold_edwards(point);
-                // Extract values for lemma
-                let x_orig = fe51_as_canonical_nat(&X);
-
-                // Establish step_2 postconditions needed by lemma
-                // step_2 ensures Y and Z are preserved by reference equality
-                assert(&point.Y == &Y);
-                assert(&point.Z == &Z);
-                assert(fe51_as_canonical_nat(&point.Y) == field_element_from_bytes(&self.0));
-                assert(fe51_as_canonical_nat(&point.Z) == 1);
-
-                // x_orig < p() is trivially true since x_orig = fe51_as_canonical_nat(&X) = ...%p()
-                pow255_gt_19();
-                assert(x_orig < p()) by {
-                    lemma_mod_bound(fe51_as_nat(&X) as int, p() as int);
-                };
-
-                // Use the unified lemma to prove all postconditions
-                lemma_decompress_valid_branch(&self.0, x_orig, &point);
-
-                // Strengthen to well-formedness: bounds + sum bounds.
-                assert(fe51_limbs_bounded(&point.Y, 51));
-                assert(fe51_limbs_bounded(&point.Z, 51));
-                assert((1u64 << 51) < (1u64 << 52)) by (bit_vector);
-                lemma_fe51_limbs_bounded_weaken(&point.Y, 51, 52);
-                lemma_fe51_limbs_bounded_weaken(&point.Z, 51, 52);
-
-                assert(edwards_point_limbs_bounded(point));
-                lemma_sum_of_limbs_bounded_from_fe51_bounded(&point.Y, &point.X, 52);
-                assert(is_well_formed_edwards_point(point));
-            }
+            proof { admit(); // HOLE R9 block2 }
             result
         } else {
             let result = None;
@@ -858,37 +819,7 @@ impl Identity for CompressedEdwardsY {
             ],
         );
 
-        proof {
-            // byte 31 is 0, so sign bit (bit 7) is 0
-            assert(result.0[31] == 0);
-            assert((0u8 >> 7) == 0) by (bit_vector);
-
-            // field_element_from_bytes([1, 0, ...]) = 1
-            // The bytes represent 1 in little-endian: byte[0] = 1, rest = 0
-
-            // Step 1: Prove u8_32_as_nat(&result.0) == 1
-            assert(result.0[0] == 1);
-            assert(forall|i: int| 1 <= i < 32 ==> result.0[i] == 0);
-            assert(u8_32_as_nat(&result.0) == 1) by {
-                lemma_u8_32_as_nat_identity(&result.0);
-            }
-
-            // Step 2: 1 % pow2(255) == 1 (since 1 < pow2(255))
-            assert(1nat % pow2(255) == 1) by {
-                lemma2_to64();
-                lemma_pow2_strictly_increases(0, 255);
-                lemma_small_mod(1nat, pow2(255));
-            }
-
-            // Step 3: 1 % p() == 1 (since 1 < p() = 2^255 - 19)
-            assert(1nat % p() == 1) by {
-                p_gt_2();
-                lemma_small_mod(1nat, p());
-            }
-
-            // Conclude: field_element_from_bytes = (u8_32_as_nat % pow2(255)) % p() = 1
-            assert(field_element_from_bytes(&result.0) == 1);
-        }
+        proof { admit(); // HOLE R10 block1 }
 
         result
     }
@@ -1962,45 +1893,14 @@ impl EdwardsPoint {
         self.as_projective().double().as_extended()
         */
         let proj = self.as_projective();
-        proof {
-            lemma_unfold_edwards(*self);
-            // is_valid_edwards_point gives z % p() != 0; since z = fe51_as_canonical_nat < p,
-            // z % p = z, so z != 0 — which is what is_valid_projective_point needs
-            let z = fe51_as_canonical_nat(&self.Z);
-            assert(z % p() != 0);
-            p_gt_2();
-            assert(z < p()) by {
-                lemma_mod_bound(fe51_as_nat(&self.Z) as int, p() as int);
-            };
-            assert(z != 0) by {
-                lemma_small_mod(z, p());
-            };
-            assert(is_valid_projective_point(proj));
-            // ProjectivePoint invariant: 52-bounded (from as_projective postcondition)
-            assert(fe51_limbs_bounded(&proj.X, 52) && fe51_limbs_bounded(&proj.Y, 52)
-                && fe51_limbs_bounded(&proj.Z, 52));
-            // sum_of_limbs_bounded follows from 52-bounded: 2^52 + 2^52 = 2^53 < u64::MAX
-            lemma_sum_of_limbs_bounded_from_fe51_bounded(&proj.X, &proj.Y, 52);
-        }
+        proof { admit(); // HOLE R8 block1 }
 
         let doubled = proj.double();
-        proof {
-            // projective double() spec guarantees this
-            assert(is_valid_completed_point(doubled));
-        }
+        proof { admit(); // HOLE R8 block2 }
 
         let result = doubled.as_extended();
 
-        proof {
-            // completed → extended conversion preserves affine meaning
-            assert(edwards_point_as_affine(result) == completed_point_as_affine_edwards(doubled));
-
-            // And from the lower-level double() spec:
-            assert(completed_point_as_affine_edwards(doubled) == edwards_double(
-                edwards_point_as_affine(*self).0,
-                edwards_point_as_affine(*self).1,
-            ));
-        }
+        proof { admit(); // HOLE R8 block3 }
 
         result
     }
@@ -2431,9 +2331,7 @@ impl<'a> Neg for &'a EdwardsPoint {
         // to avoid Verus panic
         use core::ops::Neg;
 
-        proof {
-            lemma_unfold_edwards(*self);
-        }
+        proof { admit(); // HOLE R7 block1 }
         assert(1u64 << 52 < 1u64 << 54) by (bit_vector);
 
         // Store ghost values before negation
@@ -2447,51 +2345,10 @@ impl<'a> Neg for &'a EdwardsPoint {
         Variable assignment refactor to prove type invariant before constructor. */
         let neg_x = Neg::neg(&self.X);
         let neg_t = Neg::neg(&self.T);
-        proof {
-            // Helps solver: maps opaque (1u64 << 52) to literal
-            assert((1u64 << 52u64) == 4503599627370496u64) by (bit_vector);
-            use_type_invariant(*self);
-            lemma_negation_preserves_extended_validity(old_x, old_y, old_z, old_t);
-            assert(fe51_as_canonical_nat(&neg_x) == field_neg(old_x));
-            assert(fe51_as_canonical_nat(&neg_t) == field_neg(old_t));
-        }
+        proof { admit(); // HOLE R7 block2 }
         let r = EdwardsPoint { X: neg_x, Y: self.Y, Z: self.Z, T: neg_t };
 
-        proof {
-            lemma_unfold_edwards(r);
-            let new_x = fe51_as_canonical_nat(&r.X);
-            let new_y = fe51_as_canonical_nat(&r.Y);
-            let new_z = fe51_as_canonical_nat(&r.Z);
-            let new_t = fe51_as_canonical_nat(&r.T);
-
-            assert(new_x == field_neg(old_x));
-            assert(new_t == field_neg(old_t));
-            assert(new_y == old_y);
-            assert(new_z == old_z);
-
-            assert(fe51_limbs_bounded(&r.X, 52));
-            assert(fe51_limbs_bounded(&r.T, 52));
-            assert(fe51_limbs_bounded(&r.Y, 52));
-            assert(fe51_limbs_bounded(&r.Z, 52));
-
-            lemma_sum_of_limbs_bounded_from_fe51_bounded(&r.Y, &r.X, 52);
-            assert(is_valid_edwards_point(r));
-
-            // 4. Prove affine semantics: edwards_point_as_affine(r) == edwards_neg(edwards_point_as_affine(*self))
-            let z_inv = field_inv(old_z);
-
-            // Key algebraic fact: (-x) * z_inv = -(x * z_inv)
-            assert(field_mul(new_x, z_inv) == field_neg(field_mul(old_x, z_inv))) by {
-                // new_x = field_neg(old_x)
-                // field_mul(neg(a), b) = neg(field_mul(a, b)) by field algebra
-                lemma_field_mul_comm(new_x, z_inv);
-                lemma_field_mul_neg(z_inv, old_x);
-                lemma_field_mul_comm(z_inv, old_x);
-            };
-
-            // The affine coords match: (neg(x/z), y/z) = edwards_neg((x/z, y/z))
-            assert(edwards_point_as_affine(r) == edwards_neg(edwards_point_as_affine(*self)));
-        }
+        proof { admit(); // HOLE R7 block3 }
         r
     }
 }
