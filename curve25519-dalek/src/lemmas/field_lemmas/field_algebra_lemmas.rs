@@ -152,20 +152,7 @@ pub proof fn lemma_field_mul_distributes_over_add(a: nat, b: nat, c: nat)
     ensures
         field_mul(a, field_add(b, c)) == field_add(field_mul(a, b), field_mul(a, c)),
 {
-    let p = p();
-    p_gt_2();
-
-    // Goal: a · (b + c) = a·b + a·c in the field
-    assert(field_mul(a, field_add(b, c)) == field_add(field_mul(a, b), field_mul(a, c))) by {
-        // Step 1: a * ((b+c) % p) ≡ a * (b+c) (mod p)
-        lemma_mul_mod_noop_right(a as int, (b + c) as int, p as int);
-
-        // Step 2: a * (b+c) = a*b + a*c (integer distributivity)
-        lemma_mul_is_distributive_add(a as int, b as int, c as int);
-
-        // Step 3: (a*b + a*c) % p = ((a*b)%p + (a*c)%p) % p
-        lemma_add_mod_noop((a * b) as int, (a * c) as int, p as int);
-    };
+    admit(); // HOLE C
 }
 
 /// Lemma: a + b = b + a in field arithmetic.
@@ -173,11 +160,7 @@ pub proof fn lemma_field_add_comm(a: nat, b: nat)
     ensures
         field_add(a, b) == field_add(b, a),
 {
-    let p = p();
-    p_gt_2();
-    assert(field_add(a, b) == (a + b) % p);
-    assert(field_add(b, a) == (b + a) % p);
-    assert((a + b) as int == (b + a) as int);
+    admit(); // HOLE A
 }
 
 /// field_add is associative: (a+b)+c = a+(b+c) in GF(p).
@@ -1394,21 +1377,7 @@ pub proof fn lemma_field_mul_assoc(a: nat, b: nat, c: nat)
     ensures
         field_mul(field_mul(a, b), c) == field_mul(a, field_mul(b, c)),
 {
-    let p = p();
-    p_gt_2();
-
-    let ab = field_mul(a, b);
-    let bc = field_mul(b, c);
-
-    // LHS = ((a*b) % p * c) % p
-    // RHS = (a * (b*c) % p) % p
-
-    // By mod absorption, both equal (a * b * c) % p
-    assert(field_mul(ab, c) == field_mul(a, bc)) by {
-        lemma_mul_mod_noop_left((a * b) as int, c as int, p as int);
-        lemma_mul_mod_noop_right(a as int, (b * c) as int, p as int);
-        lemma_mul_is_associative(a as int, b as int, c as int);
-    };
+    admit(); // HOLE D
 }
 
 /// Lemma: Field multiplication is commutative
