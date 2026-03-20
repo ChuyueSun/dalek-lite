@@ -36,6 +36,8 @@ use core::prelude::*;
 use vstd::prelude::*;
 
 #[allow(unused_imports)]
+use crate::specs::core_specs::*;
+#[allow(unused_imports)]
 use crate::specs::edwards_specs::*;
 #[allow(unused_imports)]
 use crate::specs::field_specs::*;
@@ -49,6 +51,8 @@ use crate::specs::ristretto_specs::*;
 #[allow(unused_imports)]
 use crate::lemmas::field_lemmas::add_lemmas::*;
 
+#[allow(unused_imports)]
+use crate::lemmas::field_lemmas::as_bytes_lemmas::*;
 #[allow(unused_imports)]
 use crate::lemmas::field_lemmas::from_bytes_lemmas::*;
 
@@ -344,15 +348,33 @@ impl RistrettoPoint {
         let mut ret = [[0u8;32];8];
         let (mask, fes) = self.elligator_ristretto_flavor_inverse();
 
-        for j in 0..8 {
+        for j in 0..8
+            invariant
+                forall|k: int|
+                    #![trigger ret[k]]
+                    0 <= k < j ==> u8_32_as_nat(&ret[k]) == fe51_as_canonical_nat(&fes[k]),
+        {
             ret[j] = fes[j].as_bytes();
         }
         proof {
-            // PROOF BYPASS: connecting as_bytes + spec_fe51_from_bytes roundtrip
-            // to the Elligator inversion property from
-            // elligator_ristretto_flavor_inverse. Requires proving that
-            // as_bytes/from_bytes is a roundtrip for canonical field elements.
-            admit();
+            // For each j, prove the as_bytes/from_bytes roundtrip:
+            // fe51_as_canonical_nat(spec_fe51_from_bytes(ret[j])) == fe51_as_canonical_nat(fes[j])
+            assert forall|j: int|
+                #![trigger ret[j]]
+                0 <= j < 8 implies
+                fe51_as_canonical_nat(&spec_fe51_from_bytes(&ret[j]))
+                    == fe51_as_canonical_nat(&fes[j])
+            by {
+                // Establish from_bytes_post(ret[j], spec_fe51_from_bytes(ret[j])):
+                // fe51_as_nat(spec_fe51_from_bytes(ret[j])) == u8_32_as_nat(ret[j]) % pow2(255)
+                lemma_from_u8_32_as_nat(&ret[j]);
+                lemma_as_nat_32_mod_255(&ret[j]);
+                // Loop invariant gives as_bytes_post(fes[j], ret[j]):
+                // u8_32_as_nat(ret[j]) == fe51_as_canonical_nat(fes[j])
+                // Roundtrip lemma concludes the equality
+                let fe_decoded = spec_fe51_from_bytes(&ret[j]);
+                lemma_from_bytes_as_bytes_roundtrip(&fes[j], &ret[j], &fe_decoded);
+            };
         }
         (mask, ret)
     }

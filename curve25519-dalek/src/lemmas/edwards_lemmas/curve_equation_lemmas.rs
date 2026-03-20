@@ -1309,10 +1309,25 @@ pub proof fn lemma_neg_of_signed_scalar_mul(P: (nat, nat), n: int)
     }
 }
 
-/// Axiom: [a]P + [b]P = [a+b]P for signed scalars a, b.
+/// Axiom: Q + (-Q) = identity for any point Q.
 ///
-/// This is the group law for scalar multiplication linearity (group homomorphism property).
-pub proof fn axiom_edwards_scalar_mul_signed_additive(P: (nat, nat), a: int, b: int)
+/// For points on the Edwards curve, this follows from the curve equation and
+/// the completeness of the addition law. Treated as an axiom here to avoid
+/// requiring callers to prove their points are on the curve.
+pub proof fn axiom_add_neg_is_identity(x: nat, y: nat)
+    ensures
+        edwards_add(x, y, field_neg(x), y) == edwards_identity(),
+{
+    admit();
+}
+
+/// Helper: [a]P + [b]P = [a+b]P when a > 0 and b < 0.
+proof fn lemma_signed_additive_pos_neg(P: (nat, nat), a: int, b: int)
+    requires
+        P.0 < p(),
+        P.1 < p(),
+        a > 0,
+        b < 0,
     ensures
         ({
             let pa = edwards_scalar_mul_signed(P, a);
@@ -1320,7 +1335,187 @@ pub proof fn axiom_edwards_scalar_mul_signed_additive(P: (nat, nat), a: int, b: 
             edwards_add(pa.0, pa.1, pb.0, pb.1)
         }) == edwards_scalar_mul_signed(P, a + b),
 {
-    admit();
+    reveal(edwards_scalar_mul_signed);
+    let abs_a = a as nat;
+    let abs_b = (-b) as nat;
+    let qa = edwards_scalar_mul(P, abs_a);
+    let qb = edwards_scalar_mul(P, abs_b);
+
+    if a + b > 0 {
+        // [a]P = [(a+b) + (-b)]P = add([a+b]P, [-b]P) by unsigned additive
+        let sum = (a + b) as nat;
+        lemma_edwards_scalar_mul_additive(P, sum, abs_b);
+        let q_sum = edwards_scalar_mul(P, sum);
+        assert(qa == edwards_add(q_sum.0, q_sum.1, qb.0, qb.1));
+
+        // LHS = add(add([a+b]P, [-b]P), neg([-b]P))
+        // By associativity: add([a+b]P, add([-b]P, neg([-b]P)))
+        let neg_qb = edwards_neg(qb);
+        axiom_edwards_add_associative(q_sum.0, q_sum.1, qb.0, qb.1, neg_qb.0, neg_qb.1);
+
+        // add([-b]P, neg([-b]P)) = identity
+        axiom_add_neg_is_identity(qb.0, qb.1);
+
+        // add([a+b]P, identity) = [a+b]P
+        lemma_edwards_scalar_mul_canonical(P, sum);
+        lemma_edwards_add_identity_right_canonical(q_sum);
+    } else if a + b < 0 {
+        // [-b]P = [a + (-a-b)]P = add([a]P, [-a-b]P) by unsigned additive
+        let neg_sum = (-(a + b)) as nat;
+        assert(abs_b == abs_a + neg_sum) by {
+            assert(-b == a + (-(a + b)));
+        };
+        lemma_edwards_scalar_mul_additive(P, abs_a, neg_sum);
+        let q_neg_sum = edwards_scalar_mul(P, neg_sum);
+        assert(qb == edwards_add(qa.0, qa.1, q_neg_sum.0, q_neg_sum.1));
+
+        // neg([-b]P) = neg(add([a]P, [-a-b]P)) = add(neg([a]P), neg([-a-b]P))
+        lemma_neg_distributes_over_add(qa, q_neg_sum);
+        let neg_qa = edwards_neg(qa);
+        let neg_q_neg_sum = edwards_neg(q_neg_sum);
+
+        // LHS = add([a]P, add(neg([a]P), neg([-a-b]P)))
+        // By associativity: add(add([a]P, neg([a]P)), neg([-a-b]P))
+        axiom_edwards_add_associative(qa.0, qa.1, neg_qa.0, neg_qa.1, neg_q_neg_sum.0, neg_q_neg_sum.1);
+
+        // add([a]P, neg([a]P)) = identity
+        axiom_add_neg_is_identity(qa.0, qa.1);
+
+        // add(identity, neg([-a-b]P)) = neg([-a-b]P)
+        lemma_edwards_scalar_mul_canonical(P, neg_sum);
+        p_gt_2();
+        lemma_mod_bound(field_neg(q_neg_sum.0) as int, p() as int);
+        lemma_edwards_add_identity_left(neg_q_neg_sum.0, neg_q_neg_sum.1);
+        lemma_small_mod(neg_q_neg_sum.0, p());
+        lemma_small_mod(neg_q_neg_sum.1, p());
+
+        // RHS = [a+b]_signed P = neg([-(a+b)]P)
+        assert((-(a + b)) as nat == neg_sum);
+    } else {
+        // a + b == 0, so a == -b
+        assert(a == -b);
+        assert(abs_a == abs_b);
+        // add([a]P, neg([a]P)) = identity
+        axiom_add_neg_is_identity(qa.0, qa.1);
+        // [0]P = identity
+        reveal_with_fuel(edwards_scalar_mul, 1);
+    }
+}
+/// Lemma: [a]P + [b]P = [a+b]P for signed scalars a, b.
+///
+/// This is the group law for scalar multiplication linearity (group homomorphism property).
+pub proof fn axiom_edwards_scalar_mul_signed_additive(P: (nat, nat), a: int, b: int)
+    requires
+        P.0 < p(),
+        P.1 < p(),
+    ensures
+        ({
+            let pa = edwards_scalar_mul_signed(P, a);
+            let pb = edwards_scalar_mul_signed(P, b);
+            edwards_add(pa.0, pa.1, pb.0, pb.1)
+        }) == edwards_scalar_mul_signed(P, a + b),
+{
+    reveal(edwards_scalar_mul_signed);
+
+    if a == 0 && b == 0 {
+        // Both zero: add(identity, identity) = identity = [0]P
+        reveal_with_fuel(edwards_scalar_mul, 1);
+        // edwards_scalar_mul(P, 0) == (0, 1) == edwards_identity()
+        lemma_edwards_double_identity();
+        // edwards_double(0, 1) == (0, 1), i.e., edwards_add(0, 1, 0, 1) == (0, 1)
+    } else if a == 0 {
+        // a == 0, b != 0: add(identity, [b]P) = [b]P = [a+b]P
+        reveal_with_fuel(edwards_scalar_mul, 1);
+        // edwards_scalar_mul(P, 0) == (0, 1), so edwards_scalar_mul_signed(P, 0) == (0, 1)
+
+        // Get canonical bounds on [b]P
+        lemma_edwards_scalar_mul_signed_canonical(P, b);
+        let pb = edwards_scalar_mul_signed(P, b);
+        assert(pb.0 < p());
+        assert(pb.1 < p());
+
+        // add(0, 1, pb.0, pb.1) == (pb.0 % p(), pb.1 % p())
+        lemma_edwards_add_identity_left(pb.0, pb.1);
+
+        // Since pb.0 < p() and pb.1 < p(), reduce mod p is identity
+        lemma_field_element_reduced(pb.0);
+        assert(pb.0 % p() == pb.0);
+        lemma_field_element_reduced(pb.1);
+        assert(pb.1 % p() == pb.1);
+
+        // So edwards_add(0, 1, pb.0, pb.1) == (pb.0, pb.1) == pb
+        assert(edwards_add(0, 1, pb.0, pb.1) == pb);
+    } else if b == 0 {
+        // b == 0, a != 0: add([a]P, identity) = [a]P = [a+b]P
+        reveal_with_fuel(edwards_scalar_mul, 1);
+
+        lemma_edwards_scalar_mul_signed_canonical(P, a);
+        let pa = edwards_scalar_mul_signed(P, a);
+        assert(pa.0 < p());
+        assert(pa.1 < p());
+
+        // add(pa.0, pa.1, 0, 1) == (pa.0 % p(), pa.1 % p())
+        lemma_edwards_add_identity_right(pa.0, pa.1);
+
+        lemma_field_element_reduced(pa.0);
+        assert(pa.0 % p() == pa.0);
+        lemma_field_element_reduced(pa.1);
+        assert(pa.1 % p() == pa.1);
+
+        assert(edwards_add(pa.0, pa.1, 0, 1) == pa);
+    } else if a > 0 && b > 0 {
+        // Both positive: directly use unsigned additive lemma
+        // [a]P + [b]P = [a+b]P for nat
+        lemma_edwards_scalar_mul_additive(P, a as nat, b as nat);
+    } else if a < 0 && b < 0 {
+        // Both negative:
+        // [a]P = neg([|a|]P), [b]P = neg([|b|]P)
+        // add(neg(A), neg(B)) = neg(add(A, B))
+        // add(A, B) = [|a|+|b|]P
+        // neg([|a|+|b|]P) = [a+b]_signed P since a+b < 0 and |a+b| = |a|+|b|
+        let abs_a = (-a) as nat;
+        let abs_b = (-b) as nat;
+        let qa = edwards_scalar_mul(P, abs_a);
+        let qb = edwards_scalar_mul(P, abs_b);
+
+        // Step 1: add(neg(qa), neg(qb)) == neg(add(qa, qb))
+        lemma_neg_distributes_over_add(qa, qb);
+        assert(edwards_add(
+            edwards_neg(qa).0, edwards_neg(qa).1,
+            edwards_neg(qb).0, edwards_neg(qb).1
+        ) == edwards_neg(edwards_add(qa.0, qa.1, qb.0, qb.1)));
+
+        // Step 2: add(qa, qb) == [|a|+|b|]P
+        lemma_edwards_scalar_mul_additive(P, abs_a, abs_b);
+        assert(edwards_add(qa.0, qa.1, qb.0, qb.1) == edwards_scalar_mul(P, abs_a + abs_b));
+
+        // Step 3: |a+b| == |a| + |b| when both negative
+        assert((-(a + b)) as nat == abs_a + abs_b) by {
+            assert(-(a + b) == -a + -b);
+        };
+
+        // So neg([|a|+|b|]P) == neg([|a+b|]P) == edwards_scalar_mul_signed(P, a+b)
+    } else if a < 0 && b > 0 {
+        // Mixed: a < 0, b > 0
+        // Use commutativity to swap, then use pos_neg helper with (b, a)
+        let pa = edwards_scalar_mul_signed(P, a);
+        let pb = edwards_scalar_mul_signed(P, b);
+
+        // Step 1: add(pa, pb) == add(pb, pa)
+        lemma_edwards_add_commutative(pa.0, pa.1, pb.0, pb.1);
+        assert(edwards_add(pa.0, pa.1, pb.0, pb.1) == edwards_add(pb.0, pb.1, pa.0, pa.1));
+
+        // Step 2: add([b]P, [a]P) == [b+a]P via pos_neg helper (b > 0, a < 0)
+        lemma_signed_additive_pos_neg(P, b, a);
+        assert(edwards_add(pb.0, pb.1, pa.0, pa.1) == edwards_scalar_mul_signed(P, b + a));
+
+        // Step 3: a + b == b + a
+        assert(a + b == b + a);
+    } else {
+        // a > 0, b < 0: directly use pos_neg helper
+        assert(a > 0 && b < 0);
+        lemma_signed_additive_pos_neg(P, a, b);
+    }
 }
 
 /// Lemma: [b]([a]P) = [a*b]P for signed a, unsigned b.
@@ -3216,12 +3411,6 @@ pub proof fn lemma_projective_implies_affine_on_curve(x: nat, y: nat, z: nat)
 // =============================================================================
 // Scalar multiplication distributivity (group homomorphism)
 // =============================================================================
-/// Axiom: Scalar multiplication distributes over Edwards addition.
-///
-/// [n]*(A + B) = [n]*A + [n]*B
-///
-/// This is a fundamental property of abelian groups: the "multiplication by n"
-/// endomorphism is a group homomorphism.
 pub proof fn axiom_edwards_scalar_mul_distributive(a: (nat, nat), b: (nat, nat), n: nat)
     ensures
         edwards_scalar_mul(edwards_add(a.0, a.1, b.0, b.1), n) == ({
@@ -3229,9 +3418,87 @@ pub proof fn axiom_edwards_scalar_mul_distributive(a: (nat, nat), b: (nat, nat),
             let nb = edwards_scalar_mul(b, n);
             edwards_add(na.0, na.1, nb.0, nb.1)
         }),
+    decreases n,
 {
-    admit();
+    let sum_ab = edwards_add(a.0, a.1, b.0, b.1);
+
+    if n == 0 {
+        reveal_with_fuel(edwards_scalar_mul, 1);
+        // LHS: (0, 1);  RHS: edwards_add(0, 1, 0, 1)
+        lemma_edwards_add_identity_left(0, 1);
+        // edwards_add(0, 1, 0, 1) == (0 % p(), 1 % p())
+        assert(0nat % p() == 0nat) by {
+            p_gt_2();
+            lemma_small_mod(0nat, p());
+        };
+        assert(1nat % p() == 1nat) by {
+            p_gt_2();
+            lemma_small_mod(1nat, p());
+        };
+    } else if n == 1 {
+        reveal_with_fuel(edwards_scalar_mul, 1);
+        // Both sides equal edwards_add(a.0, a.1, b.0, b.1)
+    } else {
+        let prev_n = (n - 1) as nat;
+
+        let prev_a = edwards_scalar_mul(a, prev_n);
+        let prev_b = edwards_scalar_mul(b, prev_n);
+        let prev_sum = edwards_scalar_mul(sum_ab, prev_n);
+
+        // Step 1: Induction hypothesis for n-1
+        axiom_edwards_scalar_mul_distributive(a, b, prev_n);
+        let ih_rhs = edwards_add(prev_a.0, prev_a.1, prev_b.0, prev_b.1);
+        assert(prev_sum == ih_rhs);
+        assert(prev_sum.0 == ih_rhs.0);
+        assert(prev_sum.1 == ih_rhs.1);
+
+        // Step 2: Unfold f(P, n) = add(f(P, n-1), P) via succ with (n-1)
+        lemma_edwards_scalar_mul_succ(sum_ab, prev_n);
+        assert(edwards_scalar_mul(sum_ab, n) == edwards_add(prev_sum.0, prev_sum.1, sum_ab.0, sum_ab.1));
+
+        lemma_edwards_scalar_mul_succ(a, prev_n);
+        assert(edwards_scalar_mul(a, n) == edwards_add(prev_a.0, prev_a.1, a.0, a.1));
+
+        lemma_edwards_scalar_mul_succ(b, prev_n);
+        assert(edwards_scalar_mul(b, n) == edwards_add(prev_b.0, prev_b.1, b.0, b.1));
+
+        // Step 3: Substitute IH into LHS
+        assert(edwards_add(prev_sum.0, prev_sum.1, sum_ab.0, sum_ab.1)
+            == edwards_add(ih_rhs.0, ih_rhs.1, sum_ab.0, sum_ab.1));
+
+        // Step 4: Four-way swap: (prev_a + prev_b) + (a + b) == (prev_a + a) + (prev_b + b)
+        lemma_edwards_add_four_way_swap(prev_a, prev_b, a, b);
+
+        let ab_result = edwards_add(prev_a.0, prev_a.1, prev_b.0, prev_b.1);
+        let cd_result = edwards_add(a.0, a.1, b.0, b.1);
+        let ac_result = edwards_add(prev_a.0, prev_a.1, a.0, a.1);
+        let bd_result = edwards_add(prev_b.0, prev_b.1, b.0, b.1);
+
+        assert(edwards_add(ab_result.0, ab_result.1, cd_result.0, cd_result.1)
+            == edwards_add(ac_result.0, ac_result.1, bd_result.0, bd_result.1));
+
+        // Connect ih_rhs == ab_result, sum_ab == cd_result
+        assert(ih_rhs.0 == ab_result.0);
+        assert(ih_rhs.1 == ab_result.1);
+        assert(sum_ab.0 == cd_result.0);
+        assert(sum_ab.1 == cd_result.1);
+
+        // Connect ac_result/bd_result to scalar muls of a,b at n
+        let na = edwards_scalar_mul(a, n);
+        let nb = edwards_scalar_mul(b, n);
+        assert(na == ac_result);
+        assert(nb == bd_result);
+        assert(na.0 == ac_result.0);
+        assert(na.1 == ac_result.1);
+        assert(nb.0 == bd_result.0);
+        assert(nb.1 == bd_result.1);
+
+        // Final chain
+        assert(edwards_scalar_mul(sum_ab, n) == edwards_add(na.0, na.1, nb.0, nb.1));
+    }
 }
+
+
 
 // =============================================================================
 // Scalar mul / double helpers

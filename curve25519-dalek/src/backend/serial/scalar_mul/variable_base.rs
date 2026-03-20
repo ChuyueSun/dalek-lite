@@ -169,6 +169,9 @@ pub(crate) fn mul(point: &EdwardsPoint, scalar: &Scalar) -> (result: EdwardsPoin
                 0 <= k < 8 ==> is_valid_projective_niels_point(#[trigger] lookup_table.0[k]),
             // Radix-16 reconstruction equality (from as_radix_16 postcondition)
             reconstruct_radix_16(scalar_digits@) == scalar_as_nat(scalar) as int,
+            // Point affine coordinates are canonical (< p)
+            edwards_point_as_affine(*point).0 < p(),
+            edwards_point_as_affine(*point).1 < p(),
             // Functional correctness: Horner partial evaluation
             completed_point_as_affine_edwards(tmp1) == edwards_scalar_mul_signed(
                 edwards_point_as_affine(*point),
@@ -248,6 +251,7 @@ pub(crate) fn mul(point: &EdwardsPoint, scalar: &Scalar) -> (result: EdwardsPoin
             }
 
             // -- Step 4: Add combines the two terms (scoped to limit Z3 pressure) --
+            // P_affine coords < p() from loop invariant
             assert(completed_point_as_affine_edwards(tmp1) == edwards_scalar_mul_signed(
                 P_affine,
                 partial_j * 16 + scalar_digits[i as int] as int,

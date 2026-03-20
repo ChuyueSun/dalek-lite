@@ -373,6 +373,8 @@ pub proof fn lemma_edwards_scalar_mul_signed_of_scalar_mul(P: (nat, nat), k: nat
 pub proof fn lemma_even_sum_up_to_correct(digits: Seq<i8>, B: (nat, nat), n: nat)
     requires
         digits.len() >= 2 * n,
+        B.0 < p(),
+        B.1 < p(),
     ensures
         even_sum_up_to(digits, (2 * n) as int, B) == edwards_scalar_mul_signed(
             B,
@@ -449,6 +451,8 @@ pub proof fn lemma_even_sum_up_to_correct(digits: Seq<i8>, B: (nat, nat), n: nat
 pub proof fn lemma_odd_sum_up_to_correct(digits: Seq<i8>, B: (nat, nat), n: nat)
     requires
         digits.len() >= 2 * n,
+        B.0 < p(),
+        B.1 < p(),
     ensures
         odd_sum_up_to(digits, (2 * n) as int, B) == edwards_scalar_mul_signed(
             B,
@@ -875,6 +879,8 @@ pub proof fn lemma_reconstruct_radix16_even_odd(digits: Seq<i8>, n: nat)
 pub proof fn lemma_pippenger_sum_correct_signed(digits: Seq<i8>, basepoint: (nat, nat))
     requires
         digits.len() == 64,
+        basepoint.0 < p(),
+        basepoint.1 < p(),
     ensures
         pippenger_partial(digits, 64, basepoint) == edwards_scalar_mul_signed(
             basepoint,
@@ -951,6 +957,8 @@ pub proof fn lemma_pippenger_sum_correct_signed(digits: Seq<i8>, basepoint: (nat
 pub proof fn lemma_pippenger_sum_correct(digits: Seq<i8>, basepoint: (nat, nat), scalar_nat: nat)
     requires
         digits.len() == 64,
+        basepoint.0 < p(),
+        basepoint.1 < p(),
         reconstruct_radix_16(digits) == scalar_nat as int,
     ensures
         pippenger_partial(digits, 64, basepoint) == edwards_scalar_mul(basepoint, scalar_nat),

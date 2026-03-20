@@ -3658,6 +3658,9 @@ impl BasepointTable for EdwardsBasepointTable {
             reveal(reconstruct_radix_16);
             assert(reconstruct_radix_16(a@) == scalar_as_nat(scalar) as int);
 
+            assert(B.0 < p() && B.1 < p()) by {
+                p_gt_2();
+            }
             lemma_pippenger_sum_correct(a@, B, scalar_as_nat(scalar));
             assert(pippenger_partial(a@, 64, B) == edwards_scalar_mul(B, scalar_as_nat(scalar)));
 
