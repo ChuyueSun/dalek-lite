@@ -25,7 +25,25 @@ pub proof fn lemma_field51_add(lhs: &FieldElement51, rhs: &FieldElement51)
             fe51_as_canonical_nat(rhs),
         ),
 {
-    admit(); // HOLE E
+    assert(u64_5_as_nat(spec_add_fe51_limbs(lhs, rhs).limbs) == u64_5_as_nat(lhs.limbs)
+        + u64_5_as_nat(rhs.limbs)) by {
+        lemma_u64_5_as_nat_add(lhs.limbs, rhs.limbs);
+    }
+
+    // trivial consequence: x = y + z => x % p = (y + z) % p
+    // Remains to show (y + z) % p = (y % p + z % p) % p
+
+    assert((u64_5_as_nat(lhs.limbs) + u64_5_as_nat(rhs.limbs)) % p() == (u64_5_as_nat(lhs.limbs)
+        % p() + u64_5_as_nat(rhs.limbs) % p()) % p()) by {
+        assert(p() > 0) by {
+            pow255_gt_19();
+        }
+        lemma_add_mod_noop(
+            u64_5_as_nat(lhs.limbs) as int,
+            u64_5_as_nat(rhs.limbs) as int,
+            p() as int,
+        );
+    }
 }
 
 /// Lemma: limb-wise equality implies `FieldElement51` equality.
@@ -61,7 +79,42 @@ pub proof fn lemma_field_add_16p_no_overflow(lhs: &FieldElement51, rhs: &FieldEl
         rhs.limbs[3] < 36028797018963952u64,
         rhs.limbs[4] < 36028797018963952u64,
 {
-    admit(); // HOLE G
+    let c0 = 36028797018963664u64;  // 16 * (2^51 - 19)
+    let c = 36028797018963952u64;  // 16 * (2^51 - 1)
+
+    // Bound lhs limbs so adding the constants cannot overflow a u64
+    assert(lhs.limbs[0] <= u64::MAX - c0) by {
+        assert(((1u64 << 54) - 1) <= u64::MAX - c0) by (compute);
+    }
+    assert(lhs.limbs[1] <= u64::MAX - c) by {
+        assert(((1u64 << 54) - 1) <= u64::MAX - c) by (compute);
+    }
+    assert(lhs.limbs[2] <= u64::MAX - c) by {
+        assert(((1u64 << 54) - 1) <= u64::MAX - c) by (compute);
+    }
+    assert(lhs.limbs[3] <= u64::MAX - c) by {
+        assert(((1u64 << 54) - 1) <= u64::MAX - c) by (compute);
+    }
+    assert(lhs.limbs[4] <= u64::MAX - c) by {
+        assert(((1u64 << 54) - 1) <= u64::MAX - c) by (compute);
+    }
+
+    // Bound rhs limbs to be less than the constants
+    assert(rhs.limbs[0] < c0) by {
+        assert((1u64 << 54) <= c0) by (compute);
+    }
+    assert(rhs.limbs[1] < c) by {
+        assert((1u64 << 54) <= c) by (compute);
+    }
+    assert(rhs.limbs[2] < c) by {
+        assert((1u64 << 54) <= c) by (compute);
+    }
+    assert(rhs.limbs[3] < c) by {
+        assert((1u64 << 54) <= c) by (compute);
+    }
+    assert(rhs.limbs[4] < c) by {
+        assert((1u64 << 54) <= c) by (compute);
+    }
 }
 
 /// Lemma: bound weakening - if limbs are bounded by `a` bits, they're also bounded by `b` bits when a < b.
@@ -75,7 +128,14 @@ pub proof fn lemma_fe51_limbs_bounded_weaken(fe: &FieldElement51, a: u64, b: u64
     ensures
         fe51_limbs_bounded(fe, b),
 {
-    admit(); // HOLE B
+    assert forall|i: int| 0 <= i < 5 implies fe.limbs[i] < (1u64 << b) by {
+        assert(fe.limbs[i] < (1u64 << a));
+        assert((1u64 << a) < (1u64 << b)) by (bit_vector)
+            requires
+                a < b,
+                b <= 63,
+        ;
+    }
 }
 
 /// Weaken EdwardsPoint from 52-bounded (invariant) to 54-bounded (operation precondition)

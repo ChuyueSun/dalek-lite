@@ -198,7 +198,23 @@ pub proof fn lemma_negation_preserves_curve(x: nat, y: nat)
     ensures
         is_on_edwards_curve(field_neg(x), y),
 {
-    admit(); // HOLE R1
+    // Goal: on_curve(-x, y)
+    // Strategy: The curve equation uses x², and (-x)² = x², so the equation is identical
+    //
+    //   y² - (-x)² = 1 + d·(-x)²·y²
+    //   y² - x²    = 1 + d·x²·y²      (same equation!)
+    //
+    // The precondition says (x, y) satisfies this, so (-x, y) does too.
+    let neg_x = field_neg(x);
+
+    assert(is_on_edwards_curve(neg_x, y)) by {
+        // Key insight: (-x)² = x²
+        assert(field_square(neg_x) == field_square(x)) by {
+            lemma_neg_square_eq(x);  // (-x)² = (x % p)²
+            lemma_square_mod_noop(x);  // (x % p)² = x²
+        };
+        // With (-x)² = x², the curve equations are identical
+    };
 }
 
 /// Lemma: Negation preserves extended Edwards point validity
