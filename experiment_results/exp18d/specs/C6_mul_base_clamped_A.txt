@@ -1,0 +1,3 @@
+    ensures
+        is_valid_montgomery_point(result),
+        montgomery_point_as_nat(result) == montgomery_scalar_mul_u(spec_x25519_basepoint_u(), u8_32_as_nat(&spec_clamp_integer(bytes))),

@@ -1,0 +1,155 @@
+{
+  "experiment": "exp19_exec_block_proof_generation",
+  "date": "2026-03-20",
+  "model": "claude-opus-4-6-1m",
+  "summary": "All 4 functions passed with 0 compile-fix cycles total. 11 proof blocks generated, 116 LOC. Exec block generation is reliable for BOUNDS_PROPAGATION, POSTCONDITION_CHAINING, and SCALAR_BIT_BRIDGE patterns.",
+
+  "block_identification": {
+    "E1_correct_positions": true,
+    "E2_correct_positions": true,
+    "E3_correct_positions": true,
+    "E4_correct_positions": true,
+    "notes": "All agents correctly identified block positions from function structure alone"
+  },
+
+  "callee_lookup": {
+    "E1_lookup_calls": 5,
+    "E2_lookup_calls": 16,
+    "E2_callee_files_found": ["edwards.rs (as_projective)", "backend/serial/curve_models/mod.rs (ProjectivePoint::double, CompletedPoint::as_extended)", "edwards_specs.rs", "add_lemmas.rs"],
+    "E2_ensures_extracted": true,
+    "E2_used_sibling_function": "mul_by_pow_2 (same as_projective→double→as_extended chain) served as template",
+    "E3_lookup_calls": 8,
+    "E3_callee_files_found": ["montgomery.rs (mul_bits_be)", "scalar.rs (bits_le)", "scalar_specs.rs", "core_specs.rs", "bits_as_nat_lemmas.rs", "to_nat_lemmas.rs"],
+    "E4_lookup_calls": 5,
+    "E4_pattern_source": "Intact blocks 1-2 and 9+ in same function",
+    "lookup_calls_avg": 8.5
+  },
+
+  "by_function": {
+    "E1": {
+      "target": "Add<&FieldElement51>::add in field.rs",
+      "total_blocks": 1,
+      "blocks_passed": 1,
+      "avg_compile_fix_cycles": 0,
+      "total_loc": 15,
+      "gt_loc": 17,
+      "full_verification": "pass",
+      "approach_vs_gt": "Used extensional equality (=~=) instead of array literal. Used lemma_add_bounds_propagate instead of bit_vector assertions. Different but cleaner."
+    },
+    "E2": {
+      "target": "EdwardsPoint::double in edwards.rs",
+      "total_blocks": 3,
+      "blocks_passed": 3,
+      "blocks_detail": [
+        {"id": "B1", "loc": 17, "pattern": "validity_bridge + bounds_propagation", "cycles": 0},
+        {"id": "B2", "loc": 0, "pattern": "empty (postconditions chain automatically)", "cycles": 0},
+        {"id": "B3", "loc": 10, "pattern": "affine_representation_chaining", "cycles": 0}
+      ],
+      "avg_compile_fix_cycles": 0,
+      "total_loc": 27,
+      "gt_loc": 34,
+      "full_verification": "pass",
+      "approach_vs_gt": "Block 2 empty (GT had 4 lines). Agent recognized postconditions chain directly. Found sibling function mul_by_pow_2 as template. Used by-blocks instead of linear assertions."
+    },
+    "E3": {
+      "target": "MontgomeryPoint::mul in montgomery.rs",
+      "total_blocks": 1,
+      "blocks_passed": 1,
+      "avg_compile_fix_cycles": 0,
+      "total_loc": 38,
+      "gt_loc": 47,
+      "full_verification": "pass",
+      "approach_vs_gt": "Same logical chain but more concise (38 vs 47 LOC). Better commented with step-by-step annotations. Eliminated redundant intermediate assertions."
+    },
+    "E4": {
+      "target": "elligator_ristretto_flavor blocks 3-8 in ristretto.rs",
+      "total_blocks": 6,
+      "blocks_passed": 6,
+      "avg_compile_fix_cycles": 0,
+      "total_loc": 36,
+      "gt_loc": 38,
+      "full_verification": "pass",
+      "approach_vs_gt": "Used by-blocks for cleaner structure. Block 8 combined c_minus_dr and r_plus_d bounds (GT had them separate). Functionally identical."
+    }
+  },
+
+  "by_pattern": {
+    "BOUNDS_PROPAGATION": {
+      "blocks": 7,
+      "avg_cycles": 0,
+      "notes": "Entirely mechanical. Two templates: (1) addition→sum_of_limbs_bounded via weaken+sum lemma, (2) multiply/subtract→fe51_limbs_bounded(54) via weaken. Zero cycles across all 7 blocks."
+    },
+    "POSTCONDITION_CHAINING": {
+      "blocks": 3,
+      "avg_cycles": 0,
+      "notes": "E2 blocks. Required cross-file callee lookup (16 grep/read calls). Model found sibling function (mul_by_pow_2) as template. Block 2 was empty — postconditions chained directly."
+    },
+    "SCALAR_BIT_BRIDGE": {
+      "blocks": 1,
+      "avg_cycles": 0,
+      "notes": "E3 block. Required finding 5 specific lemmas across 3 files. Most complex single block (38 LOC). Model found all lemmas and arranged them correctly."
+    },
+    "ALGEBRAIC_BRIDGE": {
+      "blocks": 1,
+      "avg_cycles": 0,
+      "notes": "E1 block included lemma_field51_add call (algebraic bridge) plus bounds. Model found dedicated lemma_add_bounds_propagate instead of using bit_vector assertions."
+    }
+  },
+
+  "block_interaction": {
+    "later_blocks_used_earlier_block_facts": true,
+    "redundant_assertions_across_blocks": 0,
+    "notes": "E4: each block's output bounds were correctly used as input bounds for the next block. No redundant re-assertions. E2: Block 3 correctly relied on Block 1 having established validity."
+  },
+
+  "contamination_analysis": {
+    "E1": "Used extensional equality + lemma_add_bounds_propagate — different from GT (array literal + bit_vector). Found AddAssign in same file as template.",
+    "E2": "Found mul_by_pow_2 as template — different structure from GT. Block 2 empty vs GT 4-line block.",
+    "E3": "Same logical chain as GT but 9 LOC shorter. Better step-by-step organization.",
+    "E4": "Same lemma calls as GT (only 2 lemmas available for this pattern). Block 8 combined vs GT separate — minor structural difference.",
+    "verdict": "No evidence of GT memorization. All solutions show independent reasoning with different structural choices."
+  },
+
+  "performance": {
+    "total_blocks_generated": 11,
+    "total_blocks_passed": 11,
+    "total_loc_generated": 116,
+    "total_loc_gt": 136,
+    "total_compile_fix_cycles": 0,
+    "avg_cycles_per_block": 0,
+    "avg_cycles_per_function": 0,
+    "full_verification": "1985 verified, 2 errors (both pre-existing in field.rs Sub impl, unrelated)"
+  },
+
+  "questions_answered": {
+    "Q1_block_position_identification": "YES — all 4 agents correctly identified block positions from function structure alone. The model understands where proof blocks go between exec statements.",
+    "Q2_cross_file_callee_lookup": "YES — E2 found ensures in curve_models/mod.rs (16 lookup calls). E3 found lemmas across 3 files (8 calls). Lookup works reliably.",
+    "Q3_block_interaction": "YES — later blocks correctly use earlier block facts. No redundant assertions. E2 Block 2 was empty because Block 1 established sufficient context.",
+    "Q4_bounds_propagation_mechanical": "YES — avg 0 cycles across 7 bounds blocks. Entirely template-driven with 2 patterns. Effectively free.",
+    "Q5_loop_invariant": "NOT TESTED — E3 tested the mul wrapper (SCALAR_BIT_BRIDGE) not the mul_bits_be loop body. The full montgomery ladder loop invariant (~400 proof LOC) is out of scope for this experiment. Design underestimated complexity (~40 LOC estimate vs ~400 actual)."
+  },
+
+  "expected_vs_actual": {
+    "E1": {"expected": "pass, 1-2 cycles", "actual": "pass, 0 cycles", "better_than_expected": true},
+    "E2": {"expected": "pass, 2-3 cycles", "actual": "pass, 0 cycles", "better_than_expected": true},
+    "E3": {"expected": "pass, 3-4 cycles", "actual": "pass, 0 cycles", "better_than_expected": true},
+    "E4": {"expected": "pass, avg <1.5 cycles", "actual": "pass, avg 0 cycles", "better_than_expected": true}
+  },
+
+  "verdict": "exec_blocks_handled",
+  "verdict_detail": "All 4 functions passed with 0 compile-fix cycles. Exec block generation is reliable for BOUNDS_PROPAGATION, POSTCONDITION_CHAINING, ALGEBRAIC_BRIDGE, and SCALAR_BIT_BRIDGE patterns. LOOP_INVARIANT pattern remains untested. Cross-file callee lookup works. Bounds propagation is fully mechanical. Pipeline's exec block mode (postcondition chaining) is empirically validated.",
+
+  "limitations": {
+    "loop_invariant_untested": "The montgomery ladder loop invariant was not tested. mul_bits_be has ~400 LOC of proof in the loop body, far exceeding the ~40 LOC estimate. This is the highest-risk exec block pattern.",
+    "e3_scoped_to_wrapper": "E3 tested the mul wrapper function, not the full mul_bits_be ladder body. The wrapper tests SCALAR_BIT_BRIDGE, not LOOP_INVARIANT.",
+    "small_sample": "Only 4 functions, 11 blocks. More data needed for confidence.",
+    "gt_context_available": "Surrounding proof blocks (blocks 1-2 and 9+ for E4, sibling functions for E2) provided context. Fully standalone generation was not tested."
+  },
+
+  "recommendations": {
+    "pipeline_confidence": "High for non-loop exec blocks. BOUNDS_PROPAGATION blocks can be generated mechanically with zero cycles.",
+    "loop_invariant_follow_up": "Need separate experiment for loop invariant blocks. Candidate: mul_bits_be loop body (3 blocks, ~230 LOC per iteration). High difficulty.",
+    "template_recognition": "Model effectively uses sibling functions and surrounding blocks as templates. Pipeline should provide these in context.",
+    "block_ordering": "Front-to-back ordering works well. Each block's output becomes implicit context for the next."
+  }
+}

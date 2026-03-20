@@ -1,0 +1,39 @@
+{
+  "hole_id": "R8",
+  "group": "B_exec",
+  "function": "double",
+  "file": "edwards.rs",
+  "layer": "L6",
+  "blocks": [
+    {
+      "block_num": 1,
+      "gt_loc": 18,
+      "position": "after_as_projective",
+      "attempt_1_result": "pass",
+      "attempt_1_loc": 10,
+      "model_understood_purpose": true,
+      "purpose": "Bridge EdwardsPoint validity to ProjectivePoint validity. Establish sum_of_limbs_bounded for double() precondition."
+    },
+    {
+      "block_num": 2,
+      "gt_loc": 0,
+      "position": "after_proj_double",
+      "attempt_1_result": "pass",
+      "attempt_1_loc": 2,
+      "model_understood_purpose": true,
+      "purpose": "double() postconditions directly satisfy as_extended() preconditions. Empty proof block."
+    },
+    {
+      "block_num": 3,
+      "gt_loc": 9,
+      "position": "after_as_extended",
+      "attempt_1_result": "pass",
+      "attempt_1_loc": 6,
+      "model_understood_purpose": true,
+      "purpose": "Chain affine equivalences: as_extended ensures → double ensures → as_projective ensures. Show projective_point_as_affine_edwards(proj) == edwards_point_as_affine(*self)."
+    }
+  ],
+  "approach": "Pipeline proof: each block bridges postconditions of one call to preconditions of the next. Block 1 establishes projective validity from extended validity (same X,Y,Z) and limb bounds for sum_of_limbs_bounded. Block 2 is empty pass-through. Block 3 chains the affine representation equivalences.",
+  "confidence": 4,
+  "notes": "Verified successfully (no errors at R8 lines, 1969 verified in crate). NOTE: An automated process subsequently restored ground truth to edwards.rs, preventing clean verification of remaining Group B holes."
+}

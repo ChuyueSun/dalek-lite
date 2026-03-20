@@ -1,0 +1,15 @@
+{
+  "hole_id": "R4",
+  "group": "A_standalone",
+  "function": "lemma_projective_represents_implies_u_coordinate",
+  "file": "montgomery_curve_lemmas.rs",
+  "layer": "L8",
+  "gt_loc_estimate": 43,
+  "attempt_1_result": "pass",
+  "attempt_1_loc": 44,
+  "attempt_2_result": null,
+  "approach": "Case split on MontgomeryAffine. Infinity: both sides 0. Finite: chain field_mul_assoc + inv_mul_cancel + field_mul_comm + field_mul_one_right to show U/W = u mod p. Needed explicit assertions to guide SMT.",
+  "key_insight": "Given U = u*W with W != 0: U*W^{-1} = u*W*W^{-1} = u*1 = u mod p. Required small_mod lemma to establish W%p != 0 from W < p.",
+  "confidence": 4,
+  "notes": "First attempt had compilation error (non-existent function name), fixed on same attempt. Second compilation had postcondition failure due to insufficient assertions for SMT solver. Added explicit assertion chain to guide solver."
+}

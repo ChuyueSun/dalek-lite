@@ -1,0 +1,102 @@
+{
+  "experiment": "exp9e_proptest_coverage",
+  "description": "Proptest Edge-Case Coverage: can proptest-style testing catch too-strong (overly restrictive) Verus specifications?",
+  "model": "claude-opus-4-6",
+  "methodology": {
+    "approach": "Analytical evaluation (no cargo verus available). For E1, analyzed the probability of randomly hitting the edge case. For E2/E3, analyzed whether the extra clauses are tautologies.",
+    "isolation": "Sub-agent forbidden from using any tools, reasoned only from provided context."
+  },
+  "E1_decompress": {
+    "too_strong_clause": "result.is_some() ==> (edwards_x_sign_bit(result.unwrap()) as u8) == (self.0[31] >> 7)",
+    "gt_guarded_clause": "result.is_some() ==> (field_square(field_element_from_bytes(&self.0)) != 1 ==> edwards_x_sign_bit(result.unwrap()) == (self.0[31] >> 7))",
+    "violation_condition": "y^2 ≡ 1 (mod p), i.e., y=1 or y=p-1, AND compressed sign_bit=1",
+    "random_100_catches": false,
+    "random_1000_catches": false,
+    "targeted_catches": true,
+    "min_n_to_catch": "N/A for random (probability 2/2^255 ≈ 3.5e-77 per trial); 1 targeted case suffices",
+    "targeted_cases_that_catch": [
+      "y=1 with sign_bit=1: bytes = [0x01, 0x00, ..., 0x00, 0x80]",
+      "y=p-1 with sign_bit=1: bytes encoding 2^255-20 with high bit set"
+    ],
+    "targeted_cases_that_dont_catch": [
+      "y=1 with sign_bit=0: sign_bit(0) == 0 == compressed_bit, no violation",
+      "y=p-1 with sign_bit=0: same reason",
+      "y=0: x^2 = 0/(-1) has no solution, so result.is_none(), clause vacuously true"
+    ],
+    "probability_analysis": {
+      "valid_y_with_y_squared_eq_1": 2,
+      "total_possible_y_values": "2^255",
+      "per_trial_probability": "2/2^255 ≈ 3.5e-77",
+      "N_100_detection_probability": "≈ 200/2^255 ≈ 7e-75",
+      "N_1000_detection_probability": "≈ 2000/2^255 ≈ 3.5e-74",
+      "N_needed_for_50pct_detection": "≈ 2^254 ≈ 2.9e76 (infeasible)"
+    }
+  },
+  "E2_batch_invert": {
+    "too_strong_clause": "inputs@.len() == old(inputs)@.len()",
+    "clause_is_true": true,
+    "clause_is_tautology": true,
+    "tautology_reason": "Rust's type system guarantees &mut [T] slice length is immutable. You can modify elements but cannot resize.",
+    "proptest_can_catch": false,
+    "alternative_detection": [
+      "Clause minimality check: remove clause, re-verify function and callers. If still passes, clause is redundant.",
+      "Type-system derivability: static analysis to flag ensures clauses that restate Rust type-system guarantees."
+    ]
+  },
+  "E3_conditional_select": {
+    "too_strong_clauses": [
+      "!choice_is_true(choice) ==> fe51_as_canonical_nat(&result) == fe51_as_canonical_nat(a)",
+      "choice_is_true(choice) ==> fe51_as_canonical_nat(&result) == fe51_as_canonical_nat(b)",
+      "(fe51_limbs_bounded(a, 54) && fe51_limbs_bounded(b, 54)) ==> fe51_limbs_bounded(&result, 54)"
+    ],
+    "clauses_are_true": true,
+    "clauses_are_derivable": true,
+    "derivable_from": "GT clause result.limbs == a.limbs (or b.limbs), since fe51_as_canonical_nat and fe51_limbs_bounded are pure functions of limbs",
+    "proptest_can_catch": false,
+    "alternative_detection": [
+      "Derivability/subsumption analysis: for each clause C, check if C is provable from remaining ensures clauses plus spec function definitions.",
+      "Clause minimality check: remove each extra clause, re-verify. If still passes, clause is redundant."
+    ]
+  },
+  "summary": {
+    "too_strong_taxonomy": {
+      "false_on_some_input": {
+        "count": 1,
+        "examples": ["E1: unconditional sign-bit (false when y^2=1)"],
+        "proptest_effectiveness": "Only with targeted edge cases. Random sampling is useless for measure-zero violations.",
+        "detection_strategy": "Boundary value analysis + targeted edge cases"
+      },
+      "true_but_unnecessary_type_tautology": {
+        "count": 1,
+        "examples": ["E2: slice length preservation"],
+        "proptest_effectiveness": "None (clause is a tautology)",
+        "detection_strategy": "Type-system derivability analysis or clause minimality check"
+      },
+      "true_but_unnecessary_logical_derivable": {
+        "count": 1,
+        "examples": ["E3: canonical_nat + bounds from limbs equality"],
+        "proptest_effectiveness": "None (clause is logically entailed)",
+        "detection_strategy": "Clause subsumption/derivability analysis or clause minimality check"
+      }
+    },
+    "fraction_catchable_by_random_proptest": "0/3 (0%)",
+    "fraction_catchable_by_targeted_proptest": "1/3 (33%) — only E1",
+    "fraction_requiring_static_analysis": "2/3 (67%) — E2 and E3"
+  },
+  "recommendations": {
+    "proptest_n": "N=100 random is sufficient as a smoke test (catches obvious errors) but useless for edge-case too-strong specs. Increasing N provides negligible benefit for this category of bugs.",
+    "edge_case_generation": "For field arithmetic specs, always test boundary values: 0, 1, -1 (=p-1), (p-1)/2, (p+1)/2, and for each, both values of any auxiliary bits (sign bits, choice bits). This gives a small targeted test suite (typically 5-10 cases) that catches measure-zero violations.",
+    "complementary_checks": [
+      "Clause minimality (remove-and-reverify): catches E2, E3 types. Cost: one verification run per ensures clause.",
+      "Clause derivability (SMT subsumption query): catches E3 type. Can be automated as a post-generation check.",
+      "Type-system tautology detection: catches E2 type. Flag clauses restating &mut [T] length preservation, Option::is_some/is_none duality, etc.",
+      "Guard completeness (syntactic comparison): catches E1 type. Compare conditional guards between generated spec and GT or reference implementation."
+    ],
+    "recommended_pipeline_order": [
+      "1. Generate spec (two-pass or single-pass)",
+      "2. Run proptest with N=100 random + boundary edge cases",
+      "3. Run clause minimality check (remove each clause, re-verify)",
+      "4. If callers fail, use reactive strengthening (Exp 9d approach)"
+    ]
+  }
+}

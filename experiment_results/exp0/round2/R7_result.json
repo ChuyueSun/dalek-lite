@@ -1,0 +1,11 @@
+{
+  "hole_id": "R7",
+  "group": "B_exec",
+  "function": "neg",
+  "file": "edwards.rs",
+  "layer": "L6",
+  "status": "skipped",
+  "reason": "File restored to ground truth by automated process before verification could complete",
+  "reasoning_only": true,
+  "reasoning": "The neg function negates X and T coordinates. Block 1: establish that FieldElement neg preconditions are met (limb bounds from is_well_formed). Block 2: after computing neg_x and neg_t, establish that the new coordinates form a valid extended Edwards point using lemma_negation_preserves_extended_validity. Block 3: chain the affine negation equivalence: edwards_point_as_affine of result == edwards_neg of input affine."
+}

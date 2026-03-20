@@ -1,0 +1,40 @@
+Here is a function and its algebraic ensures clause (generated in Phase A):
+
+== FUNCTION ==
+from_bytes in backend/serial/u64/field.rs
+Body: Deserializes 32 bytes into 5 limbs via load8_at + masking with 51-bit mask. Proof establishes u8_32_as_nat correspondence and calls axiom_from_bytes_uniform.
+
+== CURRENT ENSURES (from Phase A) ==
+ensures
+    ensures
+        fe51_as_canonical_nat(&result) == u8_32_as_nat(bytes) % p(),
+        fe51_limbs_bounded(&result, 51),
+        is_uniform_bytes(bytes) ==> is_uniform_field_element(&result),
+
+
+== SIBLING BOUNDS PATTERNS ==
+fn as_bytes(self) -> (r: [u8; 32])
+    ensures
+        u8_32_as_nat(&r) == fe51_as_canonical_nat(&self),
+
+fn reduce(mut limbs: [u64; 5]) -> (r: FieldElement51)
+    ensures
+        r.limbs == spec_reduce(limbs),
+        (forall|i: int| 0 <= i < 5 ==> limbs[i] < (1u64 << 51)) ==> (r.limbs =~= limbs),
+        fe51_as_nat(&r) == u64_5_as_nat(limbs) - p() * (limbs[4] >> 51),
+        fe51_as_canonical_nat(&r) == u64_5_as_field_canonical(limbs),
+        fe51_as_nat(&r) < 2 * p(),
+
+== INSTRUCTION ==
+Does this function need bounds-propagation clauses? Specifically:
+- If inputs have limb bounds B, what bounds does the output have?
+- Add conditional clauses like:
+  fe51_limbs_bounded(input, B) ==> fe51_limbs_bounded(&output, B+K)
+
+Also check:
+- Is there a < 2*p() value bound?
+- Is there an identity-when-already-reduced property?
+- Is there an exact nat-level intermediate formula?
+
+Only add clauses that are NOT trivially derivable from existing ensures.
+Output the COMPLETE ensures clause (Phase A clauses + new bounds clauses).

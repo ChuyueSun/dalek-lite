@@ -1,0 +1,3 @@
+    ensures
+        fe51_as_canonical_nat(&output) == field_sub(fe51_as_canonical_nat(self), fe51_as_canonical_nat(_rhs)),
+        fe51_limbs_bounded(self, 52) && fe51_limbs_bounded(_rhs, 52) ==> fe51_limbs_bounded(&output, 52),

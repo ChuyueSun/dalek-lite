@@ -1,0 +1,72 @@
+Your proof has an error. Fix it.
+
+== CURRENT CODE (around the error) ==
+ 384:                 (self.limbs[0] + 36028797018963664u64) - _rhs.limbs[0],
+ 385:                 (self.limbs[1] + 36028797018963952u64) - _rhs.limbs[1],
+ 386:                 (self.limbs[2] + 36028797018963952u64) - _rhs.limbs[2],
+ 387:                 (self.limbs[3] + 36028797018963952u64) - _rhs.limbs[3],
+ 388:                 (self.limbs[4] + 36028797018963952u64) - _rhs.limbs[4],
+ 389:             ],
+ 390:         );
+ 391: 
+ 392:         proof {
+ 393:             assert(fe51_limbs_bounded(&output, 52));
+ 394:             assert(1u64 << 52 <= 1u64 << 54) by (bit_vector);
+ 395:             assert(fe51_limbs_bounded(&output, 54));
+ 396: 
+ 397:             // Glue the raw subtraction back to the spec subtraction using reduction lemmas.
+ 398:             lemma_u64_5_as_nat_add(self.limbs, const_vec);
+ 399:             lemma_u64_5_as_nat_sub(augmented, _rhs.limbs);
+ 400: 
+ 401:             assert(u64_5_as_nat(augmented) == u64_5_as_nat(self.limbs) + u64_5_as_nat(const_vec));
+ 402:             lemma_sub_constants_equal_16p();
+ 403:             assert(u64_5_as_nat(augmented) == u64_5_as_nat(self.limbs) + (16 as nat) * p());
+ 404: 
+ 405:             let x = u64_5_as_nat(self.limbs) as int;
+ 406:             let y = u64_5_as_nat(_rhs.limbs) as int;
+ 407:             let modulus = p() as int;
+ 408: 
+ 409:             lemma_mod_sum_factor(x - y, 16 as int, modulus);
+ 410: 
+ 411:             let x_mod = x % modulus;
+ 412:             let y_mod = y % modulus;
+ 413:             assert(fe51_as_canonical_nat(self) == x_mod as nat);
+ 414:             assert(fe51_as_canonical_nat(_rhs) == y_mod as nat);
+ 415:             assert(fe51_as_canonical_nat(self) % p() == fe51_as_canonical_nat(self)) by {
+ 416:                 lemma_mod_twice(x, modulus);
+ 417:             }
+ 418:             assert(fe51_as_canonical_nat(_rhs) % p() == fe51_as_canonical_nat(_rhs)) by {
+ 419:                 lemma_mod_twice(y, modulus);
+ 420:             }
+ 421: 
+ 422:             assert(field_sub(fe51_as_canonical_nat(self), fe51_as_canonical_nat(_rhs)) == (((x_mod
+ 423:                 + modulus) - y_mod) % modulus) as nat) by {
+ 424:                 assert(fe51_as_canonical_nat(self) % p() == fe51_as_canonical_nat(self));
+ 425:                 assert(fe51_as_canonical_nat(_rhs) % p() == fe51_as_canonical_nat(_rhs));
+ 426:             }
+ 427: 
+ 428:             lemma_mod_sum_factor(1 as int, x_mod - y_mod, modulus);
+ 429:             lemma_sub_mod_noop(x, y, modulus);
+ 430:             assert(((x_mod + modulus) - y_mod) % modulus == (x - y) % modulus);
+ 431: 
+ 432:             assert(fe51_as_canonical_nat(&output) == field_sub(
+ 433:                 fe51_as_canonical_nat(self),
+
+== ERROR ==
+error: assertion failed
+   --> curve25519-dalek/src/backend/serial/u64/field.rs:432:20
+    |
+432 |               assert(fe51_as_canonical_nat(&output) == field_sub(
+    |  ____________________^
+433 | |                 fe51_as_canonical_nat(self),
+    | |_____________^ assertion failed
+
+== IMPORTANT WARNING ==
+This error may appear DOWNSTREAM of the actual problem.
+The failing line may be correct — the real issue could be:
+  1. A lemma call ABOVE the error line with swapped arguments (proving wrong fact)
+  2. A missing intermediate assertion BEFORE the failing line
+  3. A missing extensional equality (=~=) bridging step
+
+Check ALL lemma calls and assertions ABOVE the error line for correctness.
+Fix the proof. Return the corrected code for the relevant section.

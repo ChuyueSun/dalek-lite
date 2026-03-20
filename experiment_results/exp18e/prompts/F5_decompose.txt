@@ -1,0 +1,70 @@
+You are decomposing a complex Verus proof into sub-lemmas.
+
+== OBLIGATION ==
+pub proof fn lemma_naf_even_step(
+    naf: Seq<i8>,
+    pos: nat,
+    carry: nat,
+    scalar_val: nat,
+    w: nat,
+    extracted: nat,
+)
+    requires
+        pos < 256,
+        naf.len() == 256,
+        carry <= 1,
+        w >= 2,
+        // Old invariant
+        reconstruct(naf.take(pos as int)) + (carry as int) * pow2(pos) as int == (scalar_val as int)
+            % pow2(pos) as int,
+        // naf[pos] is zero
+        naf[pos as int] == 0i8,
+        // extracted is the w-bit window at pos
+        extracted == (scalar_val / pow2(pos)) % pow2(w),
+        // Window is even
+        (carry + extracted) % 2 == 0,
+    ensures
+        reconstruct(naf.take((pos + 1) as int)) + (carry as int) * pow2((pos + 1) as nat) as int
+            == (scalar_val as int) % pow2((pos + 1) as nat) as int,
+
+== AVAILABLE LEMMAS ==
+  lemma_reconstruct_zero_extend(naf: Seq<i8>, pos: nat, new_len: nat)
+    requires pos < naf.len(), new_len <= naf.len(), pos < new_len, naf[pos as int] == 0i8
+    ensures reconstruct(naf.take(new_len as int)) == reconstruct(naf.take(pos as int))
+  lemma_reconstruct_split(naf: Seq<i8>, k: nat)
+    requires k <= naf.len()
+    ensures reconstruct(naf) == reconstruct(naf.take(k)) + pow2(k) * reconstruct(naf.skip(k))
+  lemma_pow2_adds(e1: nat, e2: nat) ensures pow2(e1) * pow2(e2) == pow2(e1 + e2)
+  lemma_pow2_pos(e: nat) ensures pow2(e) > 0
+  lemma2_to64() ensures pow2(0)==1, pow2(1)==2, ..., pow2(64)==...
+  lemma_mod_mod(x: int, a: int, b: int) requires a > 0, b > 0 ensures (x % (a*b)) % a == x % a
+  lemma_mod_breakdown(x: int, a: int, b: int) requires a > 0, b > 0
+    ensures x % (a*b) == a * ((x/a) % b) + x % a
+  lemma_mul_is_commutative(x: int, y: int) ensures x * y == y * x
+  lemma_mul_is_associative(x: int, y: int, z: int) ensures x * (y*z) == (x*y) * z
+  lemma_mul_is_distributive_add(x: int, y: int, z: int) ensures x * (y+z) == x*y + x*z
+  lemma_small_mod(x: nat, m: nat) requires x < m ensures x % m == x
+  lemma_add_mod_noop(x: int, y: int, m: int) requires m > 0 ensures (x+y) % m == ((x%m)+(y%m)) % m
+  lemma_mul_basics(x: int) ensures x * 0 == 0, 0 * x == 0, x * 1 == x
+  lemma_mod_pos_bound(x: int, m: int) requires m > 0 ensures 0 <= x % m < m
+
+== SPEC DEFINITION ==
+  spec fn reconstruct(naf: Seq<i8>) -> int
+    decreases naf.len()
+  { if naf.len() == 0 { 0 } else { naf[0] as int + 2 * reconstruct(naf.skip(1)) } }
+
+== INSTRUCTION ==
+This proof is estimated at ~50 lines, which is too large for single-shot generation.
+Decompose it into 3-5 sequential sub-lemmas, each ≤20 lines.
+
+For each sub-lemma, specify:
+1. Name
+2. Full signature (requires + ensures)
+3. Key lemma it uses
+4. What it depends on (which prior sub-lemmas)
+
+Output the decomposition plan as sub-lemma signatures.
+Then write the MAIN LEMMA body that calls the sub-lemmas to prove the final ensures.
+
+NOTE: lemma_pow2_plus_one does NOT exist. Use lemma_pow2_adds(1, pos) + lemma2_to64().
+NOTE: '2int' is NOT valid Verus syntax. Use '2 as int' or just '2'.

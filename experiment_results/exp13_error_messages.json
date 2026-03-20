@@ -1,0 +1,262 @@
+{
+  "total_errors_tested": 10,
+  "baseline_verified": true,
+  "baseline_stats": {
+    "verified": 1974,
+    "errors": 2,
+    "note": "Baseline has 2 pre-existing errors (postcondition not satisfied in lizard modules, rlimit exceeded in scalar module)"
+  },
+  "error_tests": [
+    {
+      "id": 1,
+      "error_type": "missing_lemma",
+      "file": "curve25519-dalek/src/backend/serial/u64/field.rs",
+      "function": "Add<&FieldElement51>::add (line 231)",
+      "change_description": "Commented out lemma_field51_add(self, _rhs) call at line 278",
+      "module_verified": "backend::serial::u64::field",
+      "error_output": "error: postcondition not satisfied\n   --> curve25519-dalek/src/backend/serial/u64/field.rs:234:13\n    |\n234 |             fe51_as_nat(&output) == fe51_as_nat(self) + fe51_as_nat(_rhs),\n    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition\n\nerror: postcondition not satisfied\n   --> curve25519-dalek/src/backend/serial/u64/field.rs:235:13\n    |\n235 | /             fe51_as_canonical_nat(&output) == field_add(\n236 | |                 fe51_as_canonical_nat(self),\n237 | |                 fe51_as_canonical_nat(_rhs),\n    | |_____________^ failed this postcondition\n\nverification results:: 37 verified, 1 errors",
+      "error_message_type": "postcondition not satisfied",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points to the exact postcondition clauses that failed (fe51_as_nat equality and field_add equivalence). The developer knows the function's ensures clauses aren't being proven, but not directly told which lemma is missing. Still, the failing postcondition text strongly suggests a lemma about field addition semantics is needed."
+    },
+    {
+      "id": 2,
+      "error_type": "missing_lemma",
+      "file": "curve25519-dalek/src/backend/serial/u64/field.rs",
+      "function": "Neg<&FieldElement51>::neg (line 657)",
+      "change_description": "Commented out lemma_neg(self) call at line 666",
+      "module_verified": "backend::serial::u64::field",
+      "error_output": "error: postcondition not satisfied\n   --> curve25519-dalek/src/backend/serial/u64/field.rs:659:13\n    |\n659 |             fe51_as_canonical_nat(&output) == field_neg(fe51_as_canonical_nat(self)),\n    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition\n\nverification results:: 37 verified, 1 errors",
+      "error_message_type": "postcondition not satisfied",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points directly to the postcondition about field_neg equivalence. The function body is simple (call negate() then return), so the developer can quickly see the proof block is empty and needs a negation lemma."
+    },
+    {
+      "id": 3,
+      "error_type": "wrong_lemma_arguments",
+      "file": "curve25519-dalek/src/backend/serial/u64/field.rs",
+      "function": "m(x, y) helper (line 162)",
+      "change_description": "Swapped argument order in lemma_mul_le: changed (x, u64::MAX, y, u64::MAX) to (u64::MAX, x, u64::MAX, y) at line 169",
+      "module_verified": "backend::serial::u64::field",
+      "error_output": "error: precondition not satisfied\n   --> curve25519-dalek/src/backend/serial/u64/field.rs:169:9\n    |\n169 |         lemma_mul_le(u64::MAX as nat, x as nat, u64::MAX as nat, y as nat);\n    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    |         -------- failed precondition\n\nerror: possible arithmetic underflow/overflow\n   --> curve25519-dalek/src/backend/serial/u64/field.rs:171:5\n    |\n171 |     (x as u128) * (y as u128)\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^\n\nverification results:: 37 verified, 1 errors",
+      "error_message_type": "precondition not satisfied + cascade overflow",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points directly to the lemma call line with 'failed precondition'. The developer sees the exact call with wrong argument order. The cascade error (arithmetic overflow on the next line) shows how a failed lemma propagates: without the bounds proven by the lemma, subsequent operations can't be verified safe. Very actionable - the call site and the failure mode are both clear."
+    },
+    {
+      "id": 4,
+      "error_type": "wrong_lemma_arguments",
+      "file": "curve25519-dalek/src/backend/serial/u64/field.rs",
+      "function": "SubAssign<&FieldElement51>::sub_assign (line 291)",
+      "change_description": "Swapped first two arguments of lemma_mod_sum_factor: changed (16, x-y, modulus) to (x-y, 16, modulus) at line 409",
+      "module_verified": "backend::serial::u64::field",
+      "error_output": "error: assertion failed\n   --> curve25519-dalek/src/backend/serial/u64/field.rs:432:20\n    |\n432 |               assert(fe51_as_canonical_nat(&output) == field_sub(\n    |  ____________________^\n433 | |                 fe51_as_canonical_nat(self),\n    | |_____________^ assertion failed\n\nverification results:: 37 verified, 1 errors",
+      "error_message_type": "assertion failed",
+      "points_to_right_location": false,
+      "actionable": false,
+      "actionability_notes": "Error points to a downstream assertion (line 432), NOT to the wrong lemma call (line 409). The lemma_mod_sum_factor call with swapped arguments doesn't fail its precondition (both are ints, so the types match). Instead, it proves the wrong fact, causing a later assertion to fail. This is a MISLEADING error - the developer would look at line 432 rather than line 409 where the actual bug is. This is the hardest error type to debug."
+    },
+    {
+      "id": 5,
+      "error_type": "missing_intermediate_assert",
+      "file": "curve25519-dalek/src/backend/serial/u64/field.rs",
+      "function": "Add<&FieldElement51>::add (line 231) - output.limbs extensional equality",
+      "change_description": "Removed the assert(output.limbs == [...]) extensional equality assertion at lines 270-276",
+      "module_verified": "backend::serial::u64::field",
+      "error_output": "error: postcondition not satisfied\n   --> /root/.cargo/git/checkouts/verus-e4ebf515fa1de14c/88f7396/source/vstd/std_specs/ops.rs:70:25\n    |\n 70 |                         Self::$obeys() ==> ret == self.$spec(rhs);\n    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition\n\nerror: postcondition not satisfied\n   --> curve25519-dalek/src/backend/serial/u64/field.rs:233:13\n    |\n233 |             output == spec_add_fe51_limbs(self, _rhs),\n    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition\n\nverification results:: 37 verified, 1 errors",
+      "error_message_type": "postcondition not satisfied (in vstd trait spec + local)",
+      "points_to_right_location": false,
+      "actionable": false,
+      "actionability_notes": "Two errors: one in vstd/std_specs/ops.rs (trait-level) and one in field.rs (postcondition). The vstd error is MISLEADING - it points into the standard library macro expansion, which is confusing. The local error (output == spec_add_fe51_limbs) doesn't indicate that an extensional equality assertion was needed to bridge the loop invariant to the struct equality. The developer must understand that array equality after a loop needs explicit triggering in Verus."
+    },
+    {
+      "id": 6,
+      "error_type": "missing_reveal",
+      "file": "curve25519-dalek/src/montgomery.rs",
+      "function": "MontgomeryPoint::mul (montgomery ladder, line ~630)",
+      "change_description": "Commented out reveal(montgomery_ladder_invariant) at line 673",
+      "module_verified": "montgomery",
+      "error_output": "error: assertion failed\n   --> curve25519-dalek/src/montgomery.rs:674:24\n    |\n674 |                 assert(montgomery_ladder_invariant(x0, x1, P, 0, false));\n    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed\n\nverification results:: 35 verified, 1 errors",
+      "error_message_type": "assertion failed",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points to the assert immediately after the removed reveal, on the very next line. The assert invokes an opaque spec function (montgomery_ladder_invariant) which is defined with 'closed spec fn'. Without reveal(), Verus cannot unfold the definition. The pattern 'assert(opaque_fn(...)) fails' is a strong signal that a reveal() is needed. Highly actionable."
+    },
+    {
+      "id": 7,
+      "error_type": "off_by_one_bounds",
+      "file": "curve25519-dalek/src/backend/serial/u64/field.rs",
+      "function": "FieldElement51::reduce (line 864)",
+      "change_description": "Changed postcondition from 'fe51_as_nat(&r) < 2 * p()' to 'fe51_as_nat(&r) <= p()' at line 871 (tightened bound incorrectly)",
+      "module_verified": "backend::serial::u64::field",
+      "error_output": "error: postcondition not satisfied\n   --> curve25519-dalek/src/backend/serial/u64/field.rs:871:13\n    |\n871 |               fe51_as_nat(&r) <= p(),\n    |               ^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition\n\nverification results:: 37 verified, 1 errors",
+      "error_message_type": "postcondition not satisfied",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points exactly to the modified postcondition line. The developer can see the exact bound that failed and compare with what the lemmas actually prove. Very actionable - the failing ensures clause is highlighted, and the developer can check whether '<=' should be '<' or whether '2 * p()' is needed instead of 'p()'."
+    },
+    {
+      "id": 8,
+      "error_type": "wrong_by_strategy",
+      "file": "curve25519-dalek/src/window.rs",
+      "function": "LookupTableRadix16::select (line ~130)",
+      "change_description": "Changed by(bit_vector) to by(nonlinear_arith) for the assertion about (x as i16 >> 7u32) at line 150",
+      "module_verified": "window",
+      "error_output": "error: assertion failed\n   --> curve25519-dalek/src/window.rs:150:20\n    |\n150 |             assert((x as i16 >> 7u32) == 0i16 || (x as i16 >> 7u32) == -1i16) by (nonlinear_arith)\n    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed\n\nverification results:: 33 verified, 1 errors",
+      "error_message_type": "assertion failed",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points exactly to the assertion with the wrong strategy. The assertion text contains bit-shift operations (>> 7u32) which are a strong signal that by(bit_vector) is the correct strategy, not by(nonlinear_arith). Nonlinear arithmetic solvers cannot reason about bitwise operations. Very actionable - the operator >> in the assertion body immediately suggests bit_vector is needed."
+    },
+    {
+      "id": 9,
+      "error_type": "arithmetic_overflow",
+      "file": "curve25519-dalek/src/backend/serial/u64/field.rs",
+      "function": "Mul<&FieldElement51>::mul (line ~480)",
+      "change_description": "Commented out lemma_mul_boundary(*a, *b) call at line 507",
+      "module_verified": "backend::serial::u64::field",
+      "error_output": "error: possible arithmetic underflow/overflow\n   --> curve25519-dalek/src/backend/serial/u64/field.rs:511:21\n    |\n511 |         let b1_19 = b[1] * 19;\n    |                     ^^^^^^^^^\n\nerror: possible arithmetic underflow/overflow\n   --> curve25519-dalek/src/backend/serial/u64/field.rs:512:21\n    |\n512 |         let b2_19 = b[2] * 19;\n    |                     ^^^^^^^^^\n\nverification results:: 37 verified, 1 errors",
+      "error_message_type": "possible arithmetic underflow/overflow",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points to the first arithmetic operation that overflows (b[1]*19). The developer can trace backwards: this multiplication needs b[1] < 2^59 (so 19*b[1] < 2^64). The lemma_mul_boundary call was providing exactly these bounds. The error is on the immediate next arithmetic line after the removed lemma, which is a strong locality signal. Moderately actionable - the overflow location is clear but the specific lemma needed isn't named."
+    },
+    {
+      "id": 10,
+      "error_type": "precondition_not_satisfied",
+      "file": "curve25519-dalek/src/edwards.rs",
+      "function": "decompress::step_1 (line ~360)",
+      "change_description": "Commented out lemma_edwards_d_limbs_bounded() call at line 412, which establishes EDWARDS_D limbs are 51-bit bounded (needed for multiplication)",
+      "module_verified": "edwards",
+      "error_output": "error: precondition not satisfied\n   --> curve25519-dalek/src/edwards.rs:416:26\n    |\n416 |         let yy_times_d = &YY * &constants::EDWARDS_D;\n    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    |\n   ::: /root/.cargo/git/checkouts/verus-e4ebf515fa1de14c/88f7396/source/vstd/std_specs/ops.rs:68:25\n    |\n 68 |                         self.$req(rhs),\n    |                         -------------- failed precondition\n\nverification results:: 81 verified, 1 errors",
+      "error_message_type": "precondition not satisfied",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points to the multiplication call &YY * &constants::EDWARDS_D and says its precondition failed. The precondition comes from the Mul trait's requires clause (shown via vstd/std_specs/ops.rs). The developer knows the multiplication's operand bounds aren't established. Since EDWARDS_D is a constant, its bounds must come from a lemma. Actionable - the developer knows to search for a lemma about EDWARDS_D's limb bounds."
+    }
+  ],
+  "error_types_summary": {
+    "missing_lemma": {
+      "count": 2,
+      "typical_message": "postcondition not satisfied",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error consistently points to the postcondition clause that can no longer be proven. The developer sees WHAT failed but not WHY (no hint about which lemma is missing). The locality is good - the error is in the same function. To repair: search for lemmas whose ensures clause matches the failing postcondition."
+    },
+    "wrong_lemma_arguments": {
+      "count": 2,
+      "typical_message": "precondition not satisfied OR assertion failed (downstream)",
+      "points_to_right_location": "mixed",
+      "actionable": "mixed",
+      "actionability_notes": "When arguments violate the lemma's requires clause, the error is precise (points to exact call, says 'failed precondition'). When arguments satisfy requires but prove the wrong fact (type-compatible swap), the error appears DOWNSTREAM at a later assertion/postcondition, which is misleading. This is the most dangerous error class for automated repair."
+    },
+    "missing_intermediate_assert": {
+      "count": 1,
+      "typical_message": "postcondition not satisfied (possibly in vstd trait spec)",
+      "points_to_right_location": false,
+      "actionable": false,
+      "actionability_notes": "Error appears at the function's postcondition or in vstd trait macros, far from the actual missing assertion. The developer must understand the proof structure to know where a stepping-stone assertion is needed. Worst case: error in vstd/std_specs/ops.rs which is deeply confusing. Hard to repair automatically."
+    },
+    "missing_reveal": {
+      "count": 1,
+      "typical_message": "assertion failed",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points to the assert that invokes the opaque function. Pattern is very recognizable: 'assert(opaque_fn(args))' fails. The repair action is clear: add reveal(opaque_fn) before the assert. Easy to automate."
+    },
+    "off_by_one_bounds": {
+      "count": 1,
+      "typical_message": "postcondition not satisfied",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points exactly to the modified postcondition. The developer sees the exact bound expression that fails. Repair requires understanding whether the bound should be strict (<) or non-strict (<=) and what the correct constant is."
+    },
+    "wrong_by_strategy": {
+      "count": 1,
+      "typical_message": "assertion failed",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points to the assertion with the wrong strategy annotation. The assertion body itself contains clues about which strategy is needed (bitwise ops -> bit_vector, polynomial -> nonlinear_arith). Easy to classify and repair."
+    },
+    "arithmetic_overflow": {
+      "count": 1,
+      "typical_message": "possible arithmetic underflow/overflow",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points to the exact arithmetic expression that might overflow. The developer can trace backwards to find what bounds are needed. Repair requires finding/calling a lemma that establishes the operand bounds."
+    },
+    "precondition_not_satisfied": {
+      "count": 1,
+      "typical_message": "precondition not satisfied (often with vstd trait cross-reference)",
+      "points_to_right_location": true,
+      "actionable": true,
+      "actionability_notes": "Error points to the function/operator call whose precondition isn't met, plus shows the specific requires clause (even when it's in vstd macros). Repair requires establishing the precondition, usually via a lemma call or bounds assertion."
+    }
+  },
+  "repair_loop_implications": {
+    "errors_that_point_to_cause": 7,
+    "errors_that_are_vague": 1,
+    "errors_that_mislead": 2,
+    "classification_details": {
+      "point_to_cause": [
+        "Test 1: missing_lemma -> postcondition points to exact clause",
+        "Test 2: missing_lemma -> postcondition points to exact clause",
+        "Test 3: wrong_args -> precondition points to exact call site",
+        "Test 6: missing_reveal -> assertion failed on the opaque function call",
+        "Test 7: off_by_one -> postcondition points to exact bound",
+        "Test 8: wrong_strategy -> assertion points to the exact assert with wrong strategy",
+        "Test 9: arithmetic_overflow -> overflow points to exact expression"
+      ],
+      "vague": [
+        "Test 10: precondition_not_satisfied -> points to call site but cross-references vstd macro, requires understanding trait system"
+      ],
+      "misleading": [
+        "Test 4: wrong_args (type-compatible swap) -> error appears 23 lines downstream at an unrelated assertion",
+        "Test 5: missing_intermediate_assert -> error appears in vstd/std_specs/ops.rs macro expansion"
+      ]
+    },
+    "recommended_dispatch_rules": [
+      {
+        "error_pattern": "postcondition not satisfied",
+        "action": "check_lemma_calls",
+        "details": "Look for missing or incorrect lemma calls in the function's proof block. Compare the failing postcondition with available lemma ensures clauses. This is the most common error (4/10 tests)."
+      },
+      {
+        "error_pattern": "precondition not satisfied",
+        "action": "check_argument_bounds",
+        "details": "Look at the call site. Either (a) a lemma is called with wrong/swapped arguments, or (b) a bounds-establishing lemma call is missing before this line. Check requires clauses of the called function."
+      },
+      {
+        "error_pattern": "assertion failed",
+        "action": "check_reveal_or_strategy",
+        "details": "If the assertion involves an opaque/closed spec function, add reveal(). If the assertion uses bitwise operators (>>, <<, &, |, ^), ensure by(bit_vector) is used. If the assertion is arithmetic, try by(nonlinear_arith)."
+      },
+      {
+        "error_pattern": "possible arithmetic underflow/overflow",
+        "action": "add_bounds_lemma",
+        "details": "Find a lemma that establishes bounds on the operands of the failing expression. Look for lemma_*_boundary or lemma_*_bounded functions. The overflow typically occurs because a precondition-establishing lemma was removed."
+      },
+      {
+        "error_pattern": "error in vstd/std_specs/ops.rs",
+        "action": "check_trait_postcondition",
+        "details": "This means a trait implementation (Add, Mul, etc.) isn't satisfying its spec. Look for missing extensional equality assertions (=~=) or missing intermediate proof steps that bridge implementation to spec."
+      },
+      {
+        "error_pattern": "postcondition not satisfied + assertion failed downstream",
+        "action": "check_lemma_argument_order",
+        "details": "When a lemma call succeeds (no precondition error) but downstream assertions fail, the lemma may have been called with swapped arguments. The lemma proves the wrong fact. Check argument order against the lemma's signature."
+      }
+    ],
+    "key_insights": {
+      "error_locality": "7 out of 10 errors pointed directly to or very near the cause. Verus error messages have good locality for most error types.",
+      "hardest_to_debug": "Type-compatible argument swaps (Test 4) are the hardest - the error appears far downstream with no hint about the actual cause. An LLM repair agent would need to reason about argument semantics, not just syntax.",
+      "easiest_to_debug": "Missing reveal() (Test 6) and wrong by() strategy (Test 8) are the easiest - the error pattern is highly recognizable and the fix is mechanical.",
+      "cascade_errors": "Some errors produce cascades (Test 3: precondition failure -> overflow, Test 5: missing assert -> two postcondition failures). A repair agent should fix the FIRST error and re-verify.",
+      "vstd_cross_references": "Tests 5 and 10 show errors that cross-reference vstd library code (std_specs/ops.rs). These are confusing because the developer must understand the trait system. A repair agent should ignore vstd locations and focus on the local code.",
+      "error_frequency_in_practice": "Missing lemma calls (postcondition failures) are likely the most common error in practice, as they're the simplest mistake to make and the easiest to fix. Argument order swaps are rarer but much harder to diagnose."
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "hole_id": "D",
+  "pair": 2,
+  "dimension_tested": "vstd_lemma_discovery",
+  "function": "lemma_field_mul_assoc",
+  "file": "field_algebra_lemmas.rs",
+  "layer": "L5",
+  "taxonomy": "algebraic_rewrite",
+  "gt_body_loc": 12,
+  "gt_patterns": ["sub_lemma_vstd"],
+
+  "pre_assessment": {
+    "confidence": 3,
+    "planned_strategy": "Use lemma_mul_mod_noop_left/right to reduce both sides to (a*b*c)%p, plus lemma_mul_is_associative for integer associativity",
+    "planned_lemmas": ["lemma_mul_mod_noop_left", "lemma_mul_mod_noop_right", "lemma_mul_is_associative"],
+    "planned_verus_features": [],
+    "stated_uncertainties": ["Exact vstd function name for mul associativity"]
+  },
+
+  "attempt_1": {
+    "code": "let pp = p() as int;\np_gt_2();\nlemma_mul_mod_noop_left((a * b) as int, c as int, pp);\nlemma_mul_mod_noop_right(a as int, (b * c) as int, pp);\nlemma_mul_is_associative(a as int, b as int, c as int);",
+    "strategy_used": "sub_lemma",
+    "lemmas_called": ["p_gt_2", "lemma_mul_mod_noop_left", "lemma_mul_mod_noop_right", "lemma_mul_is_associative"],
+    "verus_features_used": [],
+    "verification_result": "pass",
+    "error_message": null,
+    "error_classified": null
+  },
+
+  "attempt_2": null,
+
+  "post_assessment": {
+    "stated_surprises": "Seeing Hole C's pattern made this straightforward — same mod-noop pattern with associativity instead of distributivity",
+    "alternate_strategy": "Could use lemma_mul_mod_noop_general for both sides instead of left/right variants",
+    "confidence_after": 5
+  },
+
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "Correctly identified mod-noop + integer associativity approach",
+    "lemma_discovery": true,
+    "lemma_detail": "Found all vstd lemmas including lemma_mul_is_associative",
+    "lemma_instantiation": true,
+    "instantiation_detail": "Correct casts and argument order",
+    "verus_pattern_correct": true,
+    "verus_detail": "N/A",
+    "intermediate_assertions_correct": true,
+    "over_engineered": false,
+    "over_detail": "Minimal proof",
+    "under_engineered": false,
+    "under_detail": "N/A",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": -6,
+    "alternative_valid_proof": false
+  }
+}

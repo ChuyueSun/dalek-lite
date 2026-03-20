@@ -1,0 +1,173 @@
+{
+  "experiment": "exp15_mode_b_feasibility",
+  "date": "2026-03-19",
+  "target_function": "lemma_double_projective_completed_valid",
+  "target_file": "curve25519-dalek/src/lemmas/edwards_lemmas/double_correctness.rs",
+
+  "gt_analysis": {
+    "total_gt_loc": 217,
+    "total_gt_loc_excluding_comments_blanks": 192,
+    "num_sub_goals": 8,
+    "sub_goal_loc_range": [6, 35],
+    "sub_goals_parallel": false,
+    "sub_goals_description": "Sequential 8-step pipeline, not 4 parallel coordinate sub-lemmas as originally hypothesized",
+    "sub_goals": [
+      {
+        "name": "Preamble (given for free)",
+        "gt_lines": "72-134",
+        "gt_loc": 62,
+        "key_lemmas": ["lemma_mod_bound", "lemma_field_element_reduced", "lemma_projective_implies_affine_on_curve"],
+        "depends_on_prior": false,
+        "nature": "boilerplate: coordinate extraction, bounds, affine derivation"
+      },
+      {
+        "name": "Step 1: Factor through Z²",
+        "gt_lines": "136-148",
+        "gt_loc": 13,
+        "key_lemmas": ["lemma_projective_product_factor x3"],
+        "depends_on_prior": true,
+        "nature": "3 parallel factoring assertions"
+      },
+      {
+        "name": "Step 2: result.X = Z²·(2·xy)",
+        "gt_lines": "150-160",
+        "gt_loc": 11,
+        "key_lemmas": ["lemma_square_sum_expansion", "lemma_reassociate_2_z_num"],
+        "depends_on_prior": true,
+        "nature": "binomial expansion + reassociation"
+      },
+      {
+        "name": "Step 3: result.Y = Z²·(y²+x²)",
+        "gt_lines": "162-167",
+        "gt_loc": 6,
+        "key_lemmas": ["lemma_factor_result_component_add"],
+        "depends_on_prior": true,
+        "nature": "single factoring lemma call"
+      },
+      {
+        "name": "Step 4: result.Z = Z²·(1+t)",
+        "gt_lines": "169-178",
+        "gt_loc": 10,
+        "key_lemmas": ["lemma_factor_result_component_sub"],
+        "depends_on_prior": true,
+        "nature": "factoring + curve equation substitution"
+      },
+      {
+        "name": "Step 5: result.T = Z²·(1-t)",
+        "gt_lines": "180-207",
+        "gt_loc": 28,
+        "key_lemmas": ["lemma_field_mul_comm", "lemma_factor_result_component_sub", "lemma_small_mod", "lemma_field_add_comm", "lemma_field_sub_add_common_right"],
+        "depends_on_prior": true,
+        "nature": "hardest algebraic step: commutativity + factoring + 2-(1+t)=1-t"
+      },
+      {
+        "name": "Step 6: Nonzero denominators",
+        "gt_lines": "209-239",
+        "gt_loc": 31,
+        "key_lemmas": ["axiom_edwards_add_complete", "lemma_nonzero_product", "lemma_field_element_reduced", "lemma_mod_bound"],
+        "depends_on_prior": true,
+        "nature": "connecting axiom output to result component nonzero"
+      },
+      {
+        "name": "Step 7: Cancel Z² from ratios",
+        "gt_lines": "241-252",
+        "gt_loc": 12,
+        "key_lemmas": ["lemma_cancel_common_factor x2"],
+        "depends_on_prior": true,
+        "nature": "algebraic cancellation"
+      },
+      {
+        "name": "Step 8: Connect to edwards_add + conclusion",
+        "gt_lines": "254-288",
+        "gt_loc": 34,
+        "key_lemmas": ["lemma_field_mul_comm", "lemma_add_self_eq_double", "axiom_edwards_add_complete"],
+        "depends_on_prior": true,
+        "nature": "connecting simplified ratios to spec function unfolding"
+      }
+    ]
+  },
+
+  "part_a": {
+    "description": "Step 5 in isolation (hardest individual algebraic step)",
+    "sub_goal_tested": "Step 5: result.T = Z²·(1-t)",
+    "gt_loc_for_step": 28,
+    "sibling_provided": "Step 4 (completed, 3 LOC body)",
+    "result": "pass",
+    "loc": 43,
+    "loc_executable_statements": 6,
+    "compile_fix_cycles": 2,
+    "fix_types": [
+      "wrong_proof_structure: placed lemma_small_mod inside assert-by block where its precondition couldn't be verified",
+      "missing_helper: needed p_gt_2() to establish p() > 2 since pow2(255) not evaluable by SMT"
+    ],
+    "model_discovered_p_gt_2": true,
+    "notes": "Model discovered p_gt_2() helper (not in provided lemma list) via compile errors. Realistic pipeline behavior."
+  },
+
+  "part_b": {
+    "description": "Steps 1-5 combined (sequential generation with dependencies)",
+    "sub_goal_tested": "Steps 1-5 all component expressions",
+    "gt_loc_for_steps": 68,
+    "sibling_provided": "Step 2 (completed, ~12 LOC body) as separate function",
+    "result": "pass",
+    "loc": 48,
+    "compile_fix_cycles": 0,
+    "sibling_effect": "Critical. Step 2 sibling provided the pattern (projective_product_factor -> algebraic identity -> reassociate). Model applied this pattern to Steps 1, 3, 4. Step 5 reused exact pattern from Part A. Zero compile-fix cycles = sibling patterns were sufficient.",
+    "pattern_reuse": {
+      "from_step2_sibling": "Steps 1, 3, 4 (projective factoring pattern)",
+      "from_part_a_step5": "Step 5 (algebraic simplification chain)"
+    },
+    "notes": "48 LOC vs 68 GT = 30% more compact. Model correctly chained all sequential dependencies. First-attempt success."
+  },
+
+  "part_c": {
+    "description": "Full proof with 8-step decomposition plan + 62 LOC preamble given",
+    "preamble_given": true,
+    "preamble_loc": 62,
+    "decomposition_plan_given": true,
+    "result": "pass",
+    "steps_1_through_8_loc": 150,
+    "total_proof_body_loc": 212,
+    "gt_proof_body_loc": 217,
+    "compile_fix_cycles": 2,
+    "fix_types": [
+      "variable_shadowing: preamble defines 'let p = p()' which shadows the function p(), causing lemma_small_mod(2, p()) to fail. Fixed by using 'p' instead of 'p()'",
+      "expression_form_mismatch: lemma_cancel_common_factor produces (a*c)*inv(b*c)=a*inv(b) but result components have form z2*expr. Needed 4 extra lemma_field_mul_comm calls + explicit intermediate assertions to rewrite to matching form"
+    ],
+    "sub_lemmas_completed": "all 8 steps",
+    "assembly_correct": true,
+    "full_verification": "pass",
+    "step_difficulty": {
+      "easy_pattern_reuse": ["Step 1", "Step 2", "Step 3", "Step 4", "Step 5"],
+      "moderate_novel_reasoning": ["Step 6 (connecting axiom t formulation to local t)"],
+      "hard_expression_matching": ["Step 7 (commutativity rewrites for cancel_common_factor)", "Step 8 + conclusion (connecting to edwards_add spec unfolding)"]
+    },
+    "notes": "Steps 1-5 were direct pattern reuse from Parts A/B. Steps 6-8 required novel reasoning about axiom connection, cancellation form matching, and spec function unfolding. The 2 compile-fix cycles were for mechanical issues (shadowing, expression form), not conceptual failures."
+  },
+
+  "mode_b_verdict": "feasible",
+
+  "implications_for_pipeline": {
+    "summary": "Mode B works for R5-type proofs. All three parts passed with at most 2 compile-fix cycles.",
+    "key_findings": [
+      "The 192-LOC proof decomposes into 8 sequential steps of 6-35 LOC each, all within Mode A range",
+      "No single step exceeds 35 LOC in the GT; the model's versions were comparably sized",
+      "Sibling patterns are the #1 success factor: Part B had 0 compile-fix cycles with siblings, vs 2 without",
+      "The decomposition plan (8 steps + lemma names) was sufficient to guide full proof completion",
+      "The preamble (62 LOC of boilerplate) can be given for free — it's deterministic coordinate extraction",
+      "The hardest novel reasoning was Step 7 (expression form matching for cancellation), not algebraic chain construction"
+    ],
+    "pipeline_design": {
+      "decomposer_role": "Identify the N-step sequential structure and the key lemma for each step. Does NOT need to create hard sub-lemmas — just the step outline.",
+      "preamble_generator": "Deterministic: extract coordinates from projective types, compute affine via field_inv, establish bounds via lemma_mod_bound. Template-based.",
+      "step_generator": "Fill each step using: (1) the decomposition plan's lemma hint, (2) sibling patterns from earlier steps, (3) up to 2 compile-fix cycles",
+      "assembler": "Not needed as a separate phase — the model generates steps inline in the function body",
+      "compile_fix_budget": "2 cycles per step is sufficient (observed: 0-2 across all steps)"
+    },
+    "risk_factors": [
+      "Step 7 (expression form matching) required understanding lemma_cancel_common_factor's output form and applying commutativity rewrites. This is fragile — different cancellation lemma signatures would require different rewrites.",
+      "The axiom t-connection (Step 6) needed explicit assertions field_mul(x,x)==x2 to help SMT connect field_square to field_mul. This is a common Verus pattern but not obvious from specs alone.",
+      "Variable shadowing (let p = p()) caught the model once. Pipeline should avoid this in generated preambles."
+    ]
+  }
+}

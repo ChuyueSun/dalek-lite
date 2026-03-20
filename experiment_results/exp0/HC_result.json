@@ -1,0 +1,58 @@
+{
+  "hole_id": "C",
+  "pair": 2,
+  "dimension_tested": "vstd_lemma_discovery",
+  "function": "lemma_field_mul_distributes_over_add",
+  "file": "field_algebra_lemmas.rs",
+  "layer": "L5",
+  "taxonomy": "algebraic_rewrite",
+  "gt_body_loc": 11,
+  "gt_patterns": ["sub_lemma_vstd"],
+
+  "pre_assessment": {
+    "confidence": 3,
+    "planned_strategy": "Chain 3 vstd lemmas: mul_mod_noop_right, mul_is_distributive_add, add_mod_noop",
+    "planned_lemmas": ["lemma_mul_mod_noop_right", "lemma_mul_is_distributive_add", "lemma_add_mod_noop"],
+    "planned_verus_features": [],
+    "stated_uncertainties": ["Exact vstd function signatures", "Whether p() > 0 needs explicit proof"]
+  },
+
+  "attempt_1": {
+    "code": "let pp = p() as int;\np_gt_2();\nlemma_mul_mod_noop_right(a as int, (b + c) as int, pp);\nlemma_mul_is_distributive_add(a as int, b as int, c as int);\nlemma_add_mod_noop((a * b) as int, (a * c) as int, pp);",
+    "strategy_used": "sub_lemma",
+    "lemmas_called": ["p_gt_2", "lemma_mul_mod_noop_right", "lemma_mul_is_distributive_add", "lemma_add_mod_noop"],
+    "verus_features_used": [],
+    "verification_result": "pass",
+    "error_message": null,
+    "error_classified": null
+  },
+
+  "attempt_2": null,
+
+  "post_assessment": {
+    "stated_surprises": "The proof was more straightforward than expected — the comment outline in the code mapped directly to vstd lemma calls",
+    "alternate_strategy": "N/A",
+    "confidence_after": 5
+  },
+
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "Correctly identified the 3-step modular arithmetic chain",
+    "lemma_discovery": true,
+    "lemma_detail": "Found all 3 vstd lemmas by name: lemma_mul_mod_noop_right, lemma_mul_is_distributive_add, lemma_add_mod_noop",
+    "lemma_instantiation": true,
+    "instantiation_detail": "Correct int casts and argument order for all 3 lemma calls",
+    "verus_pattern_correct": true,
+    "verus_detail": "N/A — no special Verus constructs needed",
+    "intermediate_assertions_correct": true,
+    "over_engineered": false,
+    "over_detail": "Minimal proof — just the 3 lemma calls plus p_gt_2()",
+    "under_engineered": false,
+    "under_detail": "N/A",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": -5,
+    "alternative_valid_proof": false
+  }
+}

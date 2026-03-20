@@ -1,0 +1,535 @@
+[SIBLING]
+Here are proven proof functions from the same file:
+
+/// Lemma: Negation preserves extended Edwards point validity
+///
+/// If (X, Y, Z, T) is a valid extended Edwards point, then (-X, Y, Z, -T) is also valid.
+/// This is because:
+/// 1. Z ≠ 0 is unchanged
+/// 2. The projective curve equation uses X² and (-X)² = X²
+/// 3. The Segre relation: (-X)·Y = -(X·Y) = -(Z·T) = Z·(-T)
+pub proof fn lemma_negation_preserves_extended_validity(x: nat, y: nat, z: nat, t: nat)
+    requires
+        is_valid_extended_edwards_point(x, y, z, t),
+    ensures
+        is_valid_extended_edwards_point(field_neg(x), y, z, field_neg(t)),
+{
+    let p = p();
+    p_gt_2();
+    let neg_x = field_neg(x);
+    let neg_t = field_neg(t);
+
+    // From precondition: z != 0, curve equation holds, x*y = z*t
+
+    // 1) Z ≠ 0 is unchanged (z remains the same)
+
+    // 2) Projective curve equation: uses X², and (-X)² = X²
+    assert(is_on_edwards_curve_projective(neg_x, y, z)) by {
+        // Key insight: (-x)² = x²
+        assert(field_square(neg_x) == field_square(x)) by {
+            lemma_neg_square_eq(x);
+            lemma_square_mod_noop(x);
+        };
+        // With (-x)² = x², the projective curve equation is unchanged
+    };
+
+    // 3) Segre relation: (-X)·Y = Z·(-T)
+    // Need to prove: field_mul(neg_x, y) == field_mul(z, neg_t)
+    assert(field_mul(neg_x, y) == field_mul(z, neg_t)) by {
+        // From precondition: x*y = z*t
+        let xy = field_mul(x, y);
+        let zt = field_mul(z, t);
+        assert(xy == zt);
+
+        // (-x)*y = -(x*y)
+        assert(field_mul(neg_x, y) == field_neg(xy)) by {
+            lemma_field_mul_neg(y, x);  // y * neg(x) = neg(y * x)
+            lemma_field_mul_comm(neg_x, y);
+            lemma_field_mul_comm(y, x);
+        };
+
+        // z*(-t) = -(z*t)
+        assert(field_mul(z, neg_t) == field_neg(zt)) by {
+            lemma_field_mul_neg(z, t);
+        };
+
+        // neg(x*y) = neg(z*t) since x*y = z*t
+        assert(field_neg(xy) == field_neg(zt));
+    };
+}
+
+/// The identity projective point (X=0, Y=1, Z=1) is valid, has bounded limbs,
+/// and its affine coordinates are the identity (0, 1).
+pub proof fn lemma_identity_projective_point_properties()
+    ensures
+        is_valid_projective_point(identity_projective_point_edwards()),
+        fe51_limbs_bounded(&identity_projective_point_edwards().X, 52),
+        fe51_limbs_bounded(&identity_projective_point_edwards().Y, 52),
+        fe51_limbs_bounded(&identity_projective_point_edwards().Z, 52),
+        sum_of_limbs_bounded(
+            &identity_projective_point_edwards().X,
+            &identity_projective_point_edwards().Y,
+            u64::MAX,
+        ),
+        projective_point_as_affine_edwards(identity_projective_point_edwards())
+            == edwards_identity(),
+{
+    let id = identity_projective_point_edwards();
+    p_gt_2();
+
+    assert(0u64 < (1u64 << 52u64) && 1u64 < (1u64 << 52u64)) by (bit_vector);
+
+    // fe51_as_nat for all-zero limbs (X) is 0, for [1,0,0,0,0] limbs (Y, Z) is 1
+    assert(fe51_as_nat(&id.X) == 0nat && fe51_as_nat(&id.Y) == 1nat && fe51_as_nat(&id.Z) == 1nat)
+        by {
+        reveal(pow2);
+        lemma_mul_by_zero_is_zero(pow2(51) as int);
+        lemma_mul_by_zero_is_zero(pow2(102) as int);
+        lemma_mul_by_zero_is_zero(pow2(153) as int);
+        lemma_mul_by_zero_is_zero(pow2(204) as int);
+    };
+
+    assert(fe51_as_canonical_nat(&id.X) == 0 && fe51_as_canonical_nat(&id.Y) == 1
+        && fe51_as_canonical_nat(&id.Z) == 1) by {
+        lemma_small_mod(0nat, p());
+        lemma_small_mod(1nat, p());
+    };
+
+    // Projective curve equation: -0² + 1² = 1² + d·0²·1²
+    // Z3 needs individual field operation results as stepping stones
+    lemma_small_mod(0nat, p());
+    lemma_small_mod(1nat, p());
+    assert(field_square(0nat) == 0 && field_square(1nat) == 1);
+    assert(field_sub(1nat, 0nat) == 1) by {
+        lemma_mod_multiples_vanish(1, 1, p() as int);
+    };
+    assert(field_mul(1nat, 1nat) == 1);
+    assert(field_mul(fe51_as_canonical_nat(&EDWARDS_D), 0nat) == 0) by {
+        lemma_mul_by_zero_is_zero(fe51_as_canonical_nat(&EDWARDS_D) as int);
+    };
+    assert(is_on_edwards_curve_projective(0, 1, 1));
+
+    lemma_field_inv_one();
+}
+
+[OBLIGATION]
+Now prove this similar function:
+
+// =============================================================================
+// Negation Lemmas
+// =============================================================================
+/// Lemma: Negation preserves the curve equation
+///
+/// If (x, y) is on the curve, then (-x, y) is also on the curve.
+/// This is because the curve equation involves x² which is the same for x and -x.
+pub proof fn lemma_negation_preserves_curve(x: nat, y: nat)
+    requires
+        is_on_edwards_curve(x, y),
+    ensures
+        is_on_edwards_curve(field_neg(x), y),
+
+[CONTEXT]
+Available lemmas from imported modules:
+
+pub open spec fn spec_gcd(a: nat, b: nat) -> nat
+    decreases b,
+
+pub proof fn lemma_divides_linear_combo(x: nat, y: nat, k: nat, d: nat)
+    requires
+        d > 0,
+        x % d == 0,
+        y % d == 0,
+    ensures
+        (x + k * y) % d == 0,
+
+pub proof fn lemma_divides_linear_combo_sub(x: nat, y: nat, k: nat, d: nat)
+    requires
+        d > 0,
+        x % d == 0,
+        y % d == 0,
+        x >= k * y,
+    ensures
+        ((x - k * y) as nat) % d == 0,
+
+pub proof fn lemma_gcd_divides_both(a: nat, b: nat)
+    ensures
+        a % spec_gcd(a, b) == 0 || spec_gcd(a, b) == 0,
+        b % spec_gcd(a, b) == 0 || spec_gcd(a, b) == 0,
+    decreases b,
+
+pub proof fn lemma_gcd_positive(a: nat, b: nat)
+    requires
+        a > 0 || b > 0,
+    ensures
+        spec_gcd(a, b) > 0,
+    decreases b,
+
+pub proof fn lemma_common_divisor_divides_gcd(a: nat, b: nat, d: nat)
+    requires
+        d > 0,
+        a % d == 0,
+        b % d == 0,
+    ensures
+        spec_gcd(a, b) % d == 0,
+    decreases b,
+
+pub proof fn lemma_gcd_with_prime(a: nat, prime: nat)
+    requires
+        is_prime(prime),
+        a % prime != 0,
+    ensures
+        spec_gcd(a % prime, prime) == 1,
+
+pub proof fn lemma_gcd_symmetric(a: nat, b: nat)
+    ensures
+        spec_gcd(a, b) == spec_gcd(b, a),
+
+pub proof fn lemma_gcd_mod_noop(a: nat, m: nat)
+    requires
+        m > 0,
+    ensures
+        spec_gcd(a % m, m) == spec_gcd(a, m),
+
+pub proof fn lemma_gcd_pow2_odd(k: nat, n: nat)
+    requires
+        n % 2 == 1,
+    ensures
+        spec_gcd(pow2(k), n) == 1,
+
+pub open spec fn factorial(n: nat) -> nat
+    decreases n,
+
+pub open spec fn binomial(n: nat, k: nat) -> nat
+    decreases n,
+
+pub proof fn lemma_binomial_divisible_by_prime(p: nat, k: nat)
+    requires
+        is_prime(p),
+        0 < k < p,
+    ensures
+        binomial(p, k) % p == 0,
+    decreases p,
+
+pub proof fn lemma_binomial_absorption(n: nat, k: nat)
+    requires
+        n >= 1,
+        k >= 1,
+        k <= n,
+    ensures
+        k * binomial(n, k) == n * binomial((n - 1) as nat, (k - 1) as nat),
+    decreases n,
+
+pub proof fn lemma_fermat_strong(a: nat, p: nat)
+    requires
+        is_prime(p),
+    ensures
+        (pow(a as int, p) as nat) % p == a % p,
+    decreases a,
+
+pub proof fn lemma_mod_sub_eq_implies_zero(x: int, y: int, m: int)
+    requires
+        m > 0,
+        x % m == y % m,
+    ensures
+        (x - y) % m == 0,
+
+pub open spec fn product_of_multiples(a: nat, n: nat) -> nat
+    decreases n,
+
+pub proof fn lemma_product_of_multiples_eq(a: nat, n: nat)
+    ensures
+        product_of_multiples(a, n) == pow(a as int, n) as nat * factorial(n),
+    decreases n,
+
+pub open spec fn spec_extended_gcd(a: nat, b: nat) -> ExtGcdResult
+    decreases b,
+
+pub proof fn lemma_extended_gcd_is_gcd(a: nat, b: nat)
+    ensures
+        spec_extended_gcd(a, b).gcd == spec_gcd(a, b),
+    decreases b,
+
+pub proof fn lemma_bezout_identity(a: nat, b: nat)
+    ensures
+        (
+
+pub open spec fn spec_mod_inverse(a: nat, m: nat) -> nat
+    recommends
+        m > 1,
+        spec_gcd(a % m, m) == 1,
+
+pub proof fn lemma_mod_inverse_correct(a: nat, m: nat)
+    requires
+        m > 1,
+        spec_gcd(a % m, m) == 1,
+    ensures
+        spec_mod_inverse(a, m) < m,
+        (a * spec_mod_inverse(a, m)) % m == 1,
+
+pub proof fn lemma_product_nonzero_mod_prime(a: nat, i: nat, p: nat)
+    requires
+        is_prime(p),
+        a % p != 0,
+        i % p != 0,
+    ensures
+        (a * i) % p != 0,
+
+pub proof fn lemma_euclid_prime(a: nat, b: nat, p: nat)
+    requires
+        is_prime(p),
+        (a * b) % p == 0,
+    ensures
+        a % p == 0 || b % p == 0,
+
+pub proof fn lemma_multiples_distinct_mod_prime(a: nat, i: nat, j: nat, p: nat)
+    requires
+        is_prime(p),
+        a % p != 0,
+        1 <= i < j < p,
+    ensures
+        (a * i) % p != (a * j) % p,
+
+pub proof fn lemma_mult_maps_to_nonzero(a: nat, i: nat, p: nat)
+    requires
+        is_prime(p),
+        a % p != 0,
+        1 <= i < p,
+    ensures
+        1 <= (a * i) % p < p,
+
+pub proof fn lemma_product_of_multiples_mod_eq_factorial(a: nat, p: nat)
+    requires
+        is_prime(p),
+        a % p != 0,
+    ensures
+        (product_of_multiples(a, (p - 1) as nat)) % p == factorial((p - 1) as nat) % p,
+
+pub proof fn lemma_fermat_little_theorem(x: nat, prime: nat)
+    requires
+        is_prime(prime),
+        x % prime != 0,
+    ensures
+        (pow(x as int, (prime - 1) as nat) as nat) % prime == 1,
+
+pub proof fn lemma_product_of_complements(a: nat, b: nat, p: nat)
+    requires
+        p > 0,
+        0 < a && a < p,
+        0 < b && b < p,
+    ensures
+        (((p - a) * (p - b)) as nat) % p == ((a * b) as nat) % p,
+
+pub proof fn lemma_p_is_odd()
+    ensures
+        p() % 2 == 1,
+
+pub proof fn lemma_p_divisibility_facts()
+    ensures
+        (
+
+pub proof fn lemma_prime_gt_2_is_odd(p: nat)
+    requires
+        is_prime(p),
+        p > 2,
+    ensures
+        p % 2 == 1,
+
+pub proof fn lemma_pow_2_is_mul(x: int)
+    ensures
+        pow(x, 2) == x * x,
+
+pub proof fn lemma_square_root_of_unity(y: nat, p: nat)
+    requires
+        is_prime(p),
+        (y * y) % p == 1,
+    ensures
+        y % p == 1 || y % p == (p - 1) as nat,
+
+pub proof fn lemma_euler_criterion(x: nat, p: nat)
+    requires
+        is_prime(p),
+        p > 2,
+        x % p != 0,
+    ensures
+        (pow(x as int, ((p - 1) / 2) as nat) as nat) % p == 1 || (pow(
+            x as int,
+            ((p - 1) / 2) as nat,
+        ) as nat) % p == (p - 1) as nat,
+
+pub proof fn lemma_pow2_plus_one(n: nat)
+    ensures
+        pow2(n + 1) == pow2(n) + pow2(n),
+
+pub proof fn lemma_div_bound(x: nat, a: nat, b: nat)
+    requires
+        a <= b,
+        x < pow2(b),
+    ensures
+        x / pow2(a) < pow2((b - a) as nat),
+
+pub proof fn lemma_two_factoring(a: nat, b: nat, v: u64)
+    ensures
+        pow2(a + b) * v == pow2(a) * (pow2(b) * v),
+
+pub proof fn lemma_pow2_square(v: int, i: nat)
+    ensures
+        pow(v, pow2(i)) * pow(v, pow2(i)) == pow(v, pow2(i + 1)),
+
+pub proof fn lemma_pow_nat_is_nat(v: nat, i: nat)
+    ensures
+        pow(v as int, pow2(i)) >= 0,
+
+pub proof fn lemma_pow2_mul_bound_general(a: nat, s: nat, k: nat)
+    requires
+        a < pow2(s),
+    ensures
+        pow2(k) * a <= pow2(k + s) - pow2(k),
+        a * pow2(k) <= pow2(k + s) - pow2(k),
+        pow2(k + s) - pow2(k) < pow2(k + s),
+
+pub proof fn lemma_binary_sum_div_decomposition(a: nat, b: nat, s: nat, k: nat)
+    requires
+        a < pow2(s),
+    ensures
+        (a + b * pow2(s)) / pow2(k) == a / pow2(k) + (b * pow2(s)) / pow2(k),
+
+pub proof fn lemma_binary_sum_mod_decomposition(a: nat, b: nat, s: nat, k: nat)
+    requires
+        a < pow2(s),
+    ensures
+        (a + b * pow2(s)) % pow2(k) == a % pow2(k) + (b * pow2(s)) % pow2(k),
+
+pub proof fn lemma_pow2_mul_mod(x: nat, k: nat, s: nat)
+    requires
+        k <= s,
+    ensures
+        (x * pow2(k)) % pow2(s) == (x % pow2((s - k) as nat)) * pow2(k),
+
+pub proof fn lemma_pow2_div_mod(x: nat, k: nat, s: nat)
+    ensures
+        (x / pow2(k)) % pow2(s) == (x % pow2(s + k)) / pow2(k),
+
+pub proof fn pow2_MUL_div(x: nat, k: nat, s: nat)
+    requires
+        k >= s,
+    ensures
+        (x * pow2(k)) / pow2(s) == x * pow2((k - s) as nat),
+
+pub proof fn lemma_pow2_mul_div(x: nat, k: nat, s: nat)
+    requires
+        k <= s,
+    ensures
+        (x * pow2(k)) / pow2(s) == x / pow2((s - k) as nat),
+
+pub proof fn lemma_pow2_mul_div_mod_small_div(x: nat, px: nat, k: nat, s: nat, t: nat)
+    requires
+        x < pow2(px),
+        s <= k,
+        px + k - s <= t,
+    ensures
+        ((x * pow2(k)) / pow2(s)) % pow2(t) == x * pow2((k - s) as nat),
+
+pub proof fn lemma_pow2_mul_div_mod_small_mul(x: nat, px: nat, k: nat, s: nat, t: nat)
+    requires
+        x < pow2(px),
+        k <= s,
+        px <= t + s - k,
+    ensures
+        ((x * pow2(k)) / pow2(s)) % pow2(t) == x / pow2((s - k) as nat),
+
+pub proof fn lemma_pow2_mul_div_mod_close_mod(x: nat, k: nat, s: nat, t: nat)
+    requires
+        s <= k,
+        k - s <= t,
+    ensures
+        ((x * pow2(k)) / pow2(s)) % pow2(t) == (x % pow2((t - (k - s)) as nat) * pow2(
+            (k - s) as nat,
+        )),
+
+pub proof fn lemma_pow2_mul_div_mod_small_mod(x: nat, k: nat, s: nat, t: nat)
+    requires
+        s <= k,
+        t <= k - s,
+    ensures
+        ((x * pow2(k)) / pow2(s)) % pow2(t) == 0,
+
+pub proof fn lemma_chunk_extraction_commutes_with_mod(x: nat, k: nat, b: nat, m: nat)
+    requires
+        b > 0,
+        k * b + b
+            <= m,  // The chunk we're extracting is entirely below the modulo boundary
+
+    ensures
+        (x / pow2(k * b)) % pow2(b) == ((x % pow2(m)) / pow2(k * b)) % pow2(b),
+
+pub proof fn lemma_modular_bit_partitioning(a: nat, b: nat, k: nat, n: nat)
+    requires
+        k <= n,
+        a < pow2(k),
+    ensures
+        (a + b * pow2(k)) % pow2(n) == (a % pow2(k)) + ((b % pow2((n - k) as nat)) * pow2(k)),
+
+pub proof fn lemma_pow2_even(n: nat)
+    requires
+        n >= 1,
+    ensures
+        pow2(n) % 2 == 0,
+    decreases n,
+
+pub proof fn lemma_pow_mod_one(x: int, n: nat, m: int)
+    requires
+        m > 1,
+        x % m == 1,
+    ensures
+        pow(x, n) % m == 1,
+    decreases n,
+
+pub proof fn lemma_pow2_geometric_double(n: nat)
+    ensures
+        (pow2(n) - 1) * pow2(n) + (pow2(n) - 1) == pow2(2 * n) - 1,
+
+pub proof fn lemma_pow2_geometric(a: nat, b: nat)
+    ensures
+        (pow2(a) - 1) * pow2(b) + (pow2(b) - 1) == pow2(a + b) - 1,
+
+pub proof fn lemma_pow_mod_congruent(a: int, b: int, n: nat, m: int)
+    requires
+        m > 0,
+        a % m == b % m,
+    ensures
+        pow(a, n) % m == pow(b, n) % m,
+
+pub proof fn lemma_pow_nonnegative(base: int, n: nat)
+    requires
+        base >= 0,
+    ensures
+        pow(base, n) >= 0,
+
+// From vstd::arithmetic::div_mod:
+//   lemma_mod_multiples_vanish(b: int, a: int, n: int) requires n > 0 ensures a % n == (a + b * n) % n
+//   lemma_small_mod(x: nat, m: nat) requires x < m ensures x % m == x
+//   lemma_mod_twice(x: int, m: int) requires m > 0 ensures (x % m) % m == x % m
+//   lemma_add_mod_noop(x: int, y: int, m: int) requires m > 0 ensures (x + y) % m == ((x % m) + (y % m)) % m
+//   lemma_mod_pos_bound(x: int, m: int) requires m > 0 ensures 0 <= x % m < m
+//   lemma_mod_bound(x: int, m: int) requires m > 0 ensures x % m < m
+//   lemma_mod_mod(x: int, a: int, b: int) requires a > 0, b > 0 ensures (x % (a * b)) % a == x % a
+//   lemma_mod_breakdown(x: int, a: int, b: int) requires a > 0, b > 0 ensures x % (a * b) == a * ((x / a) % b) + x % a
+//   lemma_mod_division_less_than_divisor(x: int, m: int) requires m > 0 ensures x % m < m
+
+// From vstd::arithmetic::mul:
+//   lemma_mul_basics(x: int) ensures x * 0 == 0, 0 * x == 0, x * 1 == x
+//   lemma_mul_is_commutative(x: int, y: int) ensures x * y == y * x
+//   lemma_mul_is_associative(x: int, y: int, z: int) ensures x * (y * z) == (x * y) * z
+//   lemma_mul_is_distributive_add(x: int, y: int, z: int) ensures x * (y + z) == x * y + x * z
+//   lemma_mul_mod_noop_left(x: int, y: int, m: int) requires m > 0 ensures (x % m) * y % m == x * y % m
+//   lemma_mul_mod_noop_right(x: int, y: int, m: int) requires m > 0 ensures x * (y % m) % m == x * y % m
+//   lemma_mul_strict_inequality(x: int, y: int, z: int) requires x < y, z > 0 ensures x * z < y * z
+//   lemma_mul_by_zero_is_zero(x: int) ensures x * 0 == 0 && 0 * x == 0
+
+// From vstd::arithmetic::power2:
+//   lemma_pow2_pos(e: nat) ensures pow2(e) > 0
+//   lemma_pow2_adds(e1: nat, e2: nat) ensures pow2(e1) * pow2(e2) == pow2(e1 + e2)
+//   lemma2_to64() ensures pow2(0)==1, pow2(1)==2, pow2(2)==4, ..., pow2(64)==0x10000000000000000
+
+[INSTRUCTION]
+Adapt the sibling's approach for this function. Return ONLY the proof body content (what goes between { and }), no function signature.

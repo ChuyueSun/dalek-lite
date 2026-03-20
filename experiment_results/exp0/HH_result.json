@@ -1,0 +1,67 @@
+{
+  "hole_id": "H",
+  "pair": 4,
+  "dimension_tested": "concrete_computation",
+  "function": "lemma_reduce_boundaries",
+  "file": "reduce_lemmas.rs",
+  "layer": "L4",
+  "taxonomy": "bounds_propagation",
+  "gt_body_loc": 27,
+  "gt_patterns": ["bitvec", "sub_lemma"],
+
+  "pre_assessment": {
+    "confidence": 2,
+    "planned_strategy": "Use by(bit_vector) with requires for mask51 value to prove each bound per limb",
+    "planned_lemmas": [],
+    "planned_verus_features": ["by(bit_vector)", "requires in by-block"],
+    "stated_uncertainties": ["Whether bit_vector handles the *19 multiplication", "Whether array indexing works in by(bit_vector)"]
+  },
+
+  "attempt_1": {
+    "code": "[5 assert by(bit_vector) blocks directly using limbs[i] & mask51 + limbs[j] >> 51]",
+    "strategy_used": "bitvec",
+    "lemmas_called": [],
+    "verus_features_used": ["by(bit_vector)", "requires"],
+    "verification_result": "fail",
+    "error_message": "Verus interpreter panicked: Expected the argument to array_view to already be an Interp(Array(_)). Got: FreeVar(VarIdent(\"limbs\", VirParam)) — bitvector solver cannot handle symbolic array indexing",
+    "error_classified": "missing_verus_pattern"
+  },
+
+  "attempt_2": {
+    "revision_description": "Extracted array elements into local variables (let l0 = limbs[0]; etc.) before the by(bit_vector) blocks to avoid symbolic array indexing in the bitvector solver",
+    "code": "let l0 = limbs[0];\nlet l1 = limbs[1];\nlet l2 = limbs[2];\nlet l3 = limbs[3];\nlet l4 = limbs[4];\nlet m = mask51;\nassert(((l1 & m) + (l0 >> 51)) < (1u64 << 52)) by (bit_vector) requires m == 2251799813685247u64;\n[4 more similar assertions]\nassert(((l0 & m) + (l4 >> 51) * 19) < (1u64 << 52)) by (bit_vector) requires m == 2251799813685247u64;",
+    "strategy_used": "bitvec",
+    "lemmas_called": [],
+    "verus_features_used": ["by(bit_vector)", "requires", "let bindings for array elements"],
+    "verification_result": "pass",
+    "error_message": null,
+    "error_classified": null
+  },
+
+  "post_assessment": {
+    "stated_surprises": "The bitvector solver cannot handle symbolic array indexing — need to extract elements into locals first. This is a Verus-specific gotcha.",
+    "alternate_strategy": "Could use sub-lemmas (lemma_masked_lt_51, lemma_u64_shr_le) as seen in lemma_reduce_bound_2p",
+    "confidence_after": 4
+  },
+
+  "diagnosis": {
+    "final_result": "pass_attempt_2",
+    "strategy_correct": true,
+    "strategy_detail": "by(bit_vector) was the right approach — just needed array element extraction",
+    "lemma_discovery": true,
+    "lemma_detail": "No external lemmas needed",
+    "lemma_instantiation": true,
+    "instantiation_detail": "N/A",
+    "verus_pattern_correct": false,
+    "verus_detail": "First attempt failed because by(bit_vector) cannot handle array indexing on symbolic arrays — needed let bindings",
+    "intermediate_assertions_correct": true,
+    "over_engineered": false,
+    "over_detail": "N/A",
+    "under_engineered": false,
+    "under_detail": "N/A",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": -16,
+    "alternative_valid_proof": true
+  }
+}

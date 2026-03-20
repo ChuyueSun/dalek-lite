@@ -1,0 +1,114 @@
+{
+  "E1_field_add": {
+    "file": "src/backend/serial/u64/field.rs",
+    "blocks": [
+      {
+        "id": "E1_B1",
+        "start_line": 268,
+        "end_line": 284,
+        "pattern": "ALGEBRAIC_BRIDGE + BOUNDS_PROPAGATION",
+        "loc": 17,
+        "description": "Post-loop proof: extensional equality, lemma_field51_add, bit-vector bound propagation"
+      }
+    ],
+    "total_proof_loc": 17
+  },
+  "E2_edwards_double": {
+    "file": "src/edwards.rs",
+    "blocks": [
+      {
+        "id": "E2_B1",
+        "start_line": 1965,
+        "end_line": 1984,
+        "pattern": "POSTCONDITION_CHAINING",
+        "loc": 20,
+        "description": "After as_projective: establish projective validity and bounds for double() preconditions"
+      },
+      {
+        "id": "E2_B2",
+        "start_line": 1987,
+        "end_line": 1990,
+        "pattern": "POSTCONDITION_CHAINING",
+        "loc": 4,
+        "description": "After proj.double(): assert completed point validity"
+      },
+      {
+        "id": "E2_B3",
+        "start_line": 1994,
+        "end_line": 2003,
+        "pattern": "POSTCONDITION_CHAINING",
+        "loc": 10,
+        "description": "After as_extended: chain affine equivalences through conversions"
+      }
+    ],
+    "total_proof_loc": 34
+  },
+  "E3_montgomery_mul": {
+    "file": "src/montgomery.rs",
+    "blocks": [
+      {
+        "id": "E3_B1",
+        "start_line": 2647,
+        "end_line": 2693,
+        "pattern": "SCALAR_BIT_BRIDGE",
+        "loc": 47,
+        "description": "Connect big-endian bit slice to scalar nat value via bit representation lemmas"
+      }
+    ],
+    "total_proof_loc": 47
+  },
+  "E4_elligator_blocks_3_8": {
+    "file": "src/ristretto.rs",
+    "blocks": [
+      {
+        "id": "E4_B3",
+        "start_line": 2326,
+        "end_line": 2331,
+        "pattern": "BOUNDS_PROPAGATION",
+        "loc": 6,
+        "description": "sum_of_limbs_bounded for r + one"
+      },
+      {
+        "id": "E4_B4",
+        "start_line": 2333,
+        "end_line": 2340,
+        "pattern": "BOUNDS_PROPAGATION",
+        "loc": 8,
+        "description": "fe51_limbs_bounded weaken for r_plus_one and one_minus_d_sq"
+      },
+      {
+        "id": "E4_B5",
+        "start_line": 2345,
+        "end_line": 2350,
+        "pattern": "BOUNDS_PROPAGATION",
+        "loc": 6,
+        "description": "fe51_limbs_bounded weaken for d and r before multiply"
+      },
+      {
+        "id": "E4_B6",
+        "start_line": 2352,
+        "end_line": 2357,
+        "pattern": "BOUNDS_PROPAGATION",
+        "loc": 6,
+        "description": "fe51_limbs_bounded weaken for c and d_times_r after multiply"
+      },
+      {
+        "id": "E4_B7",
+        "start_line": 2359,
+        "end_line": 2365,
+        "pattern": "BOUNDS_PROPAGATION",
+        "loc": 7,
+        "description": "sum_of_limbs_bounded for r + d"
+      },
+      {
+        "id": "E4_B8",
+        "start_line": 2366,
+        "end_line": 2370,
+        "pattern": "BOUNDS_PROPAGATION",
+        "loc": 5,
+        "description": "fe51_limbs_bounded weaken for r_plus_d"
+      }
+    ],
+    "total_proof_loc": 38
+  }
+}

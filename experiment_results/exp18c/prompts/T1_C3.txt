@@ -1,0 +1,68 @@
+Your proof has an error. Fix it.
+
+== CURRENT CODE (around the error) ==
+ 253:         /* MODIFIED CODE */
+ 254:         let ghost original_limbs = self.limbs;
+ 255:         for i in 0..5
+ 256:             invariant
+ 257:                 forall|j: int|
+ 258:                     0 <= j < i ==> #[trigger] output.limbs[j] == original_limbs[j] + _rhs.limbs[j],
+ 259:                 forall|j: int| i <= j < 5 ==> #[trigger] output.limbs[j] == original_limbs[j],
+ 260:                 forall|j: int|
+ 261:                     0 <= j < 5 ==> #[trigger] original_limbs[j] + _rhs.limbs[j] <= u64::MAX,
+ 262:         {
+ 263:             // Trigger the forall
+ 264:             assert(original_limbs[i as int] + _rhs.limbs[i as int] <= u64::MAX);
+ 265:             output.limbs[i] += _rhs.limbs[i];
+ 266:         }
+ 267:         /* </MODIFIED CODE> */
+ 268:         proof {
+ 269:             // Trigger the forall invariant
+ 270:             assert(output.limbs == [
+ 271:                 (original_limbs[0] + _rhs.limbs[0]) as u64,
+ 272:                 (original_limbs[1] + _rhs.limbs[1]) as u64,
+ 273:                 (original_limbs[2] + _rhs.limbs[2]) as u64,
+ 274:                 (original_limbs[3] + _rhs.limbs[3]) as u64,
+ 275:                 (original_limbs[4] + _rhs.limbs[4]) as u64,
+ 276:             ]);
+ 277: 
+ 278:             // lemma_field51_add(self, _rhs); // MUTATION: removed
+ 279: 
+ 280:             // Prove bound propagation: n-bit inputs → (n+1)-bit output
+ 281:             // If a < 2^n and b < 2^n, then a + b < 2^(n+1)
+ 282:             assert((1u64 << 51) + (1u64 << 51) == (1u64 << 52)) by (bit_vector);
+ 283:             assert((1u64 << 52) + (1u64 << 52) == (1u64 << 53)) by (bit_vector);
+ 284:         }
+ 285: 
+ 286:         output
+ 287:     }
+ 288: }
+ 289: 
+ 290: impl<'a> SubAssign<&'a FieldElement51> for FieldElement51 {
+ 291:     fn sub_assign(&mut self, _rhs: &'a FieldElement51)
+ 292:         requires
+ 293:             fe51_limbs_bounded(old(self), 54) && fe51_limbs_bounded(_rhs, 54),
+ 294:         ensures
+ 295:             fe51_limbs_bounded(self, 52),
+ 296:             *self == spec_sub_limbs(old(self), _rhs),
+ 297:             fe51_as_canonical_nat(self) == field_sub(
+ 298:                 fe51_as_canonical_nat(old(self)),
+ 299:                 fe51_as_canonical_nat(_rhs),
+ 300:             ),
+ 301:     {
+ 302:         /* ORIGINAL CODE
+
+== ERROR ==
+error: postcondition not satisfied
+   --> curve25519-dalek/src/backend/serial/u64/field.rs:234:13
+    |
+234 |             fe51_as_nat(&output) == fe51_as_nat(self) + fe51_as_nat(_rhs),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+
+== SIMILAR FIX PATTERN ==
+// Before (failed): postcondition about fe51_as_nat not satisfied
+// Missing lemma call after the loop
+// After (passed):
+//   lemma_field51_add(self, _rhs);  // establishes nat and canonical nat postconditions
+
+Apply a similar fix. Return the corrected code for the relevant section.

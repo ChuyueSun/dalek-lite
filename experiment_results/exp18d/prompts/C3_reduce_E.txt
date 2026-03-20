@@ -1,0 +1,22 @@
+A proof of a caller function fails because reduce's ensures clause
+doesn't guarantee a property the caller needs.
+
+== CALLEE (reduce) CURRENT SPEC ==
+ensures
+    ensures
+        fe51_as_canonical_nat(&r) == fe51_as_canonical_nat(self),
+        fe51_limbs_bounded(&r, 51),
+
+
+== ERROR ==
+error: postcondition not satisfied
+   --> field.rs:871:13
+   |
+871 |     r.limbs[0] == expected_limbs[0],
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+   | note: the caller expected to know the exact limb values after reduce
+
+== INSTRUCTION ==
+Propose the minimum additional ensures clause to add to reduce that would
+fix the caller's proof. Only add what is necessary — don't add unrelated properties.
+Output ONLY the new clause(s) to add.

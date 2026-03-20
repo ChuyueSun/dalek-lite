@@ -1,0 +1,62 @@
+Your proof has an error. Fix it.
+
+== CURRENT CODE (around the error) ==
+ 482: 
+ 483:     #[rustfmt::skip]  // keep alignment of c* calculations
+ 484:     fn mul(self, _rhs: &'a FieldElement51) -> (output:
+ 485:         FieldElement51)/* Precondition specified in mul_req from MulSpecImpl:
+ 486:         requires fe51_limbs_bounded(self, 54) && fe51_limbs_bounded(rhs, 54)
+ 487:         */
+ 488: 
+ 489:         ensures
+ 490:             fe51_as_canonical_nat(&output) == field_mul(
+ 491:                 fe51_as_canonical_nat(self),
+ 492:                 fe51_as_canonical_nat(_rhs),
+ 493:             ),
+ 494:             fe51_limbs_bounded(&output, 52),
+ 495:             fe51_limbs_bounded(&output, 54),
+ 496:     {
+ 497:         /// Helper function to multiply two 64-bit integers with 128
+ 498:         /// bits of output.
+ 499:         // VERIFICATION NOTE: manually moved outside
+ 500:         // #[inline(always)]
+ 501:         // fn m(x: u64, y: u64) -> u128 { (x as u128) * (y as u128) }
+ 502:         // Alias self, _rhs for more readable formulas
+ 503:         let a: &[u64; 5] = &self.limbs;
+ 504:         let b: &[u64; 5] = &_rhs.limbs;
+ 505: 
+ 506:         proof {
+ 507:             // lemma_mul_boundary(*a, *b); // MUTATION: removed
+ 508:         }
+ 509: 
+ 510:         // 64-bit precomputations to avoid 128-bit multiplications.
+ 511:         let b1_19 = b[1] * 19;
+ 512:         let b2_19 = b[2] * 19;
+ 513:         let b3_19 = b[3] * 19;
+ 514:         let b4_19 = b[4] * 19;
+ 515: 
+ 516:         // Multiply to get 128-bit coefficients of output
+ 517:         let c0: u128 = m(a[0], b[0]) + m(a[4], b1_19) + m(a[3], b2_19) + m(a[2], b3_19) + m(
+ 518:             a[1],
+ 519:             b4_19,
+ 520:         );
+ 521:         let mut c1: u128 = m(a[1], b[0]) + m(a[0], b[1]) + m(a[4], b2_19) + m(a[3], b3_19) + m(
+ 522:             a[2],
+ 523:             b4_19,
+ 524:         );
+ 525:         let mut c2: u128 = m(a[2], b[0]) + m(a[1], b[1]) + m(a[0], b[2]) + m(a[4], b3_19) + m(
+ 526:             a[3],
+ 527:             b4_19,
+ 528:         );
+ 529:         let mut c3: u128 = m(a[3], b[0]) + m(a[2], b[1]) + m(a[1], b[2]) + m(a[0], b[3]) + m(
+ 530:             a[4],
+ 531:             b4_19,
+
+== ERROR ==
+error: possible arithmetic underflow/overflow
+   --> curve25519-dalek/src/backend/serial/u64/field.rs:511:21
+    |
+511 |         let b1_19 = b[1] * 19;
+    |                     ^^^^^^^^^
+
+Fix the error. Return the corrected code for the relevant section.

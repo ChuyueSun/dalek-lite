@@ -1,0 +1,41 @@
+Here is a function and its algebraic ensures clause (generated in Phase A):
+
+== FUNCTION ==
+add in backend/serial/u64/field.rs
+Body: Limb-wise addition loop: output.limbs[i] = self.limbs[i] + _rhs.limbs[i] for i in 0..5. Proof block calls lemma_field51_add and lemma_add_bounds_propagate.
+
+== CURRENT ENSURES (from Phase A) ==
+ensures
+    ensures
+        output == spec_add_fe51_limbs(self, _rhs),
+        fe51_as_canonical_nat(&output) == field_add(fe51_as_canonical_nat(self), fe51_as_canonical_nat(_rhs)),
+        fe51_limbs_bounded(&output, 52),
+
+
+== SIBLING BOUNDS PATTERNS ==
+fn from_bytes(bytes: &[u8; 32]) -> (r: FieldElement51)
+    ensures
+        fe51_as_nat(&r) == u8_32_as_nat(bytes) % pow2(255),
+        fe51_limbs_bounded(&r, 51),
+        is_uniform_bytes(bytes) ==> is_uniform_field_element(&r),
+
+fn sub(self, _rhs: &'a FieldElement51) -> (output: FieldElement51)
+    ensures
+        output == spec_sub_limbs(self, _rhs),
+        fe51_as_canonical_nat(&output) == field_sub(fe51_as_canonical_nat(self), fe51_as_canonical_nat(_rhs)),
+        fe51_limbs_bounded(&output, 52),
+        fe51_limbs_bounded(&output, 54),
+
+== INSTRUCTION ==
+Does this function need bounds-propagation clauses? Specifically:
+- If inputs have limb bounds B, what bounds does the output have?
+- Add conditional clauses like:
+  fe51_limbs_bounded(input, B) ==> fe51_limbs_bounded(&output, B+K)
+
+Also check:
+- Is there a < 2*p() value bound?
+- Is there an identity-when-already-reduced property?
+- Is there an exact nat-level intermediate formula?
+
+Only add clauses that are NOT trivially derivable from existing ensures.
+Output the COMPLETE ensures clause (Phase A clauses + new bounds clauses).

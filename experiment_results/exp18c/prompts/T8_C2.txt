@@ -1,0 +1,66 @@
+Your proof has an error. Fix it.
+
+== CURRENT CODE (around the error) ==
+ 125:             forall|j: int| 0 <= j < 8 ==> is_valid_affine_niels_point(#[trigger] self.0[j]),
+ 126:         ensures
+ 127:     // Formal specification for all cases:
+ 128: 
+ 129:             (x > 0 ==> result == self.0[(x - 1) as int]),
+ 130:             (x == 0 ==> result == identity_affine_niels()),
+ 131:             (x < 0 ==> result == negate_affine_niels(self.0[((-x) - 1) as int])),
+ 132:             // Limb bounds on result
+ 133:             fe51_limbs_bounded(&result.y_plus_x, 54),
+ 134:             fe51_limbs_bounded(&result.y_minus_x, 54),
+ 135:             fe51_limbs_bounded(&result.xy2d, 54),
+ 136:             // The result is a valid AffineNielsPoint
+ 137:             is_valid_affine_niels_point(result),
+ 138:     {
+ 139:         // Debug assertions from original macro - ignored by Verus
+ 140:         #[cfg(not(verus_keep_ghost))]
+ 141:         {
+ 142:             debug_assert!(x >= -8);
+ 143:             debug_assert!(x <= 8);
+ 144:         }
+ 145: 
+ 146:         // Compute xabs = |x|
+ 147:         let xmask = x as i16 >> 7;
+ 148:         proof {
+ 149:             // xmask is 0 or -1, so x + xmask doesn't overflow i16
+ 150:             assert((x as i16 >> 7u32) == 0i16 || (x as i16 >> 7u32) == -1i16) by (nonlinear_arith)
+ 151:                 requires
+ 152:                     -8i8 <= x && x <= 8i8,
+ 153:             ;
+ 154:         }
+ 155:         let xabs = (x as i16 + xmask) ^ xmask;
+ 156: 
+ 157:         proof {
+ 158:             // Bit-vector facts about xmask, xabs
+ 159:             // In Verus spec mode, i16 + i16 returns int (for overflow safety),
+ 160:             // making `(x as i16 + xmask) ^ xmask` fail because int has no XOR.
+ 161:             // Work around by binding the sum as i16 so XOR stays in bitvector land.
+ 162:             let xsum: i16 = (x as i16 + xmask) as i16;
+ 163:             assert(x >= 0i8 ==> xabs == x as i16) by (bit_vector)
+ 164:                 requires
+ 165:                     -8i8 <= x && x <= 8i8,
+ 166:                     xmask == (x as i16 >> 7u32),
+ 167:                     xsum == (x as i16 + xmask) as i16,
+ 168:                     xabs == (xsum ^ xmask),
+ 169:             ;
+ 170:             assert(x < 0i8 ==> xabs == -(x as i16)) by (bit_vector)
+ 171:                 requires
+ 172:                     -8i8 <= x && x <= 8i8,
+ 173:                     xmask == (x as i16 >> 7u32),
+ 174:                     xsum == (x as i16 + xmask) as i16,
+
+== ERROR ==
+error: assertion failed
+   --> curve25519-dalek/src/window.rs:150:20
+    |
+150 |             assert((x as i16 >> 7u32) == 0i16 || (x as i16 >> 7u32) == -1i16) by (nonlinear_arith)
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+== ERROR CLASSIFICATION ==
+Error type: wrong_by_strategy
+Repair hint: assertion failed with by(nonlinear_arith) on expression with >> (bit shift) → use by(bit_vector) instead. Nonlinear arithmetic cannot reason about bitwise operations.
+
+Fix the error. Return the corrected code for the relevant section.

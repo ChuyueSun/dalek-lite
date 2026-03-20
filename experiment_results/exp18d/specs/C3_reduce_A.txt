@@ -1,0 +1,3 @@
+    ensures
+        fe51_as_canonical_nat(&r) == fe51_as_canonical_nat(self),
+        fe51_limbs_bounded(&r, 51),

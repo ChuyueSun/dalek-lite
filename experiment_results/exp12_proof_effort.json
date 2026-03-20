@@ -1,0 +1,2281 @@
+{
+  "summary": {
+    "total_proof_commits": 739,
+    "total_unique_prs": 207,
+    "total_insertions": 199768,
+    "total_deletions": 90895,
+    "unique_authors": [
+      "Bram Westerbaan",
+      "Chuyue Sun",
+      "Fran\u00e7ois Garillot",
+      "Henry de Valence",
+      "Isis Lovecruft",
+      "Jack Lloyd",
+      "Jure Kukovec",
+      "Kukovec",
+      "Lacramioara Astefanoaei",
+      "Leo Yao",
+      "Linus Karl",
+      "Michael Rosenberg",
+      "Rob Ede",
+      "S M A Nahian",
+      "SMANahian",
+      "Sergiu Bursuc",
+      "Shaowei Lin",
+      "Soumya Das",
+      "Theodore Ehrenborg",
+      "Theodore Ehrenborg (aider)",
+      "TheodoreEhrenborg",
+      "Tony Arcieri",
+      "Trevor Perrin",
+      "Wiktor Kwapisiewicz",
+      "andrew lyon",
+      "astefano",
+      "copilot-swe-agent[bot]",
+      "github-actions[bot]",
+      "isis agora lovecruft",
+      "max tan",
+      "sbursuc"
+    ],
+    "date_range": {
+      "first": "2016-12-14",
+      "last": "2026-03-18"
+    }
+  },
+  "hardest_proofs_by_insertions": [
+    {
+      "commit": "09e82bcb",
+      "date": "2026-02-09",
+      "author": "Sergiu Bursuc",
+      "message": "Add specs browser to website (#682)",
+      "pr_number": 682,
+      "insertions": 12253,
+      "deletions": 12,
+      "files_changed": 11
+    },
+    {
+      "commit": "5d8a873e",
+      "date": "2026-02-12",
+      "author": "Kukovec",
+      "message": "Refactoring: field and scalar specs (#695)",
+      "pr_number": 695,
+      "insertions": 11512,
+      "deletions": 3105,
+      "files_changed": 63
+    },
+    {
+      "commit": "8c422236",
+      "date": "2025-10-29",
+      "author": "Kukovec",
+      "message": "prove to_bytes from field_verus.rs (#63)",
+      "pr_number": 63,
+      "insertions": 8345,
+      "deletions": 94,
+      "files_changed": 25
+    },
+    {
+      "commit": "8f11f253",
+      "date": "2025-12-17",
+      "author": "Lacramioara Astefanoaei",
+      "message": "La/prove edwards decompress (#576)",
+      "pr_number": 576,
+      "insertions": 5026,
+      "deletions": 78,
+      "files_changed": 25
+    },
+    {
+      "commit": "f91fea43",
+      "date": "2026-03-05",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify ristretto double_and_compress_batch_verus (#755)",
+      "pr_number": 755,
+      "insertions": 4967,
+      "deletions": 1183,
+      "files_changed": 15
+    },
+    {
+      "commit": "827932f9",
+      "date": "2025-10-24",
+      "author": "Kukovec",
+      "message": "verusfmt all",
+      "pr_number": null,
+      "insertions": 4747,
+      "deletions": 4797,
+      "files_changed": 54
+    },
+    {
+      "commit": "541cefc6",
+      "date": "2025-10-14",
+      "author": "astefano",
+      "message": "split to_bytes_lemmas.rs in 3 files for the 3 main lemmas",
+      "pr_number": null,
+      "insertions": 4448,
+      "deletions": 2835,
+      "files_changed": 8
+    },
+    {
+      "commit": "530dae48",
+      "date": "2025-10-22",
+      "author": "astefano",
+      "message": "Revert \"Apply verusfmt\"",
+      "pr_number": null,
+      "insertions": 4002,
+      "deletions": 3887,
+      "files_changed": 50
+    },
+    {
+      "commit": "9c8605e0",
+      "date": "2025-10-22",
+      "author": "Theodore Ehrenborg",
+      "message": "Format code with verusfmt (#147)",
+      "pr_number": 147,
+      "insertions": 3963,
+      "deletions": 4058,
+      "files_changed": 52
+    },
+    {
+      "commit": "9c142e8a",
+      "date": "2025-10-20",
+      "author": "Theodore Ehrenborg",
+      "message": "Apply verusfmt",
+      "pr_number": null,
+      "insertions": 3938,
+      "deletions": 4048,
+      "files_changed": 50
+    },
+    {
+      "commit": "6637419b",
+      "date": "2026-02-09",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Verify montgomery_reduce (#670)",
+      "pr_number": 670,
+      "insertions": 3752,
+      "deletions": 526,
+      "files_changed": 14
+    },
+    {
+      "commit": "c2e862ef",
+      "date": "2026-03-06",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Transform some axioms into lemmas (#757)",
+      "pr_number": 757,
+      "insertions": 3600,
+      "deletions": 381,
+      "files_changed": 17
+    },
+    {
+      "commit": "219141e7",
+      "date": "2025-10-03",
+      "author": "astefano",
+      "message": "Claude has a proof for lemma_compute_q and lemma_to_bytes_reduction",
+      "pr_number": null,
+      "insertions": 3393,
+      "deletions": 73,
+      "files_changed": 6
+    },
+    {
+      "commit": "d7b87120",
+      "date": "2026-02-17",
+      "author": "Sergiu Bursuc",
+      "message": "Verify edwards add functions (#693)",
+      "pr_number": 693,
+      "insertions": 3322,
+      "deletions": 331,
+      "files_changed": 14
+    },
+    {
+      "commit": "8325bb6d",
+      "date": "2026-02-27",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify ristretto::decompress (#743)",
+      "pr_number": 743,
+      "insertions": 2857,
+      "deletions": 176,
+      "files_changed": 13
+    }
+  ],
+  "by_domain": {
+    "field": {
+      "total_commits": 146,
+      "first_date": "2017-01-06",
+      "last_date": "2026-02-16",
+      "total_prs": 44,
+      "authors": [
+        "Dirk Stolle",
+        "Henry de Valence",
+        "Isaiah Becker-Mayer",
+        "Isis Lovecruft",
+        "I\u00f1igo Querejeta Azurmendi",
+        "Jordan Rose",
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Luke Parker",
+        "Michael Rosenberg",
+        "S M A Nahian",
+        "Sean Bowe",
+        "Sergiu Bursuc",
+        "Theodore Ehrenborg",
+        "Tony Arcieri",
+        "astefano",
+        "root",
+        "sbursuc"
+      ],
+      "sample_insertions": 17323
+    },
+    "scalar": {
+      "total_commits": 354,
+      "first_date": "2016-12-09",
+      "last_date": "2026-02-20",
+      "total_prs": 66,
+      "authors": [
+        "Aaron Feickert",
+        "Andrew Moon",
+        "Brian Smith",
+        "DebugSteven",
+        "Henry & Isis",
+        "Henry de Valence",
+        "Isis Lovecruft",
+        "Ivan Temchenko",
+        "Jack Grigg",
+        "Jan Bujak",
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Leo Yao",
+        "Luke Parker",
+        "Michael Rosenberg",
+        "Oleg Andreev",
+        "Ruben De Smet",
+        "Rui Morais",
+        "S M A Nahian",
+        "SMANahian",
+        "Sean Bowe",
+        "SergeStrashko",
+        "Sergiu Bursuc",
+        "Soumya Das",
+        "Theodore Ehrenborg",
+        "TheodoreEhrenborg",
+        "Tony Arcieri",
+        "alexluchianov",
+        "astefano",
+        "khyperia",
+        "mandragore",
+        "max tan",
+        "moiseev-signal",
+        "sbursuc"
+      ],
+      "sample_insertions": 23871
+    },
+    "edwards": {
+      "total_commits": 144,
+      "first_date": "2016-12-23",
+      "last_date": "2026-03-18",
+      "total_prs": 46,
+      "authors": [
+        "Aaron Feickert",
+        "Chuyue Sun",
+        "Fabian Drinck",
+        "Henry & Isis",
+        "Henry de Valence",
+        "Isis Lovecruft",
+        "Jack Lloyd",
+        "Lacramioara Astefanoaei",
+        "Michael Rosenberg",
+        "Rui Morais",
+        "Sean Bowe",
+        "Sergiu Bursuc",
+        "Thomas Pornin",
+        "Tony Arcieri",
+        "gedigi",
+        "isis agora lovecruft",
+        "mandragore",
+        "phayes",
+        "sbursuc"
+      ],
+      "sample_insertions": 22808
+    },
+    "ristretto": {
+      "total_commits": 79,
+      "first_date": "2017-05-15",
+      "last_date": "2026-03-06",
+      "total_prs": 22,
+      "authors": [
+        "Aaron Feickert",
+        "Chris Beck",
+        "Fran\u00e7ois Garillot",
+        "Henry de Valence",
+        "Isis Lovecruft",
+        "Jordan Rose",
+        "Lacramioara Astefanoaei",
+        "Rui Morais",
+        "Sam Scott",
+        "Sergiu Bursuc",
+        "Thomas Pornin",
+        "Trangar",
+        "Trevor Perrin",
+        "gedigi",
+        "isis agora lovecruft",
+        "mandragore"
+      ],
+      "sample_insertions": 15796
+    },
+    "montgomery": {
+      "total_commits": 73,
+      "first_date": "2016-12-09",
+      "last_date": "2026-03-06",
+      "total_prs": 25,
+      "authors": [
+        "Andrew Poelstra",
+        "DebugSteven",
+        "Elichai Turkel",
+        "Henry de Valence",
+        "Isis Lovecruft",
+        "Jack Michaud",
+        "Lacramioara Astefanoaei",
+        "Michael Rosenberg",
+        "Rui Morais",
+        "Sean Bowe",
+        "Sergiu Bursuc",
+        "Theodore Ehrenborg",
+        "Tony Arcieri",
+        "isis agora lovecruft",
+        "max tan",
+        "sbursuc"
+      ],
+      "sample_insertions": 16921
+    },
+    "scalar_mul": {
+      "total_commits": 46,
+      "first_date": "2017-05-03",
+      "last_date": "2026-03-09",
+      "total_prs": 9,
+      "authors": [
+        "Aaron Feickert",
+        "Henry de Valence",
+        "Isis Lovecruft",
+        "Jan Bujak",
+        "Oleg Andreev",
+        "Sergiu Bursuc",
+        "isis agora lovecruft",
+        "sbursuc"
+      ],
+      "sample_insertions": 6707
+    }
+  },
+  "lemma_files": [
+    {
+      "file": "src/lemmas/common_lemmas/bit_lemmas.rs",
+      "total_commits": 13,
+      "first_commit": "2025-08-27",
+      "last_commit": "2025-12-10",
+      "authors": [
+        "Kukovec",
+        "Theodore Ehrenborg",
+        "astefano"
+      ],
+      "pr_numbers": [
+        262,
+        275,
+        571
+      ],
+      "num_revisions": 13
+    },
+    {
+      "file": "src/lemmas/common_lemmas/bits_as_nat_lemmas.rs",
+      "total_commits": 2,
+      "first_commit": "2026-02-16",
+      "last_commit": "2026-02-16",
+      "authors": [
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        692,
+        705
+      ],
+      "num_revisions": 2
+    },
+    {
+      "file": "src/lemmas/common_lemmas/div_mod_lemmas.rs",
+      "total_commits": 29,
+      "first_commit": "2025-08-27",
+      "last_commit": "2026-01-21",
+      "authors": [
+        "Jure Kukovec",
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc",
+        "Theodore Ehrenborg",
+        "astefano"
+      ],
+      "pr_numbers": [
+        236,
+        262,
+        275,
+        285,
+        310,
+        324,
+        576,
+        608,
+        633,
+        649,
+        651
+      ],
+      "num_revisions": 29
+    },
+    {
+      "file": "src/lemmas/common_lemmas/mask_lemmas.rs",
+      "total_commits": 8,
+      "first_commit": "2025-08-27",
+      "last_commit": "2025-12-10",
+      "authors": [
+        "Kukovec",
+        "Theodore Ehrenborg",
+        "astefano"
+      ],
+      "pr_numbers": [
+        262,
+        275,
+        571
+      ],
+      "num_revisions": 8
+    },
+    {
+      "file": "src/lemmas/common_lemmas/mul_lemmas.rs",
+      "total_commits": 12,
+      "first_commit": "2025-08-27",
+      "last_commit": "2026-02-18",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Theodore Ehrenborg",
+        "alexluchianov",
+        "astefano"
+      ],
+      "pr_numbers": [
+        262,
+        275,
+        300,
+        649,
+        710,
+        719
+      ],
+      "num_revisions": 12
+    },
+    {
+      "file": "src/lemmas/common_lemmas/number_theory_lemmas.rs",
+      "total_commits": 8,
+      "first_commit": "2025-11-24",
+      "last_commit": "2026-03-06",
+      "authors": [
+        "Lacramioara Astefanoaei",
+        "S M A Nahian"
+      ],
+      "pr_numbers": [
+        335,
+        350,
+        353,
+        576,
+        649,
+        670,
+        710,
+        757
+      ],
+      "num_revisions": 8
+    },
+    {
+      "file": "src/lemmas/common_lemmas/pow_lemmas.rs",
+      "total_commits": 29,
+      "first_commit": "2025-08-27",
+      "last_commit": "2026-01-21",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Theodore Ehrenborg",
+        "alexluchianov",
+        "astefano"
+      ],
+      "pr_numbers": [
+        236,
+        262,
+        275,
+        285,
+        300,
+        324,
+        571,
+        587,
+        649
+      ],
+      "num_revisions": 29
+    },
+    {
+      "file": "src/lemmas/common_lemmas/shift_lemmas.rs",
+      "total_commits": 25,
+      "first_commit": "2025-07-29",
+      "last_commit": "2026-03-11",
+      "authors": [
+        "Chuyue Sun",
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc",
+        "Theodore Ehrenborg",
+        "astefano"
+      ],
+      "pr_numbers": [
+        262,
+        275,
+        571,
+        587,
+        633,
+        649,
+        651
+      ],
+      "num_revisions": 25
+    },
+    {
+      "file": "src/lemmas/common_lemmas/sum_lemmas.rs",
+      "total_commits": 9,
+      "first_commit": "2025-10-17",
+      "last_commit": "2025-12-10",
+      "authors": [
+        "Kukovec",
+        "Soumya Das",
+        "Theodore Ehrenborg",
+        "astefano"
+      ],
+      "pr_numbers": [
+        262,
+        275,
+        543
+      ],
+      "num_revisions": 9
+    },
+    {
+      "file": "src/lemmas/common_lemmas/to_nat_lemmas.rs",
+      "total_commits": 6,
+      "first_commit": "2025-12-25",
+      "last_commit": "2026-02-16",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        609,
+        648,
+        675,
+        692,
+        695,
+        696
+      ],
+      "num_revisions": 6
+    },
+    {
+      "file": "src/lemmas/edwards_lemmas/constants_lemmas.rs",
+      "total_commits": 6,
+      "first_commit": "2025-12-17",
+      "last_commit": "2026-03-06",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        576,
+        654,
+        668,
+        671,
+        695,
+        757
+      ],
+      "num_revisions": 6
+    },
+    {
+      "file": "src/lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+      "total_commits": 23,
+      "first_commit": "2025-12-17",
+      "last_commit": "2026-03-06",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        576,
+        648,
+        649,
+        652,
+        654,
+        661,
+        668,
+        671,
+        692,
+        693,
+        695,
+        701,
+        709,
+        712,
+        721,
+        722,
+        725,
+        728,
+        734,
+        735,
+        738,
+        755,
+        757
+      ],
+      "num_revisions": 23
+    },
+    {
+      "file": "src/lemmas/edwards_lemmas/decompress_lemmas.rs",
+      "total_commits": 8,
+      "first_commit": "2025-12-17",
+      "last_commit": "2026-03-05",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        576,
+        614,
+        695,
+        709,
+        728,
+        734,
+        747,
+        755
+      ],
+      "num_revisions": 8
+    },
+    {
+      "file": "src/lemmas/edwards_lemmas/double_correctness.rs",
+      "total_commits": 2,
+      "first_commit": "2026-02-22",
+      "last_commit": "2026-02-24",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei"
+      ],
+      "pr_numbers": [
+        726,
+        734
+      ],
+      "num_revisions": 2
+    },
+    {
+      "file": "src/lemmas/edwards_lemmas/mul_base_lemmas.rs",
+      "total_commits": 7,
+      "first_commit": "2026-02-03",
+      "last_commit": "2026-02-24",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        668,
+        671,
+        684,
+        692,
+        695,
+        722,
+        734
+      ],
+      "num_revisions": 7
+    },
+    {
+      "file": "src/lemmas/edwards_lemmas/niels_addition_correctness.rs",
+      "total_commits": 6,
+      "first_commit": "2026-02-17",
+      "last_commit": "2026-02-24",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        693,
+        712,
+        726,
+        728,
+        734,
+        735
+      ],
+      "num_revisions": 6
+    },
+    {
+      "file": "src/lemmas/edwards_lemmas/pippenger_lemmas.rs",
+      "total_commits": 2,
+      "first_commit": "2026-02-25",
+      "last_commit": "2026-03-06",
+      "authors": [
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        730,
+        757
+      ],
+      "num_revisions": 2
+    },
+    {
+      "file": "src/lemmas/edwards_lemmas/step1_lemmas.rs",
+      "total_commits": 4,
+      "first_commit": "2025-12-17",
+      "last_commit": "2026-02-24",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei"
+      ],
+      "pr_numbers": [
+        576,
+        649,
+        695,
+        734
+      ],
+      "num_revisions": 4
+    },
+    {
+      "file": "src/lemmas/edwards_lemmas/straus_lemmas.rs",
+      "total_commits": 6,
+      "first_commit": "2026-02-22",
+      "last_commit": "2026-03-09",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        721,
+        728,
+        734,
+        738,
+        739,
+        760
+      ],
+      "num_revisions": 6
+    },
+    {
+      "file": "src/lemmas/edwards_lemmas/vartime_double_base_lemmas.rs",
+      "total_commits": 1,
+      "first_commit": "2026-03-09",
+      "last_commit": "2026-03-09",
+      "authors": [
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        760
+      ],
+      "num_revisions": 1
+    },
+    {
+      "file": "src/lemmas/field_lemmas/add_lemmas.rs",
+      "total_commits": 8,
+      "first_commit": "2025-11-19",
+      "last_commit": "2026-03-18",
+      "authors": [
+        "Chuyue Sun",
+        "Kukovec",
+        "S M A Nahian",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        314,
+        338,
+        352,
+        623,
+        668,
+        695,
+        728
+      ],
+      "num_revisions": 8
+    },
+    {
+      "file": "src/lemmas/field_lemmas/as_bytes_lemmas.rs",
+      "total_commits": 17,
+      "first_commit": "2025-10-29",
+      "last_commit": "2026-03-18",
+      "authors": [
+        "Chuyue Sun",
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        262,
+        276,
+        310,
+        362,
+        587,
+        606,
+        609,
+        652,
+        661,
+        692,
+        695,
+        706,
+        710,
+        715,
+        743
+      ],
+      "num_revisions": 17
+    },
+    {
+      "file": "src/lemmas/field_lemmas/batch_invert_lemmas.rs",
+      "total_commits": 1,
+      "first_commit": "2026-02-16",
+      "last_commit": "2026-02-16",
+      "authors": [
+        "Lacramioara Astefanoaei"
+      ],
+      "pr_numbers": [
+        706
+      ],
+      "num_revisions": 1
+    },
+    {
+      "file": "src/lemmas/field_lemmas/compute_q_lemmas.rs",
+      "total_commits": 16,
+      "first_commit": "2025-10-14",
+      "last_commit": "2025-12-15",
+      "authors": [
+        "Kukovec",
+        "astefano"
+      ],
+      "pr_numbers": [
+        262,
+        275,
+        306,
+        587
+      ],
+      "num_revisions": 16
+    },
+    {
+      "file": "src/lemmas/field_lemmas/constants_lemmas.rs",
+      "total_commits": 8,
+      "first_commit": "2025-12-17",
+      "last_commit": "2026-03-05",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        576,
+        648,
+        675,
+        692,
+        695,
+        748,
+        753,
+        755
+      ],
+      "num_revisions": 8
+    },
+    {
+      "file": "src/lemmas/field_lemmas/field_algebra_lemmas.rs",
+      "total_commits": 19,
+      "first_commit": "2025-12-17",
+      "last_commit": "2026-03-18",
+      "authors": [
+        "Chuyue Sun",
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "pr_numbers": [
+        576,
+        623,
+        652,
+        668,
+        669,
+        671,
+        689,
+        692,
+        693,
+        695,
+        709,
+        710,
+        712,
+        722,
+        725,
+        726,
+        732,
+        755
+      ],
+      "num_revisions": 19
+    },
+    {
+      "file": "src/lemmas/field_lemmas/from_bytes_lemmas.rs",
+      "total_commits": 18,
+      "first_commit": "2025-10-21",
+      "last_commit": "2026-03-18",
+      "authors": [
+        "Chuyue Sun",
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc",
+        "Theodore Ehrenborg",
+        "astefano"
+      ],
+      "pr_numbers": [
+        262,
+        266,
+        275,
+        276,
+        306,
+        587,
+        609,
+        649,
+        651,
+        695
+      ],
+      "num_revisions": 18
+    },
+    {
+      "file": "src/lemmas/field_lemmas/invert_lemmas.rs",
+      "total_commits": 5,
+      "first_commit": "2025-11-21",
+      "last_commit": "2026-02-12",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "S M A Nahian"
+      ],
+      "pr_numbers": [
+        324,
+        335,
+        350,
+        576,
+        695
+      ],
+      "num_revisions": 5
+    },
+    {
+      "file": "src/lemmas/field_lemmas/limbs_to_bytes_lemmas.rs",
+      "total_commits": 40,
+      "first_commit": "2025-10-14",
+      "last_commit": "2026-02-12",
+      "authors": [
+        "Jure Kukovec",
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "astefano",
+        "sbursuc"
+      ],
+      "pr_numbers": [
+        262,
+        266,
+        275,
+        306,
+        571,
+        587,
+        608,
+        609,
+        649,
+        658,
+        695
+      ],
+      "num_revisions": 40
+    },
+    {
+      "file": "src/lemmas/field_lemmas/load8_lemmas.rs",
+      "total_commits": 29,
+      "first_commit": "2025-08-27",
+      "last_commit": "2026-01-22",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Theodore Ehrenborg",
+        "astefano"
+      ],
+      "pr_numbers": [
+        262,
+        266,
+        275,
+        276,
+        306,
+        571,
+        587,
+        649,
+        657
+      ],
+      "num_revisions": 29
+    }
+  ],
+  "ai_involved_proofs": [
+    {
+      "commit": "219141e7",
+      "date": "2025-10-03",
+      "message": "Claude has a proof for lemma_compute_q and lemma_to_bytes_reduction",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "53b5f9c7",
+      "date": "2025-10-02",
+      "message": "Claude gets closer for a proof for lemma_packed_byte",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "1c6f3143",
+      "date": "2025-10-02",
+      "message": "Claude adds the proof for lemma_extract_byte",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "1d555788",
+      "date": "2025-10-02",
+      "message": "add rec def for as_nat_32_u8 and lemmas from Claude to help to_bytes",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "81c44a7b",
+      "date": "2025-10-20",
+      "message": "Claude adds verusfmt action",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "6e8ec24b",
+      "date": "2025-10-22",
+      "message": "Claude adds a spec",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "783153d1",
+      "date": "2025-10-21",
+      "message": "Claude ignores commented requires/ensures",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "2ff12d6d",
+      "date": "2025-10-15",
+      "message": "Claude: Also look for other verus cheats",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "9797e5e7",
+      "date": "2025-10-15",
+      "message": "Claude: functions with admit aren't proved",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "b568dbc7",
+      "date": "2025-08-18",
+      "message": "Tell Claude to click on lemma links",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "b5680e13",
+      "date": "2025-08-18",
+      "message": "Claude adds a lemma with some assumes",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "71d9cde8",
+      "date": "2025-08-10",
+      "message": "Claude tries to prove base case",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "6f1a629c",
+      "date": "2025-08-10",
+      "message": "Claude proves a lemma",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "836be91b",
+      "date": "2025-08-10",
+      "message": "Claude finishes the lemma without assumes",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "50087ae6",
+      "date": "2025-08-09",
+      "message": "Claude writes a proof with some assumes",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "8fa7799e",
+      "date": "2025-08-09",
+      "message": "Claude writes an invariant",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "dd2697c2",
+      "date": "2025-08-09",
+      "message": "Claude adds an invariant",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "d9bf793d",
+      "date": "2025-08-09",
+      "message": "Claude adds helpful lemma",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "874fe9ff",
+      "date": "2025-08-01",
+      "message": "Claude proves square, but leaves in assumes",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "e9bbcd64",
+      "date": "2025-08-01",
+      "message": "Claude moves proofs into lemmas",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "e69a4f73",
+      "date": "2025-08-01",
+      "message": "Claude does some proofs",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "f728bc5a",
+      "date": "2025-08-01",
+      "message": "Claude tightens the specs",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "3d960958",
+      "date": "2025-08-01",
+      "message": "Ask Claude to make spec more precise",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "d71b687f",
+      "date": "2025-08-01",
+      "message": "Claude notes which specs are AI-generated",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "17596df0",
+      "date": "2025-08-01",
+      "message": "Claude adds specs",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "42237f80",
+      "date": "2025-07-31",
+      "message": "Clean the lemmas Claude added",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "09c5c375",
+      "date": "2025-07-30",
+      "message": "Claude adds spec for Montgomery multiplication",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "73fc41ae",
+      "date": "2025-07-31",
+      "message": "Claude pulls add proofs into lemmas",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "5e4512c5",
+      "date": "2025-07-31",
+      "message": "Claude moves another proof block",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "25fcf3e6",
+      "date": "2025-07-31",
+      "message": "Claude pulls out another block into a lemma",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "2d88864e",
+      "date": "2025-07-31",
+      "message": "Claude pulls out another proof block into a lemma",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "e7d11958",
+      "date": "2025-07-31",
+      "message": "Claude adds a how-to on moving proofs to lemmas",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "6409812a",
+      "date": "2025-07-31",
+      "message": "Claude moves more into lemma",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "98a86510",
+      "date": "2025-07-31",
+      "message": "Claude makes some progress at moving into lemma",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "573c9fe7",
+      "date": "2025-07-31",
+      "message": "Claude pulls out the lemmas for mul_internal",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "020c70dd",
+      "date": "2025-07-31",
+      "message": "Claude writes a lemma (no proof yet)",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "8f6bae05",
+      "date": "2025-07-30",
+      "message": "Claude merges scalar_verus.rs into scalar.rs",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "73b2f074",
+      "date": "2025-07-24",
+      "message": "Add to Claude.md about verus cleaner",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "37b553dc",
+      "date": "2025-07-24",
+      "message": "Claude copies the proof for u64",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "cb1d466b",
+      "date": "2025-07-23",
+      "message": "Claude finds the pow2 lemma in field_verus, QED",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "7bc2d07a",
+      "date": "2025-07-22",
+      "message": "Claude adds a spec",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "c0cee92d",
+      "date": "2025-07-24",
+      "message": "Add to Claude.md about verus cleaner",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "fd3b0e5d",
+      "date": "2025-07-24",
+      "message": "Claude copies the proof for u64",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "baca689a",
+      "date": "2025-07-23",
+      "message": "Claude finds the pow2 lemma in field_verus, QED",
+      "ai_keyword": "Claude"
+    },
+    {
+      "commit": "d4fe60f0",
+      "date": "2025-07-22",
+      "message": "Claude adds a spec",
+      "ai_keyword": "Claude"
+    }
+  ],
+  "all_proof_commits": [
+    {
+      "commit": "f57c0056",
+      "date": "2026-03-18",
+      "author": "Chuyue Sun",
+      "message": "index on exp0: eec4fa0e exp0: create 10 proof holes for paired reconstruction experiment",
+      "pr_number": null,
+      "insertions": 0,
+      "deletions": 0,
+      "files_changed": 0
+    },
+    {
+      "commit": "eec4fa0e",
+      "date": "2026-03-18",
+      "author": "Chuyue Sun",
+      "message": "exp0: create 10 proof holes for paired reconstruction experiment",
+      "pr_number": null,
+      "insertions": 10,
+      "deletions": 313,
+      "files_changed": 5
+    },
+    {
+      "commit": "69759b23",
+      "date": "2026-03-11",
+      "author": "Chuyue Sun",
+      "message": "Prove lemma_u128_shl_is_mul, eliminating last assume(false)",
+      "pr_number": null,
+      "insertions": 45,
+      "deletions": 9,
+      "files_changed": 1
+    },
+    {
+      "commit": "b99d7ad7",
+      "date": "2026-03-09",
+      "author": "Sergiu Bursuc",
+      "message": "ci: switch probe-verus back to main (include-external-body merged) (#762)",
+      "pr_number": 762,
+      "insertions": 2,
+      "deletions": 2,
+      "files_changed": 1
+    },
+    {
+      "commit": "f93c3410",
+      "date": "2026-03-09",
+      "author": "Sergiu Bursuc",
+      "message": "Prove vartime double-base multiplication (#760)",
+      "pr_number": 760,
+      "insertions": 1002,
+      "deletions": 23,
+      "files_changed": 10
+    },
+    {
+      "commit": "f5dbd2c3",
+      "date": "2026-03-08",
+      "author": "Sergiu Bursuc",
+      "message": "Specifications for lizard functions (#754)",
+      "pr_number": 754,
+      "insertions": 2467,
+      "deletions": 10985,
+      "files_changed": 36
+    },
+    {
+      "commit": "d80a618f",
+      "date": "2026-03-07",
+      "author": "Lacramioara Astefanoaei",
+      "message": "fix specs page for probe-verus schema 2.0 envelope (#759)",
+      "pr_number": 759,
+      "insertions": 4,
+      "deletions": 1,
+      "files_changed": 1
+    },
+    {
+      "commit": "c2e862ef",
+      "date": "2026-03-06",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Transform some axioms into lemmas (#757)",
+      "pr_number": 757,
+      "insertions": 3600,
+      "deletions": 381,
+      "files_changed": 17
+    },
+    {
+      "commit": "3eebbb8c",
+      "date": "2026-03-06",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify RistrettoPoint::mul_base and from_uniform_bytes (#756)",
+      "pr_number": 756,
+      "insertions": 81,
+      "deletions": 42,
+      "files_changed": 3
+    },
+    {
+      "commit": "f91fea43",
+      "date": "2026-03-05",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify ristretto double_and_compress_batch_verus (#755)",
+      "pr_number": 755,
+      "insertions": 4967,
+      "deletions": 1183,
+      "files_changed": 15
+    },
+    {
+      "commit": "1d01da71",
+      "date": "2026-03-03",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify elligator_ristretto_flavor (#753)",
+      "pr_number": 753,
+      "insertions": 1591,
+      "deletions": 108,
+      "files_changed": 8
+    },
+    {
+      "commit": "63471152",
+      "date": "2026-03-01",
+      "author": "Sergiu Bursuc",
+      "message": "restore spec_ prefix on elligator_ristretto_flavor and nonspec_map_to_curve (#752)",
+      "pr_number": 752,
+      "insertions": 17,
+      "deletions": 11,
+      "files_changed": 5
+    },
+    {
+      "commit": "9ebf74d1",
+      "date": "2026-03-01",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify ristretto identity, from_slice, eq, ct_eq (#751)",
+      "pr_number": 751,
+      "insertions": 236,
+      "deletions": 40,
+      "files_changed": 4
+    },
+    {
+      "commit": "9a8437bd",
+      "date": "2026-02-28",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify BatchCompressState::from (#750)",
+      "pr_number": 750,
+      "insertions": 104,
+      "deletions": 4,
+      "files_changed": 1
+    },
+    {
+      "commit": "a3b7280d",
+      "date": "2026-02-28",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify ristretto::compress (#748)",
+      "pr_number": 748,
+      "insertions": 760,
+      "deletions": 254,
+      "files_changed": 9
+    },
+    {
+      "commit": "613ae3cb",
+      "date": "2026-02-28",
+      "author": "Sergiu Bursuc",
+      "message": "prove is_identity in traits.rs; spec renamings (#747)",
+      "pr_number": 747,
+      "insertions": 395,
+      "deletions": 377,
+      "files_changed": 12
+    },
+    {
+      "commit": "8325bb6d",
+      "date": "2026-02-27",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify ristretto::decompress (#743)",
+      "pr_number": 743,
+      "insertions": 2857,
+      "deletions": 176,
+      "files_changed": 13
+    },
+    {
+      "commit": "b1f18d00",
+      "date": "2026-02-25",
+      "author": "Sergiu Bursuc",
+      "message": "pippenger: replace assume with unreachable-branch proof (#744)",
+      "pr_number": 744,
+      "insertions": 29,
+      "deletions": 1,
+      "files_changed": 1
+    },
+    {
+      "commit": "47ba69d8",
+      "date": "2026-02-24",
+      "author": "Kukovec",
+      "message": "Comprehensive refactoring - ensures clauses + verification notes (#734)",
+      "pr_number": 734,
+      "insertions": 2758,
+      "deletions": 1246,
+      "files_changed": 36
+    },
+    {
+      "commit": "0564b9ab",
+      "date": "2026-02-24",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify LookupTable<ProjectiveNielsPoint>::select (#738)",
+      "pr_number": 738,
+      "insertions": 303,
+      "deletions": 20,
+      "files_changed": 8
+    },
+    {
+      "commit": "c624c368",
+      "date": "2026-02-24",
+      "author": "Sergiu Bursuc",
+      "message": "Prove EdwardsPoint ct_eq  (#732)",
+      "pr_number": 732,
+      "insertions": 134,
+      "deletions": 11,
+      "files_changed": 4
+    },
+    {
+      "commit": "1fa414e3",
+      "date": "2026-02-24",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Verify AffineNielsPoint::select (#735)",
+      "pr_number": 735,
+      "insertions": 568,
+      "deletions": 64,
+      "files_changed": 11
+    },
+    {
+      "commit": "6e0c1407",
+      "date": "2026-02-23",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify sub_new and conditional_add_l (#731)",
+      "pr_number": 731,
+      "insertions": 390,
+      "deletions": 165,
+      "files_changed": 2
+    },
+    {
+      "commit": "a054dc03",
+      "date": "2026-02-23",
+      "author": "Sergiu Bursuc",
+      "message": "Refactor specs to allow type invariant for EdwardsPoint (#728)",
+      "pr_number": 728,
+      "insertions": 1123,
+      "deletions": 861,
+      "files_changed": 20
+    },
+    {
+      "commit": "0d40fcef",
+      "date": "2026-02-22",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify projpoint and affinepoint neg (#727)",
+      "pr_number": 727,
+      "insertions": 44,
+      "deletions": 12,
+      "files_changed": 1
+    },
+    {
+      "commit": "14cdcf7c",
+      "date": "2026-02-22",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify ProjectivePoint::double (#726)",
+      "pr_number": 726,
+      "insertions": 452,
+      "deletions": 6,
+      "files_changed": 5
+    },
+    {
+      "commit": "a8c98e3b",
+      "date": "2026-02-20",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify ProjectedPoint::as_extended and CompletedPoint::as_extended (#725)",
+      "pr_number": 725,
+      "insertions": 212,
+      "deletions": 9,
+      "files_changed": 3
+    },
+    {
+      "commit": "ca32bbea",
+      "date": "2026-02-20",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify ProjectivePoint::is_valid (#724)",
+      "pr_number": 724,
+      "insertions": 52,
+      "deletions": 28,
+      "files_changed": 1
+    },
+    {
+      "commit": "852df6ba",
+      "date": "2026-02-20",
+      "author": "Sergiu Bursuc",
+      "message": "Fix website source links and specs browser display (#723)",
+      "pr_number": 723,
+      "insertions": 46,
+      "deletions": 8,
+      "files_changed": 5
+    },
+    {
+      "commit": "dd4b391d",
+      "date": "2026-02-20",
+      "author": "Sergiu Bursuc",
+      "message": "Verify variable-base scalar multiplication (#722)",
+      "pr_number": 722,
+      "insertions": 452,
+      "deletions": 100,
+      "files_changed": 5
+    },
+    {
+      "commit": "a509df8d",
+      "date": "2026-02-19",
+      "author": "Sergiu Bursuc",
+      "message": "Verify to_edwards in montgomery.rs (#709)",
+      "pr_number": 709,
+      "insertions": 704,
+      "deletions": 156,
+      "files_changed": 9
+    },
+    {
+      "commit": "175b7ef2",
+      "date": "2026-02-18",
+      "author": "Lacramioara Astefanoaei",
+      "message": "use probe_verus (#717)",
+      "pr_number": 717,
+      "insertions": 104,
+      "deletions": 2770,
+      "files_changed": 15
+    },
+    {
+      "commit": "c36b395a",
+      "date": "2026-02-18",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify montgomery_invert (#720)",
+      "pr_number": 720,
+      "insertions": 1393,
+      "deletions": 83,
+      "files_changed": 5
+    },
+    {
+      "commit": "f59f9fa4",
+      "date": "2026-02-18",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify sub_assign and mul (#719)",
+      "pr_number": 719,
+      "insertions": 821,
+      "deletions": 1530,
+      "files_changed": 9
+    },
+    {
+      "commit": "37ec4818",
+      "date": "2026-02-17",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify invsqrt (#718)",
+      "pr_number": 718,
+      "insertions": 18,
+      "deletions": 7,
+      "files_changed": 1
+    },
+    {
+      "commit": "e5e1abfd",
+      "date": "2026-02-17",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify sqrt_ratio_i (#710)",
+      "pr_number": 710,
+      "insertions": 1839,
+      "deletions": 205,
+      "files_changed": 8
+    },
+    {
+      "commit": "d7b87120",
+      "date": "2026-02-17",
+      "author": "Sergiu Bursuc",
+      "message": "Verify edwards add functions (#693)",
+      "pr_number": 693,
+      "insertions": 3322,
+      "deletions": 331,
+      "files_changed": 14
+    },
+    {
+      "commit": "beee6a90",
+      "date": "2026-02-16",
+      "author": "Sergiu Bursuc",
+      "message": "Fix spec and proof detection: skip comments in brace/paren tracking (#697)",
+      "pr_number": 697,
+      "insertions": 14,
+      "deletions": 0,
+      "files_changed": 1
+    },
+    {
+      "commit": "b01225f9",
+      "date": "2026-02-16",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify field batch_invert (#706)",
+      "pr_number": 706,
+      "insertions": 290,
+      "deletions": 49,
+      "files_changed": 5
+    },
+    {
+      "commit": "a5c3ad2c",
+      "date": "2026-02-16",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify Scalar::bits_le (#705)",
+      "pr_number": 705,
+      "insertions": 375,
+      "deletions": 142,
+      "files_changed": 4
+    },
+    {
+      "commit": "0694746e",
+      "date": "2026-02-16",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Add \"Graph\" links to specs pages for callgraph navigation (#702)",
+      "pr_number": 702,
+      "insertions": 23,
+      "deletions": 3,
+      "files_changed": 4
+    },
+    {
+      "commit": "f6fa9b5b",
+      "date": "2026-02-16",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Remove all by(compute) and by(nonlinear_arith) from mul_base_lemmas.rs (#701)",
+      "pr_number": 701,
+      "insertions": 2,
+      "deletions": 6,
+      "files_changed": 1
+    },
+    {
+      "commit": "6da63560",
+      "date": "2026-02-16",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify a few more src scalar (#700)",
+      "pr_number": 700,
+      "insertions": 1215,
+      "deletions": 83,
+      "files_changed": 8
+    },
+    {
+      "commit": "aab56f60",
+      "date": "2026-02-16",
+      "author": "Sergiu Bursuc",
+      "message": "Verify Montgomery functions (#692)",
+      "pr_number": 692,
+      "insertions": 1545,
+      "deletions": 303,
+      "files_changed": 24
+    },
+    {
+      "commit": "29251ed1",
+      "date": "2026-02-13",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify read_le_u64_into (#698)",
+      "pr_number": 698,
+      "insertions": 15,
+      "deletions": 10,
+      "files_changed": 1
+    },
+    {
+      "commit": "2dc1564f",
+      "date": "2026-02-13",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Verify Scalar::as_radix_2w (#696)",
+      "pr_number": 696,
+      "insertions": 1878,
+      "deletions": 167,
+      "files_changed": 6
+    },
+    {
+      "commit": "22bfb3e7",
+      "date": "2026-02-12",
+      "author": "Sergiu Bursuc",
+      "message": "Verify MontgomeryPoint::mul_base and mul_base_clamped (#689)",
+      "pr_number": 689,
+      "insertions": 216,
+      "deletions": 52,
+      "files_changed": 6
+    },
+    {
+      "commit": "5d8a873e",
+      "date": "2026-02-12",
+      "author": "Kukovec",
+      "message": "Refactoring: field and scalar specs (#695)",
+      "pr_number": 695,
+      "insertions": 11512,
+      "deletions": 3105,
+      "files_changed": 63
+    },
+    {
+      "commit": "33637d0f",
+      "date": "2026-02-11",
+      "author": "Sergiu Bursuc",
+      "message": "Spec browser: generate interpretations for verified functions (#691)",
+      "pr_number": 691,
+      "insertions": 126,
+      "deletions": 26,
+      "files_changed": 2
+    },
+    {
+      "commit": "561fc7c2",
+      "date": "2026-02-10",
+      "author": "Sergiu Bursuc",
+      "message": "Verify Elligator/map-to-curve conversions (#675)",
+      "pr_number": 675,
+      "insertions": 938,
+      "deletions": 84,
+      "files_changed": 8
+    },
+    {
+      "commit": "2e6497e6",
+      "date": "2026-02-10",
+      "author": "Sergiu Bursuc",
+      "message": "Improve spec browser (#687)",
+      "pr_number": 687,
+      "insertions": 485,
+      "deletions": 8650,
+      "files_changed": 4
+    },
+    {
+      "commit": "33729ee3",
+      "date": "2026-02-09",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Verify as_radix_16 scalar function (#684)",
+      "pr_number": 684,
+      "insertions": 483,
+      "deletions": 61,
+      "files_changed": 5
+    },
+    {
+      "commit": "09e82bcb",
+      "date": "2026-02-09",
+      "author": "Sergiu Bursuc",
+      "message": "Add specs browser to website (#682)",
+      "pr_number": 682,
+      "insertions": 12253,
+      "deletions": 12,
+      "files_changed": 11
+    },
+    {
+      "commit": "d9a42227",
+      "date": "2026-02-09",
+      "author": "Lacramioara Astefanoaei",
+      "message": "verify Scalar::clamp_integer (#685)",
+      "pr_number": 685,
+      "insertions": 36,
+      "deletions": 10,
+      "files_changed": 1
+    },
+    {
+      "commit": "fc767f04",
+      "date": "2026-02-09",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Verify Scalar::add by requiring canonical inputs (aligned with mul/sub) (#686)",
+      "pr_number": 686,
+      "insertions": 20,
+      "deletions": 39,
+      "files_changed": 2
+    },
+    {
+      "commit": "6637419b",
+      "date": "2026-02-09",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Verify montgomery_reduce (#670)",
+      "pr_number": 670,
+      "insertions": 3752,
+      "deletions": 526,
+      "files_changed": 14
+    },
+    {
+      "commit": "16580d40",
+      "date": "2026-02-05",
+      "author": "Sergiu Bursuc",
+      "message": "Verify 4 edwards functions (#674)",
+      "pr_number": 674,
+      "insertions": 231,
+      "deletions": 51,
+      "files_changed": 3
+    },
+    {
+      "commit": "7ace9114",
+      "date": "2026-02-05",
+      "author": "Sergiu Bursuc",
+      "message": "Use direct RR constant in proofs (#673)",
+      "pr_number": 673,
+      "insertions": 41,
+      "deletions": 19,
+      "files_changed": 2
+    },
+    {
+      "commit": "c0bfeb90",
+      "date": "2026-02-04",
+      "author": "Sergiu Bursuc",
+      "message": "Simplify mul_base proof and verify some edwards functions (#671)",
+      "pr_number": 671,
+      "insertions": 937,
+      "deletions": 136,
+      "files_changed": 10
+    },
+    {
+      "commit": "4419e6f9",
+      "date": "2026-02-03",
+      "author": "Sergiu Bursuc",
+      "message": "Verify EdwardsBasepointTable::mul_base function (#668)",
+      "pr_number": 668,
+      "insertions": 2452,
+      "deletions": 171,
+      "files_changed": 16
+    },
+    {
+      "commit": "4df455ac",
+      "date": "2026-02-02",
+      "author": "Sergiu Bursuc",
+      "message": "Verify montgomery ladder (#669)",
+      "pr_number": 669,
+      "insertions": 1829,
+      "deletions": 62,
+      "files_changed": 6
+    },
+    {
+      "commit": "e083340c",
+      "date": "2026-01-28",
+      "author": "Kukovec",
+      "message": "specialized postcondition (#667)",
+      "pr_number": 667,
+      "insertions": 35,
+      "deletions": 0,
+      "files_changed": 1
+    },
+    {
+      "commit": "a9185171",
+      "date": "2026-01-28",
+      "author": "Kukovec",
+      "message": "Zeroize and Identity proofs (#666)",
+      "pr_number": 666,
+      "insertions": 77,
+      "deletions": 37,
+      "files_changed": 3
+    },
+    {
+      "commit": "5c4190a3",
+      "date": "2026-01-28",
+      "author": "Sergiu Bursuc",
+      "message": "Verify edwards compress create (#661)",
+      "pr_number": 661,
+      "insertions": 978,
+      "deletions": 23,
+      "files_changed": 4
+    },
+    {
+      "commit": "fac59381",
+      "date": "2026-01-27",
+      "author": "Kukovec",
+      "message": "Proof repair after boundary tightening (#663)",
+      "pr_number": 663,
+      "insertions": 10,
+      "deletions": 20,
+      "files_changed": 2
+    },
+    {
+      "commit": "99199884",
+      "date": "2026-01-27",
+      "author": "Sergiu Bursuc",
+      "message": "Verify 3 edwards functions and fix problem in scalar mul specs  (#654)",
+      "pr_number": 654,
+      "insertions": 420,
+      "deletions": 130,
+      "files_changed": 13
+    },
+    {
+      "commit": "de27648e",
+      "date": "2026-01-23",
+      "author": "Kukovec",
+      "message": "`lemma_decompose` proof + proof repair from z3 bump (#658)",
+      "pr_number": 658,
+      "insertions": 101,
+      "deletions": 74,
+      "files_changed": 3
+    },
+    {
+      "commit": "cb8387b2",
+      "date": "2026-01-22",
+      "author": "Sergiu Bursuc",
+      "message": "Proofs for EdwardsPoint::is_valid and field element <-> bytes conversion (#652)",
+      "pr_number": 652,
+      "insertions": 920,
+      "deletions": 56,
+      "files_changed": 6
+    },
+    {
+      "commit": "4c969c6e",
+      "date": "2026-01-21",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Fix and refactor proofs to get rid new assertion failures and rlimits with verus 88f7396 (#649)",
+      "pr_number": 649,
+      "insertions": 1228,
+      "deletions": 383,
+      "files_changed": 14
+    },
+    {
+      "commit": "5fb6a041",
+      "date": "2026-01-20",
+      "author": "Sergiu Bursuc",
+      "message": "Verify compressed edwards functions and edwards identity (#648)",
+      "pr_number": 648,
+      "insertions": 256,
+      "deletions": 22,
+      "files_changed": 5
+    },
+    {
+      "commit": "5ee0a079",
+      "date": "2026-01-20",
+      "author": "Sergiu Bursuc",
+      "message": "Verus 88f7396 migration  (#651)",
+      "pr_number": 651,
+      "insertions": 91,
+      "deletions": 82,
+      "files_changed": 9
+    },
+    {
+      "commit": "424bf80b",
+      "date": "2026-01-19",
+      "author": "Sergiu Bursuc",
+      "message": "remaining Ristretto specs (#637)",
+      "pr_number": 637,
+      "insertions": 2463,
+      "deletions": 450,
+      "files_changed": 19
+    },
+    {
+      "commit": "a9a4c320",
+      "date": "2026-01-19",
+      "author": "Sergiu Bursuc",
+      "message": "Complete the proof of Scalar batch_invert  (#646)",
+      "pr_number": 646,
+      "insertions": 25,
+      "deletions": 7,
+      "files_changed": 2
+    },
+    {
+      "commit": "05b6422d",
+      "date": "2026-01-19",
+      "author": "S M A Nahian",
+      "message": "Verify function Scalar::batch_invert(&[Scalar]) from scalar.rs (#584)",
+      "pr_number": 584,
+      "insertions": 445,
+      "deletions": 57,
+      "files_changed": 5
+    },
+    {
+      "commit": "a1855f4a",
+      "date": "2026-01-16",
+      "author": "S M A Nahian",
+      "message": "Verify FieldElement::batch_invert(&[FieldElement]) from field.rs (#574)",
+      "pr_number": 574,
+      "insertions": 123,
+      "deletions": 37,
+      "files_changed": 3
+    },
+    {
+      "commit": "d6f1c370",
+      "date": "2026-01-13",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Verify scalar::part1 (#633)",
+      "pr_number": 633,
+      "insertions": 718,
+      "deletions": 33,
+      "files_changed": 5
+    },
+    {
+      "commit": "60ae00d4",
+      "date": "2026-01-12",
+      "author": "Sergiu Bursuc",
+      "message": "ristretto specs (#629)",
+      "pr_number": 629,
+      "insertions": 1444,
+      "deletions": 404,
+      "files_changed": 13
+    },
+    {
+      "commit": "1b82b3da",
+      "date": "2025-12-31",
+      "author": "Sergiu Bursuc",
+      "message": "Specs for multiscalar multiplication (#610)",
+      "pr_number": 610,
+      "insertions": 1593,
+      "deletions": 56,
+      "files_changed": 10
+    },
+    {
+      "commit": "dd2bfa15",
+      "date": "2025-12-29",
+      "author": "Lacramioara Astefanoaei",
+      "message": "fix(ci): make verus-function-graphs manual-only (#618)",
+      "pr_number": 618,
+      "insertions": 10,
+      "deletions": 37,
+      "files_changed": 1
+    },
+    {
+      "commit": "51292748",
+      "date": "2025-12-29",
+      "author": "Lacramioara Astefanoaei",
+      "message": "fix(ci): fix jq dependency order and remove PR trigger from detect-unused-specs (#617)",
+      "pr_number": 617,
+      "insertions": 9,
+      "deletions": 6,
+      "files_changed": 1
+    },
+    {
+      "commit": "a3202f48",
+      "date": "2025-12-25",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Consolidate nat conversion specs (#609)",
+      "pr_number": 609,
+      "insertions": 2764,
+      "deletions": 1819,
+      "files_changed": 34
+    },
+    {
+      "commit": "7e347830",
+      "date": "2025-12-19",
+      "author": "Kukovec",
+      "message": "div_mod_lemmas (#608)",
+      "pr_number": 608,
+      "insertions": 108,
+      "deletions": 56,
+      "files_changed": 8
+    },
+    {
+      "commit": "9e48741f",
+      "date": "2025-12-19",
+      "author": "Lacramioara Astefanoaei",
+      "message": "Add 2 roundtrip lemmas for field element bytes serialization (#606)",
+      "pr_number": 606,
+      "insertions": 164,
+      "deletions": 5,
+      "files_changed": 3
+    },
+    {
+      "commit": "c2738734",
+      "date": "2025-12-18",
+      "author": "Lacramioara Astefanoaei",
+      "message": "prove Scalar::from (#602)",
+      "pr_number": 602,
+      "insertions": 417,
+      "deletions": 19,
+      "files_changed": 2
+    },
+    {
+      "commit": "a90b9a21",
+      "date": "2025-12-18",
+      "author": "Kukovec",
+      "message": "Proof stability repair (#603)",
+      "pr_number": 603,
+      "insertions": 92,
+      "deletions": 21,
+      "files_changed": 1
+    },
+    {
+      "commit": "8f11f253",
+      "date": "2025-12-17",
+      "author": "Lacramioara Astefanoaei",
+      "message": "La/prove edwards decompress (#576)",
+      "pr_number": 576,
+      "insertions": 5026,
+      "deletions": 78,
+      "files_changed": 25
+    },
+    {
+      "commit": "9ed7e3ff",
+      "date": "2025-12-17",
+      "author": "Leo Yao",
+      "message": "Verify unpackedscalar invert (#579)",
+      "pr_number": 579,
+      "insertions": 100,
+      "deletions": 5,
+      "files_changed": 2
+    },
+    {
+      "commit": "156bb1e9",
+      "date": "2025-12-15",
+      "author": "Kukovec",
+      "message": " Common lemmas generalization - `pow_lemmas` and `shift_lemmas` (#587)",
+      "pr_number": 587,
+      "insertions": 995,
+      "deletions": 543,
+      "files_changed": 17
+    },
+    {
+      "commit": "495f117e",
+      "date": "2025-12-10",
+      "author": "Sergiu Bursuc",
+      "message": "Spec and proof for EdwardsPoint::sum in edwards.rs  (#573)",
+      "pr_number": 573,
+      "insertions": 169,
+      "deletions": 5,
+      "files_changed": 2
+    },
+    {
+      "commit": "98f51ff3",
+      "date": "2025-12-10",
+      "author": "Soumya Das",
+      "message": "Verify scalar/sub (#543)",
+      "pr_number": 543,
+      "insertions": 59,
+      "deletions": 17,
+      "files_changed": 2
+    },
+    {
+      "commit": "e4ca48e5",
+      "date": "2025-12-10",
+      "author": "Kukovec",
+      "message": "Common lemmas generalization - `bit_lemmas` and `mask_lemmas` (#571)",
+      "pr_number": 571,
+      "insertions": 325,
+      "deletions": 309,
+      "files_changed": 11
+    },
+    {
+      "commit": "60b0ed82",
+      "date": "2025-12-10",
+      "author": "Sergiu Bursuc",
+      "message": "Curve models remaining specs (#564)",
+      "pr_number": 564,
+      "insertions": 317,
+      "deletions": 31,
+      "files_changed": 2
+    },
+    {
+      "commit": "3b1359a0",
+      "date": "2025-12-09",
+      "author": "S M A Nahian",
+      "message": "Verify function Scalar::invert(&self) from scalar.rs (#395)",
+      "pr_number": 395,
+      "insertions": 43,
+      "deletions": 10,
+      "files_changed": 4
+    },
+    {
+      "commit": "29281f97",
+      "date": "2025-12-08",
+      "author": "Sergiu Bursuc",
+      "message": "Window naf specs (#401)",
+      "pr_number": 401,
+      "insertions": 710,
+      "deletions": 140,
+      "files_changed": 6
+    },
+    {
+      "commit": "a320cbf3",
+      "date": "2025-12-08",
+      "author": "Sergiu Bursuc",
+      "message": "specs for elligator_encode function in montgomery.rs (#394)",
+      "pr_number": 394,
+      "insertions": 164,
+      "deletions": 15,
+      "files_changed": 3
+    },
+    {
+      "commit": "59e122a6",
+      "date": "2025-12-08",
+      "author": "Leo Yao",
+      "message": "Verify neg (#392)",
+      "pr_number": 392,
+      "insertions": 111,
+      "deletions": 22,
+      "files_changed": 2
+    },
+    {
+      "commit": "76c4c2fa",
+      "date": "2025-12-05",
+      "author": "Sergiu Bursuc",
+      "message": "Add specs for some edwards functions (#391)",
+      "pr_number": 391,
+      "insertions": 145,
+      "deletions": 12,
+      "files_changed": 4
+    },
+    {
+      "commit": "d0704d26",
+      "date": "2025-12-04",
+      "author": "Kukovec",
+      "message": "`Scalar52::part2` proof (#387)",
+      "pr_number": 387,
+      "insertions": 106,
+      "deletions": 1,
+      "files_changed": 4
+    },
+    {
+      "commit": "d8b7c2c3",
+      "date": "2025-12-04",
+      "author": "Sergiu Bursuc",
+      "message": "Specify mul functions from edwards.rs (#379)",
+      "pr_number": 379,
+      "insertions": 558,
+      "deletions": 89,
+      "files_changed": 11
+    },
+    {
+      "commit": "3a4a6e97",
+      "date": "2025-12-04",
+      "author": "Leo Yao",
+      "message": "Verify from_canonical_bytes (#381)",
+      "pr_number": 381,
+      "insertions": 40,
+      "deletions": 6,
+      "files_changed": 3
+    }
+  ]
+}

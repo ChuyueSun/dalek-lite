@@ -1,0 +1,176 @@
+{
+  "experiment": "exp18a_prompt_structure",
+  "date": "2026-03-20",
+  "protocol": {
+    "blind": true,
+    "context_extraction": "mechanical (scripts/exp18a_blind_extract.py)",
+    "gt_isolation": "proof bodies replaced with admit() before agent launch",
+    "git_access": "prohibited (agents instructed, source files holed)",
+    "agent_model": "claude-sonnet-4-6",
+    "single_shot": true,
+    "no_repair_loop": true
+  },
+
+  "test_functions": {
+    "F1_easy": {
+      "function": "lemma_negation_preserves_curve",
+      "file": "curve_equation_lemmas.rs",
+      "difficulty": "easy",
+      "gt_loc": 16
+    },
+    "F2_easy": {
+      "function": "lemma_field_mul_distributes_over_add",
+      "file": "field_algebra_lemmas.rs",
+      "difficulty": "easy",
+      "gt_loc": 11
+    },
+    "F3_medium": {
+      "function": "lemma_field51_add",
+      "file": "add_lemmas.rs",
+      "difficulty": "medium",
+      "gt_loc": 17
+    },
+    "F4_medium": {
+      "function": "lemma_from_bytes_as_bytes_roundtrip",
+      "file": "as_bytes_lemmas.rs",
+      "difficulty": "medium",
+      "gt_loc": 19
+    },
+    "F5_hard": {
+      "function": "lemma_naf_even_step",
+      "file": "naf_lemmas.rs",
+      "difficulty": "hard",
+      "gt_loc": 52
+    },
+    "F6_hard": {
+      "function": "lemma_carry_preserves_reconstruction",
+      "file": "radix16_lemmas.rs",
+      "difficulty": "hard",
+      "gt_loc": 54
+    }
+  },
+
+  "results_matrix": {
+    "F1_easy":   {"v1": "pass", "v2": "pass", "v3": "pass", "v4": "fail"},
+    "F2_easy":   {"v1": "pass", "v2": "pass", "v3": "pass", "v4": "fail"},
+    "F3_medium": {"v1": "pass", "v2": "pass", "v3": "fail", "v4": "fail"},
+    "F4_medium": {"v1": "fail", "v2": "pass", "v3": "pass", "v4": "fail"},
+    "F5_hard":   {"v1": "fail", "v2": "fail", "v3": "fail", "v4": "fail"},
+    "F6_hard":   {"v1": "pass", "v2": "fail", "v3": "pass", "v4": "fail"}
+  },
+
+  "loc_matrix": {
+    "F1_easy":   {"v1": 9, "v2": 12, "v3": 17, "v4": 1},
+    "F2_easy":   {"v1": 12, "v2": 17, "v3": 23, "v4": 13},
+    "F3_medium": {"v1": 56, "v2": 45, "v3": 58, "v4": 59},
+    "F4_medium": {"v1": 24, "v2": 34, "v3": 37, "v4": 21},
+    "F5_hard":   {"v1": 123, "v2": 186, "v3": 133, "v4": 156},
+    "F6_hard":   {"v1": 127, "v2": 67, "v3": 97, "v4": 66}
+  },
+
+  "per_variant_summary": {
+    "v1_obligation_first": {
+      "pass_rate": "4/6 (67%)",
+      "passes": ["F1_easy", "F2_easy", "F3_medium", "F6_hard"],
+      "fails": ["F4_medium", "F5_hard"],
+      "avg_loc_passing": 51,
+      "fail_modes": {
+        "F4_medium": "type_error_E0308 (mismatched types in lemma_mod_twice call)",
+        "F5_hard": "type_error_E0308 (mismatched types — used nonexistent lemma_pow2_plus_one)"
+      }
+    },
+    "v2_sibling_first": {
+      "pass_rate": "4/6 (67%)",
+      "passes": ["F1_easy", "F2_easy", "F3_medium", "F4_medium"],
+      "fails": ["F5_hard", "F6_hard"],
+      "avg_loc_passing": 27,
+      "fail_modes": {
+        "F5_hard": "type_error_E0308 (2 instances)",
+        "F6_hard": "trigger_inference_error (quantifier without trigger annotations)"
+      }
+    },
+    "v3_strategy_first": {
+      "pass_rate": "4/6 (67%)",
+      "passes": ["F1_easy", "F2_easy", "F4_medium", "F6_hard"],
+      "fails": ["F3_medium", "F5_hard"],
+      "avg_loc_passing": 44,
+      "fail_modes": {
+        "F3_medium": "compilation or verification failure",
+        "F5_hard": "compilation failure (133 LOC, too complex)"
+      }
+    },
+    "v4_minimal": {
+      "pass_rate": "0/6 (0%)",
+      "passes": [],
+      "fails": ["F1_easy", "F2_easy", "F3_medium", "F4_medium", "F5_hard", "F6_hard"],
+      "avg_loc_passing": null,
+      "fail_modes": "Various compilation and verification errors across all functions"
+    }
+  },
+
+  "analysis": {
+    "sibling_effect": {
+      "description": "Comparing any sibling variant (v1/v2/v3) vs no-sibling (v4)",
+      "with_siblings_best": "4/6 (67%) — consistent across v1, v2, v3",
+      "without_siblings": "0/6 (0%)",
+      "sibling_contribution": "67 percentage points — siblings are ESSENTIAL, not optional",
+      "note": "V4 (minimal) failed ALL 6 functions. Without sibling context, the model cannot generate correct Verus proofs even for the easiest functions."
+    },
+    "prompt_ordering_effect": {
+      "description": "V1, V2, V3 all achieve 4/6 but on DIFFERENT function subsets",
+      "v1_unique_passes": ["F3_medium (pass only in v1, v2)"],
+      "v2_unique_passes": ["F4_medium (pass in v2, v3 but not v1)"],
+      "v3_unique_passes": ["F6_hard (pass in v1, v3 but not v2)"],
+      "conclusion": "Prompt ordering affects WHICH functions pass, not HOW MANY. Different orderings have complementary strengths — suggesting a retry strategy with different prompts."
+    },
+    "difficulty_correlation": {
+      "easy_F1_F2": "pass in all sibling variants (3/3 each), fail in v4",
+      "medium_F3_F4": "mixed — each passes in 2-3 of 3 sibling variants",
+      "hard_F5": "FAIL in all variants (0/4) — ceiling test",
+      "hard_F6": "passes in v1, v3 but not v2 — surprising non-monotonicity"
+    },
+    "key_finding": "Siblings are the single most important context component. Prompt ordering is secondary but creates complementary coverage — the UNION of v1+v2+v3 passes would be 5/6 (83%), better than any single variant."
+  },
+
+  "evaluation": {
+    "v1_obligation_first": {"pass_rate": 0.67, "avg_loc": 51},
+    "v2_sibling_first": {"pass_rate": 0.67, "avg_loc": 27},
+    "v3_strategy_first": {"pass_rate": 0.67, "avg_loc": 44},
+    "v4_minimal": {"pass_rate": 0.0, "avg_loc": null},
+    "winner": "TIE (v1, v2, v3 all 4/6) — but v2 produces most concise proofs (avg 27 LOC)",
+    "sibling_effect": 0.67,
+    "union_of_sibling_variants": "5/6 (83%) — only F5_hard fails all",
+    "recommended_pipeline_strategy": "Try v1 first, retry with v2 on failure, then v3. This covers 5/6."
+  },
+
+  "v4_failure_analysis": {
+    "F1_easy_v4": {
+      "loc": 1,
+      "error": "hallucinated function lemma_product_of_complements (does not exist)",
+      "root_cause": "Without sibling showing lemma_neg_square_eq + lemma_square_mod_noop pattern, model guesses wrong lemma name"
+    },
+    "F2_easy_v4": {
+      "loc": 13,
+      "error": "precondition failure (p() > 0 not established)",
+      "root_cause": "Missing p_gt_2() call. All sibling variants include this because siblings show the pattern. Without siblings, model omits the prerequisite.",
+      "code_was_correct_except_for": "p_gt_2() — the 3 lemma calls were identical to the passing variants"
+    },
+    "F3_medium_v4": {
+      "loc": 59,
+      "root_cause": "Complex assertion structure without sibling template to follow"
+    },
+    "F4_medium_v4": {
+      "loc": 21,
+      "root_cause": "Type/argument mismatch in lemma calls without sibling demonstrating correct casting"
+    },
+    "F5_hard_v4": {
+      "loc": 156,
+      "root_cause": "Hallucinated lemma_pow2_plus_one (does not exist); used 2int literal (invalid Verus syntax)"
+    },
+    "F6_hard_v4": {
+      "loc": 66,
+      "root_cause": "Trigger inference failure on quantifier assertion"
+    },
+    "key_insight": "V4 failures are NOT about wrong strategy — the model identifies the right proof approach. Failures come from: (1) hallucinated lemma names (without sibling examples showing correct names), (2) missing boilerplate prerequisites like p_gt_2(), (3) Verus syntax errors (int literal suffixes, trigger annotations). Siblings provide working SYNTAX templates, not just proof ideas."
+  }
+}

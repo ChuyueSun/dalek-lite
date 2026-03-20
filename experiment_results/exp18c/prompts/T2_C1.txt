@@ -1,0 +1,62 @@
+Your proof has an error. Fix it.
+
+== CURRENT CODE (around the error) ==
+ 641: 
+ 642:     // Pre-condition of neg
+ 643:     open spec fn neg_req(self) -> bool {
+ 644:         fe51_limbs_bounded(self, 54)
+ 645:     }
+ 646: 
+ 647:     // Postcondition of neg
+ 648:     open spec fn neg_spec(self) -> FieldElement51 {
+ 649:         // VERIFICATION NOTE: WE DON'T PROVIDE A SPEC EXPRESSION FOR neg RESULT
+ 650:         arbitrary()
+ 651:     }
+ 652: }
+ 653: 
+ 654: impl Neg for &FieldElement51 {
+ 655:     type Output = FieldElement51;
+ 656: 
+ 657:     fn neg(self) -> (output: FieldElement51)
+ 658:         ensures
+ 659:             fe51_as_canonical_nat(&output) == field_neg(fe51_as_canonical_nat(self)),
+ 660:             fe51_limbs_bounded(&output, 52),
+ 661:     {
+ 662:         let mut output = *self;
+ 663:         output.negate();
+ 664: 
+ 665:         proof {
+ 666:             // lemma_neg(self); // MUTATION: removed
+ 667:         }
+ 668: 
+ 669:         output
+ 670:     }
+ 671: }
+ 672: 
+ 673: impl ConditionallySelectable for FieldElement51 {
+ 674:     fn conditional_select(a: &FieldElement51, b: &FieldElement51, choice: Choice) -> (result:
+ 675:         FieldElement51)
+ 676:         ensures
+ 677:     // If choice is false, return a
+ 678: 
+ 679:             !choice_is_true(choice) ==> result.limbs == a.limbs,
+ 680:             choice_is_true(choice) ==> result.limbs == b.limbs,
+ 681:     {
+ 682:         FieldElement51 {
+ 683:             limbs: [
+ 684:                 conditional_select_u64(&a.limbs[0], &b.limbs[0], choice),
+ 685:                 conditional_select_u64(&a.limbs[1], &b.limbs[1], choice),
+ 686:                 conditional_select_u64(&a.limbs[2], &b.limbs[2], choice),
+ 687:                 conditional_select_u64(&a.limbs[3], &b.limbs[3], choice),
+ 688:                 conditional_select_u64(&a.limbs[4], &b.limbs[4], choice),
+ 689:             ],
+ 690:         }
+
+== ERROR ==
+error: postcondition not satisfied
+   --> curve25519-dalek/src/backend/serial/u64/field.rs:659:13
+    |
+659 |             fe51_as_canonical_nat(&output) == field_neg(fe51_as_canonical_nat(self)),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+
+Fix the error. Return the corrected code for the relevant section.

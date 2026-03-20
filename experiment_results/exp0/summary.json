@@ -1,0 +1,106 @@
+{
+  "overview": {
+    "total_holes": 10,
+    "pass_attempt_1": 7,
+    "pass_attempt_2": 1,
+    "fail": 2
+  },
+
+  "by_pair": {
+    "pair_1_verus_strategies": {
+      "A_result": "pass",
+      "B_result": "pass",
+      "conclusion": "Model has strong Verus strategy knowledge. Correctly identified pure_smt for A and by(bit_vector) + assert forall for B. No issues with Verus-specific constructs."
+    },
+    "pair_2_vstd_discovery": {
+      "C_result": "pass",
+      "D_result": "pass",
+      "learned_from_C_to_D": true,
+      "conclusion": "Strong vstd lemma discovery. Found lemma_mul_mod_noop_right/left, lemma_mul_is_distributive_add, lemma_add_mod_noop, lemma_mul_is_associative by name. Pattern from C (mod-noop + distributivity) transferred directly to D (mod-noop + associativity)."
+    },
+    "pair_3_composition": {
+      "E_result": "pass",
+      "F_result": "pass",
+      "conclusion": "Model can compose 2-3 sub-lemmas effectively. E needed 2 lemmas (u64_5_as_nat_add + add_mod_noop), F needed 5 lemmas (p_gt_2, pow255_gt_19, mod_pos_bound, small_mod, mod_twice) across different files. Both passed on attempt 1."
+    },
+    "pair_4_computation": {
+      "G_result": "pass",
+      "H_result": "pass",
+      "conclusion": "Model handles both by(compute) and by(bit_vector) strategies. G used by(compute) for constant arithmetic. H initially failed because by(bit_vector) cannot handle symbolic array indexing — needed let-bindings to extract elements first. This is a Verus-specific gotcha learned on attempt 2."
+    },
+    "pair_5_scaling": {
+      "I_result": "fail",
+      "J_result": "fail",
+      "conclusion": "Complexity cliff hits at ~55 LOC. Both I (55 LOC GT) and J (93 LOC GT) failed. The fundamental bottleneck in I was bridging flat sum definitions with recursive bytes_as_nat_prefix — the SMT solver cannot match these without reveal_with_fuel or explicit bridge lemmas. J failed on type issues with macro-generated lemma signatures and incomplete algebraic identity proof."
+    }
+  },
+
+  "struggle_dimensions": {
+    "verus_pattern_knowledge": {
+      "score": "strong",
+      "evidence": "A: pure_smt correct, B: by(bit_vector)+assert forall correct, H: by(bit_vector) correct after learning array extraction gotcha, G: by(compute) correct",
+      "pipeline_action": "No special tooling needed. Model knows by(bit_vector), by(compute), assert forall |i| ... by { }, =~=, requires in by-blocks."
+    },
+    "vstd_lemma_discovery": {
+      "score": "strong",
+      "evidence": "C: found lemma_mul_mod_noop_right, lemma_mul_is_distributive_add, lemma_add_mod_noop. D: found lemma_mul_mod_noop_left, lemma_mul_is_associative. E: found lemma_u64_5_as_nat_add. F: found lemma_small_mod, lemma_mod_twice, lemma_mod_pos_bound. All correct names and signatures.",
+      "pipeline_action": "Current vstd knowledge is adequate for common arithmetic lemmas. May need RAG for less common lemmas."
+    },
+    "sub_lemma_composition": {
+      "score": "strong",
+      "evidence": "E: composed 2 lemmas (passed). F: composed 5 lemmas across different files (passed). Up to ~20 LOC proofs with 3-5 sub-lemma calls are feasible.",
+      "pipeline_action": "No special tooling needed for composition up to 5 lemma chains."
+    },
+    "concrete_computation": {
+      "score": "adequate",
+      "evidence": "G: by(compute) for constant arithmetic passed. H: by(bit_vector) for symbolic bounds passed after learning array extraction pattern.",
+      "pipeline_action": "Document the by(bit_vector) array indexing gotcha as a known pattern."
+    },
+    "scaling": {
+      "cliff_loc": 55,
+      "evidence": "Holes A-H (5-34 LOC GT) all passed. Hole I (55 LOC GT) failed. Hole J (93 LOC GT) failed. The cliff is around 50 LOC. Failures were not about strategy or lemma knowledge but about connecting different representations (flat sums vs recursive specs) and managing 50+ lines of intermediate assertions.",
+      "pipeline_action": "For proofs above ~50 LOC: (1) provide pre-decomposed proof sketches with intermediate goals, (2) provide bridge lemmas that connect flat and recursive representations, (3) consider proof decomposition into smaller sub-lemmas."
+    }
+  },
+
+  "error_mode_frequency": {
+    "wrong_strategy": 0,
+    "wrong_lemma": 0,
+    "wrong_instantiation": 1,
+    "missing_intermediate": 2,
+    "missing_verus_pattern": 1,
+    "missing_reveal": 0,
+    "trigger_issue": 0,
+    "solver_timeout": 0,
+    "syntax_error": 0,
+    "type_error": 1,
+    "other": 0
+  },
+
+  "top_3_pipeline_priorities": [
+    {
+      "priority": 1,
+      "component": "proof_decomposition",
+      "justification": "2/2 failures (I, J) were due to proof complexity exceeding ~50 LOC. The model can handle individual steps but cannot produce 55-93 line proofs in one shot. Need automatic decomposition of large proofs into sub-lemma chains."
+    },
+    {
+      "priority": 2,
+      "component": "representation_bridges",
+      "justification": "Hole I failed specifically because the SMT solver couldn't connect flat spec fn definitions (u8_32_as_nat) with recursive ones (bytes_as_nat_prefix). A library of bridge lemmas or reveal_with_fuel hints would unblock this class of proofs."
+    },
+    {
+      "priority": 3,
+      "component": "verus_gotcha_database",
+      "justification": "Hole H failed on attempt 1 due to by(bit_vector) not supporting symbolic array indexing. Hole J failed partly on macro-generated lemma type signatures. A database of Verus-specific gotchas (array extraction for bitvector, macro-generated function signatures, etc.) would prevent these first-attempt failures."
+    }
+  ],
+
+  "confidence_calibration": {
+    "avg_pre_confidence": 2.8,
+    "avg_post_confidence": 3.8,
+    "overconfident_count": 0,
+    "underconfident_count": 5,
+    "calibrated_count": 5,
+    "notes": "Model was well-calibrated or underconfident on all holes. Pre-confidence of 2-3 on holes that passed first attempt (C, D, E, F) suggests the model underestimates its own ability for 10-20 LOC proofs. Confidence of 1-2 on failing holes (I, J) was accurate."
+  }
+}

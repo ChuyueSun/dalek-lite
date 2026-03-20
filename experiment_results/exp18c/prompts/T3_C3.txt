@@ -1,0 +1,69 @@
+Your proof has an error. Fix it.
+
+== CURRENT CODE (around the error) ==
+ 144:     requires
+ 145:         i + 7 < input.len(),
+ 146:     ensures
+ 147:         r as nat == spec_load8_at(input, i),
+ 148: {
+ 149:     proof {
+ 150:         lemma_load8_at_rec_version_is_exec(input, i);
+ 151:         lemma_load8_at_versions_equivalent(input, i, 7);
+ 152:         lemma_load8_at_plus_version_is_spec(input, i);
+ 153:     }
+ 154:     (input[i] as u64) | ((input[i + 1] as u64) << 8) | ((input[i + 2] as u64) << 16) | ((input[i
+ 155:         + 3] as u64) << 24) | ((input[i + 4] as u64) << 32) | ((input[i + 5] as u64) << 40) | ((
+ 156:     input[i + 6] as u64) << 48) | ((input[i + 7] as u64) << 56)
+ 157: }
+ 158: 
+ 159: /* MANUALLY moved outside */
+ 160: 
+ 161: #[inline(always)]
+ 162: fn m(x: u64, y: u64) -> (r: u128)
+ 163:     ensures
+ 164:         (r as nat) == (x as nat) * (y as nat),
+ 165:         r <= u128::MAX,
+ 166: {
+ 167:     proof {
+ 168:         // if a <= a' and b <= b' then ab <= a'b'
+ 169:         lemma_mul_le(u64::MAX as nat, x as nat, u64::MAX as nat, y as nat);
+ 170:     }
+ 171:     (x as u128) * (y as u128)
+ 172: }
+ 173: 
+ 174: impl<'a> AddAssign<&'a FieldElement51> for FieldElement51 {
+ 175:     fn add_assign(&mut self, _rhs: &'a FieldElement51)
+ 176:         requires
+ 177:             sum_of_limbs_bounded(old(self), _rhs, u64::MAX),
+ 178:         ensures
+ 179:             *self == spec_add_fe51_limbs(old(self), _rhs),
+ 180:             fe51_as_nat(self) == fe51_as_nat(old(self)) + fe51_as_nat(_rhs),
+ 181:             fe51_as_canonical_nat(self) == field_add(
+ 182:                 fe51_as_canonical_nat(old(self)),
+ 183:                 fe51_as_canonical_nat(_rhs),
+ 184:             ),
+ 185:     {
+ 186:         let ghost original_limbs = self.limbs;
+ 187:         for i in 0..5
+ 188:             invariant
+ 189:                 forall|j: int|
+ 190:                     0 <= j < i ==> #[trigger] self.limbs[j] == original_limbs[j] + _rhs.limbs[j],
+ 191:                 forall|j: int| i <= j < 5 ==> #[trigger] self.limbs[j] == original_limbs[j],
+ 192:                 forall|j: int|
+ 193:                     0 <= j < 5 ==> #[trigger] original_limbs[j] + _rhs.limbs[j] <= u64::MAX,
+
+== ERROR ==
+error: precondition not satisfied
+   --> curve25519-dalek/src/backend/serial/u64/field.rs:169:9
+    |
+169 |         lemma_mul_le(u64::MAX as nat, x as nat, u64::MAX as nat, y as nat);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |         -------- failed precondition
+
+== SIMILAR FIX PATTERN ==
+// Before (failed): precondition of lemma_mul_le not satisfied
+//   lemma_mul_le(u64::MAX, x, u64::MAX, y)  -- WRONG order
+// After (passed):
+//   lemma_mul_le(x, u64::MAX, y, u64::MAX)  -- requires a<=b, c<=d
+
+Apply a similar fix. Return the corrected code for the relevant section.

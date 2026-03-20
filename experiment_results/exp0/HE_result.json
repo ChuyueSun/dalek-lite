@@ -1,0 +1,58 @@
+{
+  "hole_id": "E",
+  "pair": 3,
+  "dimension_tested": "sub_lemma_composition",
+  "function": "lemma_field51_add",
+  "file": "add_lemmas.rs",
+  "layer": "L4",
+  "taxonomy": "representation_equivalence",
+  "gt_body_loc": 17,
+  "gt_patterns": ["sub_lemma"],
+
+  "pre_assessment": {
+    "confidence": 3,
+    "planned_strategy": "Call lemma_u64_5_as_nat_add for limb-level sum, then lemma_add_mod_noop for canonical nat equivalence",
+    "planned_lemmas": ["lemma_u64_5_as_nat_add", "lemma_add_mod_noop", "p_gt_2"],
+    "planned_verus_features": [],
+    "stated_uncertainties": ["Whether the preconditions chain correctly from sum_of_limbs_bounded to the add lemma"]
+  },
+
+  "attempt_1": {
+    "code": "lemma_u64_5_as_nat_add(lhs.limbs, rhs.limbs);\np_gt_2();\nlemma_add_mod_noop(u64_5_as_nat(lhs.limbs) as int, u64_5_as_nat(rhs.limbs) as int, p() as int);",
+    "strategy_used": "sub_lemma",
+    "lemmas_called": ["lemma_u64_5_as_nat_add", "p_gt_2", "lemma_add_mod_noop"],
+    "verus_features_used": [],
+    "verification_result": "pass",
+    "error_message": null,
+    "error_classified": null
+  },
+
+  "attempt_2": null,
+
+  "post_assessment": {
+    "stated_surprises": "Simpler than expected — only 2 non-trivial lemma calls needed vs GT's 17 LOC",
+    "alternate_strategy": "N/A",
+    "confidence_after": 5
+  },
+
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "Two-step: raw addition then mod reduction — correct decomposition",
+    "lemma_discovery": true,
+    "lemma_detail": "Found lemma_u64_5_as_nat_add in same-file imports and lemma_add_mod_noop from vstd",
+    "lemma_instantiation": true,
+    "instantiation_detail": "Correct arguments: lhs.limbs/rhs.limbs for the add lemma, int casts for the mod lemma",
+    "verus_pattern_correct": true,
+    "verus_detail": "N/A",
+    "intermediate_assertions_correct": true,
+    "over_engineered": false,
+    "over_detail": "Minimal proof",
+    "under_engineered": false,
+    "under_detail": "N/A",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": -12,
+    "alternative_valid_proof": true
+  }
+}

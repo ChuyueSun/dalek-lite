@@ -1,0 +1,291 @@
+[OBLIGATION]
+Prove this Verus proof function:
+
+pub proof fn lemma_field51_add(lhs: &FieldElement51, rhs: &FieldElement51)
+    requires
+        sum_of_limbs_bounded(lhs, rhs, u64::MAX),
+    ensures
+        u64_5_as_nat(spec_add_fe51_limbs(lhs, rhs).limbs) == u64_5_as_nat(lhs.limbs) + u64_5_as_nat(
+            rhs.limbs,
+        ),
+        fe51_as_canonical_nat(&spec_add_fe51_limbs(lhs, rhs)) == field_add(
+            fe51_as_canonical_nat(lhs),
+            fe51_as_canonical_nat(rhs),
+        ),
+
+[CONTEXT]
+Available lemmas from imported modules:
+
+pub proof fn lemma_ed25519_basepoint_y()
+    ensures
+        spec_ed25519_basepoint().1 == u64_5_as_nat(
+            [
+                1801439850948184u64,
+                1351079888211148u64,
+                450359962737049u64,
+                900719925474099u64,
+                1801439850948198u64,
+            ],
+        ),
+
+pub open spec fn pow256(n: nat) -> nat
+
+pub open spec fn is_valid_edwards_basepoint_table(
+    table: EdwardsBasepointTable,
+    basepoint: (nat, nat),
+) -> bool
+
+pub proof fn axiom_ed25519_basepoint_table_valid()
+    ensures
+        is_valid_edwards_basepoint_table(*ED25519_BASEPOINT_TABLE, spec_ed25519_basepoint()),
+
+pub open spec fn is_on_edwards_curve(x: nat, y: nat) -> bool
+
+pub open spec fn is_on_edwards_curve_projective(x: nat, y: nat, z: nat) -> bool
+
+pub open spec fn is_valid_edwards_y_coordinate(y: nat) -> bool
+
+pub open spec fn edwards_identity() -> (nat, nat)
+
+pub open spec fn is_edwards_identity(x: nat, y: nat) -> bool
+
+pub open spec fn is_identity_edwards_point(point: crate::edwards::EdwardsPoint) -> bool
+
+pub open spec fn is_valid_extended_edwards_point(x: nat, y: nat, z: nat, t: nat) -> bool
+
+pub open spec fn is_valid_edwards_point(point: crate::edwards::EdwardsPoint) -> bool
+
+pub open spec fn edwards_point_limbs_bounded(point: crate::edwards::EdwardsPoint) -> bool
+
+pub open spec fn is_well_formed_edwards_point(point: crate::edwards::EdwardsPoint) -> bool
+
+pub open spec fn edwards_z_sum_bounded(point: crate::edwards::EdwardsPoint) -> bool
+
+pub open spec fn edwards_y_nat(point: crate::edwards::EdwardsPoint) -> nat
+
+pub open spec fn edwards_z_nat(point: crate::edwards::EdwardsPoint) -> nat
+
+pub open spec fn edwards_x_sign_bit(point: crate::edwards::EdwardsPoint) -> u8
+
+pub open spec fn edwards_point_as_nat(point: crate::edwards::EdwardsPoint) -> (nat, nat, nat, nat)
+
+pub open spec fn edwards_point_as_affine(point: crate::edwards::EdwardsPoint) -> (nat, nat)
+
+pub open spec fn completed_point_as_nat(
+    point: crate::backend::serial::curve_models::CompletedPoint,
+) -> (nat, nat, nat, nat)
+
+pub open spec fn completed_point_as_affine_edwards(
+    point: crate::backend::serial::curve_models::CompletedPoint,
+) -> (nat, nat)
+
+pub open spec fn projective_point_edwards_as_nat(point: ProjectivePoint) -> (nat, nat, nat)
+
+pub open spec fn spec_identity_projective_point_edwards() -> (nat, nat, nat)
+
+pub open spec fn identity_projective_point_edwards() -> ProjectivePoint
+
+pub open spec fn projective_point_as_affine_edwards(point: ProjectivePoint) -> (nat, nat)
+
+pub open spec fn projective_niels_point_as_nat(niels: ProjectiveNielsPoint) -> (
+    nat,
+    nat,
+    nat,
+    nat,
+)
+
+pub open spec fn affine_niels_point_as_nat(niels: AffineNielsPoint) -> (nat, nat, nat)
+
+pub open spec fn compressed_edwards_y_corresponds_to_edwards(
+    compressed: CompressedEdwardsY,
+    point: EdwardsPoint,
+) -> bool
+
+pub open spec fn projective_niels_corresponds_to_edwards(
+    niels: ProjectiveNielsPoint,
+    point: EdwardsPoint,
+) -> bool
+
+pub open spec fn is_valid_projective_niels_point(niels: ProjectiveNielsPoint) -> bool
+
+pub open spec fn projective_niels_point_as_affine_edwards(niels: ProjectiveNielsPoint) -> (
+    nat,
+    nat,
+)
+
+pub open spec fn affine_niels_corresponds_to_edwards(
+    niels: AffineNielsPoint,
+    point: EdwardsPoint,
+) -> bool
+
+pub open spec fn is_valid_affine_niels_point(niels: AffineNielsPoint) -> bool
+
+pub open spec fn affine_niels_point_as_affine_edwards(niels: AffineNielsPoint) -> (nat, nat)
+
+pub open spec fn spec_identity_affine_niels() -> (nat, nat, nat)
+
+pub open spec fn identity_affine_niels() -> AffineNielsPoint
+
+pub open spec fn spec_identity_projective_niels() -> (nat, nat, nat, nat)
+
+pub open spec fn identity_projective_niels() -> ProjectiveNielsPoint
+
+pub open spec fn negate_affine_niels(p: AffineNielsPoint) -> AffineNielsPoint
+
+pub open spec fn negate_projective_niels(p: ProjectiveNielsPoint) -> ProjectiveNielsPoint
+
+pub open spec fn edwards_add(x1: nat, y1: nat, x2: nat, y2: nat) -> (nat, nat)
+
+pub open spec fn edwards_double(x: nat, y: nat) -> (nat, nat)
+
+pub open spec fn edwards_neg(point: (nat, nat)) -> (nat, nat)
+
+pub open spec fn edwards_sub(x1: nat, y1: nat, x2: nat, y2: nat) -> (nat, nat)
+
+pub open spec fn is_valid_completed_point(
+    point: crate::backend::serial::curve_models::CompletedPoint,
+) -> bool
+
+pub open spec fn is_valid_projective_point(point: ProjectivePoint) -> bool
+
+pub open spec fn completed_to_projective(
+    point: crate::backend::serial::curve_models::CompletedPoint,
+) -> (nat, nat, nat)
+
+pub open spec fn completed_to_extended(
+    point: crate::backend::serial::curve_models::CompletedPoint,
+) -> (nat, nat, nat, nat)
+
+pub open spec fn projective_to_extended(point: ProjectivePoint) -> (nat, nat, nat, nat)
+
+pub open spec fn edwards_scalar_mul(point_affine: (nat, nat), n: nat) -> (nat, nat)
+    decreases n,
+
+pub open spec fn edwards_scalar_mul_signed(point_affine: (nat, nat), n: int) -> (nat, nat)
+
+pub open spec fn sum_of_points(points: Seq<EdwardsPoint>) -> (nat, nat)
+    decreases points.len(),
+
+pub open spec fn sum_of_scalar_muls(scalars: Seq<Scalar>, points: Seq<EdwardsPoint>) -> (nat, nat)
+    decreases scalars.len(),
+
+pub proof fn lemma_identity_affine_coords(point: EdwardsPoint)
+    requires
+        is_identity_edwards_point(point),
+    ensures
+        edwards_point_as_affine(point) == (0nat, 1nat),
+
+pub open spec fn spec_nonspec_map_to_curve(hash_bytes: Seq<u8>) -> (nat, nat)
+    recommends
+        hash_bytes.len() == 32,
+
+pub open spec fn normalize_sign(sign: u8) -> u8
+
+pub open spec fn montgomery_to_edwards_affine(u: nat, sign_bit: u8) -> (nat, nat)
+
+pub open spec fn edwards_decompress_from_y_and_sign(y: nat, sign_bit: u8) -> Option<(nat, nat)>
+
+pub open spec fn points_to_affine(points: Seq<EdwardsPoint>) -> Seq<(nat, nat)>
+
+// From vstd::arithmetic::div_mod:
+//   lemma_mod_multiples_vanish(b: int, a: int, n: int) requires n > 0 ensures a % n == (a + b * n) % n
+//   lemma_small_mod(x: nat, m: nat) requires x < m ensures x % m == x
+//   lemma_mod_twice(x: int, m: int) requires m > 0 ensures (x % m) % m == x % m
+//   lemma_add_mod_noop(x: int, y: int, m: int) requires m > 0 ensures (x + y) % m == ((x % m) + (y % m)) % m
+//   lemma_mod_pos_bound(x: int, m: int) requires m > 0 ensures 0 <= x % m < m
+//   lemma_mod_bound(x: int, m: int) requires m > 0 ensures x % m < m
+//   lemma_mod_mod(x: int, a: int, b: int) requires a > 0, b > 0 ensures (x % (a * b)) % a == x % a
+//   lemma_mod_breakdown(x: int, a: int, b: int) requires a > 0, b > 0 ensures x % (a * b) == a * ((x / a) % b) + x % a
+//   lemma_mod_division_less_than_divisor(x: int, m: int) requires m > 0 ensures x % m < m
+
+// From vstd::arithmetic::mul:
+//   lemma_mul_basics(x: int) ensures x * 0 == 0, 0 * x == 0, x * 1 == x
+//   lemma_mul_is_commutative(x: int, y: int) ensures x * y == y * x
+//   lemma_mul_is_associative(x: int, y: int, z: int) ensures x * (y * z) == (x * y) * z
+//   lemma_mul_is_distributive_add(x: int, y: int, z: int) ensures x * (y + z) == x * y + x * z
+//   lemma_mul_mod_noop_left(x: int, y: int, m: int) requires m > 0 ensures (x % m) * y % m == x * y % m
+//   lemma_mul_mod_noop_right(x: int, y: int, m: int) requires m > 0 ensures x * (y % m) % m == x * y % m
+//   lemma_mul_strict_inequality(x: int, y: int, z: int) requires x < y, z > 0 ensures x * z < y * z
+//   lemma_mul_by_zero_is_zero(x: int) ensures x * 0 == 0 && 0 * x == 0
+
+// From vstd::arithmetic::power2:
+//   lemma_pow2_pos(e: nat) ensures pow2(e) > 0
+//   lemma_pow2_adds(e1: nat, e2: nat) ensures pow2(e1) * pow2(e2) == pow2(e1 + e2)
+//   lemma2_to64() ensures pow2(0)==1, pow2(1)==2, pow2(2)==4, ..., pow2(64)==0x10000000000000000
+
+[SIBLING]
+Here are nearby proof functions from the same file:
+
+/// Lemma: limb-wise equality implies `FieldElement51` equality.
+///
+/// This is useful when a function specifies equality of each limb (e.g. conditional_select),
+/// but a caller needs equality of the whole `FieldElement51` value.
+pub proof fn lemma_field_element51_eq_from_limbs_eq(a: FieldElement51, b: FieldElement51)
+    requires
+        forall|i: int| 0 <= i < 5 ==> a.limbs[i] == b.limbs[i],
+    ensures
+        a == b,
+{
+    // Establish extensional equality of the limb arrays; Verus can then lift to struct equality.
+    assert(a.limbs =~= b.limbs);
+    assert(a == b);
+}
+
+pub proof fn lemma_field_add_16p_no_overflow(lhs: &FieldElement51, rhs: &FieldElement51)
+    requires
+        fe51_limbs_bounded(lhs, 54),
+        fe51_limbs_bounded(rhs, 54),
+    ensures
+// Adding 16p constants won't overflow
+
+        lhs.limbs[0] <= u64::MAX - 36028797018963664u64,
+        lhs.limbs[1] <= u64::MAX - 36028797018963952u64,
+        lhs.limbs[2] <= u64::MAX - 36028797018963952u64,
+        lhs.limbs[3] <= u64::MAX - 36028797018963952u64,
+        lhs.limbs[4] <= u64::MAX - 36028797018963952u64,
+        rhs.limbs[0] < 36028797018963664u64,
+        rhs.limbs[1] < 36028797018963952u64,
+        rhs.limbs[2] < 36028797018963952u64,
+        rhs.limbs[3] < 36028797018963952u64,
+        rhs.limbs[4] < 36028797018963952u64,
+{
+    let c0 = 36028797018963664u64;  // 16 * (2^51 - 19)
+    let c = 36028797018963952u64;  // 16 * (2^51 - 1)
+
+    // Bound lhs limbs so adding the constants cannot overflow a u64
+    assert(lhs.limbs[0] <= u64::MAX - c0) by {
+        assert(((1u64 << 54) - 1) <= u64::MAX - c0) by (compute);
+    }
+    assert(lhs.limbs[1] <= u64::MAX - c) by {
+        assert(((1u64 << 54) - 1) <= u64::MAX - c) by (compute);
+    }
+    assert(lhs.limbs[2] <= u64::MAX - c) by {
+        assert(((1u64 << 54) - 1) <= u64::MAX - c) by (compute);
+    }
+    assert(lhs.limbs[3] <= u64::MAX - c) by {
+        assert(((1u64 << 54) - 1) <= u64::MAX - c) by (compute);
+    }
+    assert(lhs.limbs[4] <= u64::MAX - c) by {
+        assert(((1u64 << 54) - 1) <= u64::MAX - c) by (compute);
+    }
+
+    // Bound rhs limbs to be less than the constants
+    assert(rhs.limbs[0] < c0) by {
+        assert((1u64 << 54) <= c0) by (compute);
+    }
+    assert(rhs.limbs[1] < c) by {
+        assert((1u64 << 54) <= c) by (compute);
+    }
+    assert(rhs.limbs[2] < c) by {
+        assert((1u64 << 54) <= c) by (compute);
+    }
+    assert(rhs.limbs[3] < c) by {
+        assert((1u64 << 54) <= c) by (compute);
+    }
+    assert(rhs.limbs[4] < c) by {
+        assert((1u64 << 54) <= c) by (compute);
+    }
+}
+
+[INSTRUCTION]
+Write the proof body for the function in [OBLIGATION]. Use only lemmas from the available list or from the sibling proofs. Return ONLY the proof body content (what goes between { and }), no function signature.

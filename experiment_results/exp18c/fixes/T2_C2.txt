@@ -1,0 +1,1 @@
+LINE 666:             lemma_neg(self);

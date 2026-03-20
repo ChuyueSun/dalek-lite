@@ -1,0 +1,4 @@
+    ensures
+        fe51_as_canonical_nat(&result) == u8_32_as_nat(bytes) % p(),
+        fe51_limbs_bounded(&result, 51),
+        is_uniform_bytes(bytes) ==> is_uniform_field_element(&result),

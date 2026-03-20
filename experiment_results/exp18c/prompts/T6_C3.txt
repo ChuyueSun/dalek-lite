@@ -1,0 +1,68 @@
+Your proof has an error. Fix it.
+
+== CURRENT CODE (around the error) ==
+ 648:                 // x1 = (u0:1) represents P = [1]P.
+ 649:                 assert(projective_represents_montgomery_or_infinity(
+ 650:                     x1,
+ 651:                     montgomery_scalar_mul(P, 1),
+ 652:                 )) by {
+ 653:                     assert(montgomery_scalar_mul(P, 1) == P);
+ 654:                     // Finite points require W != 0 and U = u * W.
+ 655:                     assert(fe51_as_canonical_nat(&x1.W) == 1) by {
+ 656:                         lemma_one_field_element_value();
+ 657:                     }
+ 658:                     assert(fe51_as_canonical_nat(&x1.W) != 0);
+ 659:                     assert(fe51_as_canonical_nat(&x1.U) == u0) by {
+ 660:                         assert(x1.U == affine_u);
+ 661:                         assert(fe51_as_canonical_nat(&affine_u) == u0);
+ 662:                     }
+ 663:                     assert(u_coordinate(P) == u0);
+ 664:                     assert(fe51_as_canonical_nat(&x1.U) == field_mul(
+ 665:                         u_coordinate(P),
+ 666:                         fe51_as_canonical_nat(&x1.W),
+ 667:                     )) by {
+ 668:                         lemma_field_mul_one_right(u_coordinate(P));
+ 669:                     }
+ 670:                 }
+ 671: 
+ 672:                 // Establish the ladder invariant at i = 0 (k = 0, prev_bit = false).
+ 673:                 // reveal(montgomery_ladder_invariant); // MUTATION: removed
+ 674:                 assert(montgomery_ladder_invariant(x0, x1, P, 0, false));
+ 675:             }
+ 676:         }
+ 677:         // VERIFICATION NOTE: refactoring lemma calls into `assert...by` style breaks rlimit.
+ 678:         while i < bits.len()
+ 679:             invariant
+ 680:                 i <= bits.len(),
+ 681:                 // Limb bounds needed for `differential_add_and_double` and `as_affine`
+ 682:                 fe51_limbs_bounded(&x0.U, 52),
+ 683:                 fe51_limbs_bounded(&x0.W, 52),
+ 684:                 fe51_limbs_bounded(&x1.U, 52),
+ 685:                 fe51_limbs_bounded(&x1.W, 52),
+ 686:                 fe51_limbs_bounded(&affine_u, 51),
+ 687:                 // Basepoint decoding/validity (needed for canonical lift reasoning)
+ 688:                 fe51_as_canonical_nat(&affine_u) == montgomery_point_as_nat(*self),
+ 689:                 is_valid_u_coordinate(montgomery_point_as_nat(*self)),
+ 690:                 is_valid_u_coordinate(fe51_as_canonical_nat(&affine_u)),
+ 691:                 // Scalar-multiplication relationship (Montgomery ladder invariant)
+ 692:                 ({
+ 693:                     let u0 = montgomery_point_as_nat(*self);
+ 694:                     if u0 == 0 {
+ 695:                         // Degenerate case: u0=0 is the (0,0) 2-torsion point; all multiples have u=0.
+ 696:                         &&& projective_u_coordinate(x0) == 0
+ 697:                         &&& projective_u_coordinate(x1) == 0
+
+== ERROR ==
+error: assertion failed
+   --> curve25519-dalek/src/montgomery.rs:674:24
+    |
+674 |                 assert(montgomery_ladder_invariant(x0, x1, P, 0, false));
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+== SIMILAR FIX PATTERN ==
+// Before (failed): assert(opaque_fn(...)) failed
+// Missing reveal() for opaque spec function
+// After (passed):
+//   reveal(montgomery_ladder_invariant);  // unfold opaque definition before assert
+
+Apply a similar fix. Return the corrected code for the relevant section.

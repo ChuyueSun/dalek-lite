@@ -1,0 +1,42 @@
+Here is a function and its algebraic ensures clause (generated in Phase A):
+
+== FUNCTION ==
+pow2k in backend/serial/u64/field.rs
+Body: Repeated squaring k times. Loop: compute schoolbook square (with 19x reduction), carry-propagate. Result = self^(2^k). Uses same mul pattern as mul().
+
+== CURRENT ENSURES (from Phase A) ==
+ensures
+    ensures
+        fe51_limbs_bounded(&r, 52),
+        fe51_limbs_bounded(&r, 54),
+        fe51_as_canonical_nat(&r) == field_canonical(pow(u64_5_as_nat(self.limbs) as int, pow2(k as nat) as int) as nat),
+
+
+== SIBLING BOUNDS PATTERNS ==
+fn square(&self) -> (r: FieldElement51)
+    requires fe51_limbs_bounded(self, 54),
+    ensures
+        fe51_limbs_bounded(&r, 52),
+        fe51_limbs_bounded(&r, 54),
+        fe51_as_canonical_nat(&r) == field_canonical(pow(u64_5_as_nat(self.limbs) as int, 2) as nat),
+
+fn square2(&self) -> (r: FieldElement51)
+    requires fe51_limbs_bounded(self, 54),
+    ensures
+        fe51_as_canonical_nat(&r) == field_canonical((2 * pow(u64_5_as_nat(self.limbs) as int, 2)) as nat),
+        fe51_limbs_bounded(&r, 53),
+        fe51_limbs_bounded(&r, 54),
+
+== INSTRUCTION ==
+Does this function need bounds-propagation clauses? Specifically:
+- If inputs have limb bounds B, what bounds does the output have?
+- Add conditional clauses like:
+  fe51_limbs_bounded(input, B) ==> fe51_limbs_bounded(&output, B+K)
+
+Also check:
+- Is there a < 2*p() value bound?
+- Is there an identity-when-already-reduced property?
+- Is there an exact nat-level intermediate formula?
+
+Only add clauses that are NOT trivially derivable from existing ensures.
+Output the COMPLETE ensures clause (Phase A clauses + new bounds clauses).

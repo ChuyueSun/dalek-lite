@@ -1,0 +1,148 @@
+== SIBLING PROOF (adapt this approach) ==
+/// Lemma: Sequence equality implies array equality
+pub proof fn lemma_seq_eq_implies_array_eq(bytes1: &[u8; 32], bytes2: &[u8; 32])
+    requires
+        seq_from32(bytes1) == seq_from32(bytes2),
+    ensures
+        *bytes1 == *bytes2,
+{
+    // If seq representations are equal, then they're equal element-wise
+    // seq_from32 is defined as Seq::new(32, |i: int| b[i])
+    // So if the sequences are equal, each element must be equal
+    assert forall|i: int| 0 <= i < 32 implies bytes1[i] == bytes2[i] by {
+        // From the definition of seq_from32, we have:
+        // seq_from32(bytes1)[i] == bytes1[i]
+        // seq_from32(bytes2)[i] == bytes2[i]
+        // Since seq_from32(bytes1) == seq_from32(bytes2), we get:
+        // bytes1[i] == bytes2[i]
+        assert(seq_from32(bytes1)[i] == bytes1[i]);
+        assert(seq_from32(bytes2)[i] == bytes2[i]);
+        assert(seq_from32(bytes1)[i] == seq_from32(bytes2)[i]);
+    }
+    // Verus axiom: arrays are equal iff all elements are equal
+    assert(*bytes1 == *bytes2);
+}
+
+/// Lemma: as_bytes(from_bytes(bytes_orig)) preserves the byte value (for canonical inputs)
+///
+/// This is the reverse roundtrip property for field element serialization.
+/// It only holds when the input bytes represent a canonical value (< p).
+///
+/// ## Parameters:
+/// - `bytes_orig`: the original bytes (must be canonical: u8_32_as_nat < p)
+/// - `fe`: output of `from_bytes(bytes_orig)`
+/// - `bytes_decoded`: output of `as_bytes(fe)`
+///
+/// ## Usage:
+/// ```
+/// let fe = FieldElement51::from_bytes(&bytes_orig);
+/// let bytes_decoded = fe.as_bytes();
+/// proof {
+///     lemma_as_bytes_from_bytes_roundtrip(&bytes_orig, &fe, &bytes_decoded);
+///     // Now: u8_32_as_nat(&bytes_decoded) == u8_32_as_nat(&bytes_orig)
+/// }
+/// ```
+///
+/// ## Why canonical is required:
+/// If bytes_orig encodes a value v where p <= v < 2^255, then:
+/// - from_bytes preserves v (since v < 2^255)
+/// - as_bytes reduces to v % p
+/// So as_bytes(from_bytes(bytes)) would encode (v % p), not v.
+///
+/// ## Proof outline (let v = u8_32_as_nat(bytes_orig)):
+/// 1. Since v < p < pow2(255), by lemma_small_mod: v % pow2(255) = v
+/// 2. So from_bytes gives: fe51_as_nat(fe) = v
+/// 3. Since v < p, by lemma_small_mod: v % p = v
+/// 4. So as_bytes gives: u8_32_as_nat(bytes_decoded) = v
+pub proof fn lemma_as_bytes_from_bytes_roundtrip(
+    bytes_orig: &[u8; 32],
+    fe: &FieldElement51,
+    bytes_decoded: &[u8; 32],
+)
+    requires
+        u8_32_as_nat(bytes_orig) < p(),  // bytes_orig is canonical
+        from_bytes_post(bytes_orig, fe),  // fe = from_bytes(bytes_orig)
+        as_bytes_post(fe, bytes_decoded),  // bytes_decoded = as_bytes(fe)
+
+    ensures
+        u8_32_as_nat(bytes_decoded) == u8_32_as_nat(bytes_orig),
+{
+    let v = u8_32_as_nat(bytes_orig);
+
+    assert(0 < p() < pow2(255)) by {
+        pow255_gt_19();
+    };
+    assert(u8_32_as_nat(bytes_decoded) == v) by {
+        // Subgoal 1: v % pow2(255) == v
+        // Since v < p < pow2(255), v fits in 255 bits
+        assert(v % pow2(255) == v) by {
+            lemma_small_mod(v, pow2(255));
+        };
+
+        // Subgoal 2: v % p == v
+        // Since v < p (canonical), taking mod p doesn't change it
+        assert(v % p() == v) by {
+            lemma_small_mod(v, p());
+        };
+    };
+}
+
+== OBLIGATION ==
+/// Lemma: from_bytes(as_bytes(fe_orig)) preserves the field element value
+///
+/// This is the fundamental roundtrip property for field element serialization.
+/// Encoding to bytes and decoding back yields the same math field element.
+///
+/// ## Parameters:
+/// - `fe_orig`: the original field element
+/// - `bytes`: output of `as_bytes(fe_orig)`
+/// - `fe_decoded`: output of `from_bytes(bytes)`
+///
+/// ## Usage:
+/// ```
+/// let bytes = fe_orig.as_bytes();
+/// let fe_decoded = FieldElement51::from_bytes(&bytes);
+/// proof {
+///     lemma_from_bytes_as_bytes_roundtrip(&fe_orig, &bytes, &fe_decoded);
+///     // Now: fe51_as_canonical_nat(&fe_decoded) == fe51_as_canonical_nat(&fe_orig)
+/// }
+/// ```
+///
+/// ## Proof outline (let v = fe51_as_nat(fe_orig)):
+/// 1. as_bytes postcondition: u8_32_as_nat(bytes) = v % p
+/// 2. from_bytes postcondition: fe51_as_nat(fe_decoded) = u8_32_as_nat(bytes) % pow2(255)
+/// 3. Since v % p < p < pow2(255), by lemma_small_mod: (v % p) % pow2(255) = v % p
+/// 4. By lemma_mod_twice: fe51_as_canonical_nat(fe_decoded) = (v % p) % p = v % p = fe51_as_canonical_nat(fe_orig)
+pub proof fn lemma_from_bytes_as_bytes_roundtrip(
+    fe_orig: &FieldElement51,
+    bytes: &[u8; 32],
+    fe_decoded: &FieldElement51,
+)
+    requires
+        as_bytes_post(fe_orig, bytes),  // bytes = as_bytes(fe_orig)
+        from_bytes_post(bytes, fe_decoded),  // fe_decoded = from_bytes(bytes)
+
+    ensures
+        fe51_as_canonical_nat(fe_decoded) == fe51_as_canonical_nat(fe_orig),
+
+PROVEN LEMMA REGISTRY (exact signatures — use these names):
+  pow255_gt_19()
+    ensures p() == pow2(255) - 19, p() > 0, pow2(255) > 19
+  lemma_mod_pos_bound(x: int, m: int)
+    requires m > 0
+    ensures 0 <= x % m < m
+  lemma_mod_bound(x: int, m: int)
+    requires m > 0
+    ensures x % m < m
+  lemma_small_mod(x: nat, m: nat)
+    requires x < m
+    ensures x % m == x
+  lemma_mod_twice(x: int, m: int)
+    requires m > 0
+    ensures (x % m) % m == x % m
+
+== FILE IMPORTS ==
+// See file imports in context above
+
+Use ONLY lemmas from the proven registry above. Their names and signatures are exact.
+Return ONLY the proof body content (between { and }).

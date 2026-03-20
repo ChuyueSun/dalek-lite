@@ -1,0 +1,58 @@
+{
+  "hole_id": "G",
+  "pair": 4,
+  "dimension_tested": "concrete_computation",
+  "function": "lemma_field_add_16p_no_overflow",
+  "file": "add_lemmas.rs",
+  "layer": "L4",
+  "taxonomy": "bounds_propagation",
+  "gt_body_loc": 34,
+  "gt_patterns": ["compute"],
+
+  "pre_assessment": {
+    "confidence": 3,
+    "planned_strategy": "Use by(compute) to verify the concrete constant relationships, then let SMT chain from limb bounds",
+    "planned_lemmas": [],
+    "planned_verus_features": ["by(compute)"],
+    "stated_uncertainties": ["Whether by(compute) handles the large constants directly", "Whether I need per-limb assertions"]
+  },
+
+  "attempt_1": {
+    "code": "assert(lhs.limbs[0] < (1u64 << 54)); ... [10 limb assertions]\nassert((1u64 << 54) + 36028797018963664u64 <= u64::MAX) by (compute);\nassert((1u64 << 54) + 36028797018963952u64 <= u64::MAX) by (compute);\nassert((1u64 << 54) < 36028797018963664u64) by (compute);\nassert((1u64 << 54) < 36028797018963952u64) by (compute);",
+    "strategy_used": "compute",
+    "lemmas_called": [],
+    "verus_features_used": ["by(compute)"],
+    "verification_result": "pass",
+    "error_message": null,
+    "error_classified": null
+  },
+
+  "attempt_2": null,
+
+  "post_assessment": {
+    "stated_surprises": "The proof needed explicit per-limb assertions to trigger the fe51_limbs_bounded quantifier, plus 4 by(compute) facts. More verbose than expected but conceptually simple.",
+    "alternate_strategy": "Could use assert forall to avoid repeating per-limb assertions, or bundle all by(compute) into fewer assertions",
+    "confidence_after": 4
+  },
+
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "by(compute) for constant arithmetic, explicit limb assertions to unpack the forall",
+    "lemma_discovery": true,
+    "lemma_detail": "No external lemmas needed — pure compute",
+    "lemma_instantiation": true,
+    "instantiation_detail": "N/A",
+    "verus_pattern_correct": true,
+    "verus_detail": "Used by(compute) correctly for constant arithmetic",
+    "intermediate_assertions_correct": true,
+    "over_engineered": false,
+    "over_detail": "Could be more concise but correct",
+    "under_engineered": false,
+    "under_detail": "N/A",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": -20,
+    "alternative_valid_proof": true
+  }
+}

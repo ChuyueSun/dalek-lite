@@ -1,0 +1,16 @@
+{
+  "hole_id": "R5",
+  "group": "A_standalone",
+  "function": "lemma_double_projective_completed_valid",
+  "file": "double_correctness.rs",
+  "layer": "L6",
+  "gt_loc_estimate": 192,
+  "attempt_1_result": "fail",
+  "attempt_1_loc": null,
+  "attempt_2_result": "not_attempted",
+  "approach_attempted": "Identified proof strategy: (1) projective_implies_affine_on_curve for x,y on curve, (2) axiom_edwards_add_complete for denominator nonzero, (3) bridge projective doubling formula (2XY, X²+Y², Y²-X², 2Z²-(Y²-X²)) to affine ratios via curve equation (Y²-X²)Z²=Z⁴+dX²Y². Unable to complete algebraic chain.",
+  "failure_mode": "Algebraic bridging between projective and affine coordinate systems requires ~50 field algebra lemma calls per coordinate ratio (4 ratios), plus nonzero proofs. Total estimated ~200 LOC of sequential field_mul_assoc/comm/cancel/square lemma calls. Cannot be reliably generated without CAS integration.",
+  "key_insight": "The common factor Z² connects projective to affine: result.Z = Z²·(1+dx²y²), result.T = Z²·(1-dx²y²). The proof requires: lemma_quotient_of_squares to convert (X/Z)²→X²/Z², the projective curve equation, and extensive algebraic simplification. Found lemma_completed_point_ratios but it can't be applied directly since result coordinates are in projective form, not affine form.",
+  "confidence": 1,
+  "notes": "This is the expected ceiling test. The proof IS structurally possible with known lemmas (lemma_projective_implies_affine_on_curve, axiom_edwards_add_complete, lemma_quotient_of_squares, lemma_completed_point_ratios, etc.) but the sheer volume of algebraic chain steps makes it unreliable for LLM generation."
+}

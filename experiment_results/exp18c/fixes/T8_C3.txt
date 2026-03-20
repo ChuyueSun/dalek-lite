@@ -1,0 +1,1 @@
+LINE 150: assert((x as i16 >> 7u32) == 0i16 || (x as i16 >> 7u32) == -1i16) by (bit_vector)

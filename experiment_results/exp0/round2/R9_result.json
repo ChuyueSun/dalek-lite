@@ -1,0 +1,11 @@
+{
+  "hole_id": "R9",
+  "group": "B_exec",
+  "function": "decompress",
+  "file": "edwards.rs",
+  "layer": "L6",
+  "status": "skipped",
+  "reason": "File restored to ground truth by automated process before verification could complete",
+  "reasoning_only": true,
+  "reasoning": "Block 1 (before branch): bridge step_1 postconditions to the if-else branching logic. step_1 returns (is_valid, X, Y, Z) with postconditions about Y matching the compressed representation, Z==1, and validity iff y-coordinate is valid. Block 2 (inside if-branch): after step_2 constructs the point, establish that the result satisfies all ensures clauses - well-formed point, Y matches, Z==1, X sign bit correct, point on curve. This is the larger block requiring multiple assertions connecting step_1 and step_2 postconditions."
+}

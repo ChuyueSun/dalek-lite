@@ -1,0 +1,93 @@
+{
+  "experiment": "exp9d_caller_driven",
+  "description": "Caller-Driven Strengthening Simulation: given a too-weak spec and a verification error from a caller, can the model propose the correct spec strengthening?",
+  "model": "claude-opus-4-6",
+  "methodology": {
+    "isolation": "Sub-agent forbidden from using any tools, reasoned only from provided context (function bodies, too-weak specs, simulated error messages, and spec function signatures).",
+    "tool_uses": 0
+  },
+  "total_weak_cases": 3,
+  "correctly_strengthened": 3,
+  "over_strengthened": 0,
+  "wrong_strengthening": 0,
+  "failed_to_strengthen": 0,
+  "total_control_cases": 3,
+  "correctly_identified_complete": 3,
+  "false_positive_strengthening": 0,
+  "details": [
+    {
+      "id": "D1",
+      "function": "add",
+      "caller": "sub",
+      "missing_clause_from_gt": "fe51_limbs_bounded(self, 51) && fe51_limbs_bounded(_rhs, 51) ==> fe51_limbs_bounded(&output, 52)",
+      "proposed_clause": "fe51_limbs_bounded(self, 51) && fe51_limbs_bounded(_rhs, 51) ==> fe51_limbs_bounded(&output, 52)",
+      "matches_gt": true,
+      "extra_clauses": 0,
+      "verdict": "correctly_strengthened",
+      "reasoning": "Agent correctly identified that limb-wise addition of 51-bit inputs yields 52-bit output (2^51 + 2^51 = 2^52). Proposed the minimum necessary clause without any extras."
+    },
+    {
+      "id": "D2",
+      "function": "negate",
+      "caller": "downstream proof needing exact nat identity",
+      "missing_clause_from_gt": "u64_5_as_nat(self.limbs) == 16 * p() - u64_5_as_nat(old(self).limbs) - p() * ((36028797018963952u64 - old(self).limbs[4]) as u64 >> 51)",
+      "proposed_clause": "u64_5_as_nat(self.limbs) == 16 * p() - u64_5_as_nat(old(self).limbs) - p() * (((36028797018963952u64 - old(self).limbs[4]) as u64 >> 51) as nat)",
+      "matches_gt": true,
+      "extra_clauses": 0,
+      "verdict": "correctly_strengthened",
+      "reasoning": "Agent reconstructed the exact carry formula: negate computes sixteen_p_vec - limbs then reduces. The reduce subtracts p * (carry_from_top_limb >> 51). Agent correctly identified 36028797018963952u64 as sixteen_p_vec[4] and used the right shift amount. Minor syntax difference (extra 'as nat' cast) but semantically identical."
+    },
+    {
+      "id": "D3",
+      "function": "reduce",
+      "caller": "as_bytes",
+      "missing_clause_from_gt": "(forall|i: int| 0 <= i < 5 ==> limbs[i] < (1u64 << 51)) ==> (r.limbs =~= limbs)",
+      "proposed_clause": "(forall |i| 0 <= i < 5 ==> limbs[i] < (1u64 << 51)) ==> r.limbs == limbs",
+      "matches_gt": true,
+      "extra_clauses": 0,
+      "verdict": "correctly_strengthened",
+      "reasoning": "Agent correctly identified that reduce is a no-op on already-reduced inputs: when all limbs < 2^51, all carries are 0, so masking and carry addition leave limbs unchanged. Used == instead of GT's =~= (extensional equality), which is equivalent for [u64; 5]."
+    },
+    {
+      "id": "D4",
+      "function": "from_bytes",
+      "type": "control",
+      "spec_is_complete": true,
+      "identified_as_complete": true,
+      "unnecessary_additions": [],
+      "verdict": "correctly_identified_complete"
+    },
+    {
+      "id": "D5",
+      "function": "compress",
+      "type": "control",
+      "spec_is_complete": true,
+      "identified_as_complete": true,
+      "unnecessary_additions": [],
+      "verdict": "correctly_identified_complete"
+    },
+    {
+      "id": "D6",
+      "function": "mul_base_clamped",
+      "type": "control",
+      "spec_is_complete": true,
+      "identified_as_complete": true,
+      "unnecessary_additions": [],
+      "verdict": "correctly_identified_complete"
+    }
+  ],
+  "key_findings": {
+    "reactive_strengthening_accuracy": "100% (3/3 correct strengthening, 0/3 over-strengthening, 3/3 controls correct)",
+    "error_message_is_key": "The simulated verification error message provides a strong signal: it names the exact missing property and identifies which callee is responsible. This converts the open-ended spec-authoring problem into a targeted gap-filling problem.",
+    "comparison_to_proactive_generation": "In Exp 9c (proactive two-pass generation), the model failed to recover 2/3 of the missing clauses because they didn't fit the algebraic/bounds framework. In this reactive approach, all 3 were recovered because the error message directly identifies what's needed.",
+    "minimum_clause_discipline": "The model showed good discipline in proposing minimum necessary clauses — no extra clauses in any of the 3 cases. This suggests that the 'only add the minimum necessary' instruction is effective.",
+    "control_accuracy": "3/3 controls correctly identified as complete — no false-positive strengthening. This is important because unnecessary strengthening creates verification burden.",
+    "d2_is_most_impressive": "D2 (negate carry formula) is particularly notable: the model reconstructed the exact intermediate carry formula u64_5_as_nat = 16p - old_nat - p*carry from the error message context, identifying the magic constant 36028797018963952u64 as sixteen_p_vec[4]. This clause was NOT recoverable by the two-pass approach in Exp 9c."
+  },
+  "implications_for_pipeline": {
+    "reactive_is_viable": "The reactive approach (generate spec → try to prove caller → strengthen from error) is a viable primary strategy for spec generation. It achieves 100% accuracy on the cases tested.",
+    "complementary_to_proactive": "Reactive strengthening is complementary to proactive two-pass generation. Use two-pass for initial spec, then reactive strengthening when callers fail.",
+    "error_message_quality_matters": "The quality of the verification error message is critical. Detailed errors that identify the missing property and the responsible callee enable accurate strengthening. Vague errors would likely produce worse results.",
+    "iteration_count": "In practice, each strengthen-and-retry cycle costs one verification run (~1-5 minutes for this codebase). With 100% accuracy per cycle, the expected number of iterations equals the number of missing clauses."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "hole_id": "R2",
+  "group": "A_standalone",
+  "function": "lemma_naf_even_step",
+  "file": "naf_lemmas.rs",
+  "layer": "L7",
+  "gt_loc_estimate": 52,
+  "attempt_1_result": "pass",
+  "attempt_1_loc": 61,
+  "attempt_2_result": null,
+  "approach": "5-step proof: (1) reconstruct_zero_extend since naf[pos]=0, (2) pow2(pos+1)=2*pow2(pos) via lemma_pow2_adds+lemma2_to64, (3) lemma_mod_breakdown to decompose scalar_val%pow2(pos+1), (4) parity argument: extracted=2k+bit via lemma_mod_breakdown, so carry==bit, (5) algebraic combination via distributive+commutative lemmas.",
+  "key_insight": "Even window means carry equals the least significant bit of the window. This follows from (carry+extracted)%2==0 and extracted = 2k + (scalar/pow2(pos))%2. The reconstruction doesn't change because naf[pos]=0.",
+  "confidence": 4,
+  "notes": "Required several compilation fixes: (1) pow2(1)==2 needs lemma2_to64() not direct assertion, (2) parity argument needed explicit mod_breakdown to show extracted=2k+bit, (3) final combination needed explicit mul commutativity lemmas."
+}

@@ -1,0 +1,175 @@
+{
+  "experiment": "exp18c_repair_prompt",
+  "date": "2026-03-20",
+  "protocol": {
+    "agents_saw": "mutated code + error message only",
+    "agents_blocked_from": "git history, source files, GT backups",
+    "model": "claude-sonnet-4-6",
+    "single_shot": true
+  },
+
+  "evaluation_criteria": {
+    "correct_fix": "Fix undoes the exact mutation (restores GT behavior)",
+    "right_line": "Fix targets the correct line (where the mutation is, not where the error points)",
+    "wrong_fix": "Fix targets wrong location or proposes incorrect change"
+  },
+
+  "group_a_direct": {
+    "description": "7 tests where error points directly to cause",
+    "T1_missing_lemma_add": {
+      "correct_fix": "uncomment lemma_field51_add(self, _rhs) at line 278",
+      "C1": {"result": "correct", "right_line": true, "fix": "restore lemma_field51_add(self, _rhs)"},
+      "C2": {"result": "correct", "right_line": true, "fix": "restore lemma_field51_add(self, _rhs)"},
+      "C3": {"result": "correct", "right_line": true, "fix": "restore lemma_field51_add(self, _rhs)"}
+    },
+    "T2_missing_lemma_neg": {
+      "correct_fix": "uncomment lemma_neg(self) at line 666",
+      "C1": {"result": "correct", "right_line": true, "fix": "restore lemma_neg(self)"},
+      "C2": {"result": "correct", "right_line": true, "fix": "restore lemma_neg(self)"},
+      "C3": {"result": "correct", "right_line": true, "fix": "restore lemma_neg(self)"}
+    },
+    "T3_wrong_arg_order": {
+      "correct_fix": "swap args to (x, u64::MAX, y, u64::MAX)",
+      "C1": {"result": "correct", "right_line": true, "fix": "swapped args correctly"},
+      "C2": {"result": "correct", "right_line": true, "fix": "swapped args correctly"},
+      "C3": {"result": "correct", "right_line": true, "fix": "swapped args correctly"}
+    },
+    "T6_missing_reveal": {
+      "correct_fix": "uncomment reveal(montgomery_ladder_invariant)",
+      "C1": {"result": "correct", "right_line": true, "fix": "restore reveal()"},
+      "C2": {"result": "correct", "right_line": true, "fix": "restore reveal()"},
+      "C3": {"result": "correct", "right_line": true, "fix": "restore reveal()"}
+    },
+    "T7_off_by_one_bound": {
+      "correct_fix": "change <= p() to < 2 * p()",
+      "C1": {"result": "correct", "right_line": true, "fix": "< 2 * p()"},
+      "C2": {"result": "correct", "right_line": true, "fix": "< 2 * p()"},
+      "C3": {"result": "correct", "right_line": true, "fix": "< 2 * p()"}
+    },
+    "T8_wrong_strategy": {
+      "correct_fix": "change by(nonlinear_arith) to by(bit_vector)",
+      "C1": {"result": "correct", "right_line": true, "fix": "by(bit_vector)"},
+      "C2": {"result": "correct", "right_line": true, "fix": "by(bit_vector)"},
+      "C3": {"result": "correct", "right_line": true, "fix": "by(bit_vector)"}
+    },
+    "T9_missing_boundary_lemma": {
+      "correct_fix": "uncomment lemma_mul_boundary(*a, *b)",
+      "C1": {"result": "correct", "right_line": true, "fix": "restore lemma_mul_boundary(*a, *b)"},
+      "C2": {"result": "correct", "right_line": true, "fix": "restore lemma_mul_boundary(*a, *b)"},
+      "C3": {"result": "correct", "right_line": true, "fix": "restore lemma_mul_boundary(*a, *b)"}
+    },
+    "summary": {
+      "C1_error_only": {"fix_rate": "7/7", "right_line_rate": "7/7"},
+      "C2_dispatch_hint": {"fix_rate": "7/7", "right_line_rate": "7/7"},
+      "C3_sibling_fix": {"fix_rate": "7/7", "right_line_rate": "7/7"}
+    }
+  },
+
+  "group_b_misleading": {
+    "description": "2 tests where error appears downstream of actual bug",
+    "T4_arg_swap_downstream": {
+      "correct_fix": "swap args in lemma_mod_sum_factor(16, x-y, modulus) at line 409",
+      "error_points_to": "line 432 (downstream assertion), NOT line 409",
+      "C1": {
+        "result": "wrong",
+        "right_line": false,
+        "fix": "tried to add assertions around line 432-436 (the error site)",
+        "notes": "C1 was misled by the error — tried to fix the symptom at line 432, not the cause at line 409"
+      },
+      "C2": {
+        "result": "correct",
+        "right_line": true,
+        "fix": "restored lemma_mod_sum_factor(16, x-y, modulus) at line 409",
+        "notes": "dispatch hint told agent to check for arg swaps — found the cause"
+      },
+      "C4": {
+        "result": "wrong",
+        "right_line": false,
+        "fix": "swapped args on line 429 (lemma_mod_sum_factor(1, x_mod-y_mod, modulus)) instead of line 409",
+        "notes": "C4 looked upstream but targeted the WRONG lemma_mod_sum_factor call"
+      }
+    },
+    "T5_missing_extensional_eq": {
+      "correct_fix": "restore assert(output.limbs == [...]) extensional equality at lines 270-276",
+      "error_points_to": "vstd/std_specs/ops.rs (confusing) + postcondition line 233",
+      "C1": {
+        "result": "partial",
+        "right_line": true,
+        "fix": "added assert(output == spec_add_fe51_limbs(self, _rhs)) with =~= on limbs",
+        "notes": "right idea (add assertion to bridge), but not the exact GT fix. May or may not verify."
+      },
+      "C2": {
+        "result": "partial",
+        "right_line": false,
+        "fix": "added assert with Seq::new pattern instead of explicit limb array",
+        "notes": "different approach than GT, unclear if it would verify"
+      },
+      "C4": {
+        "result": "partial",
+        "right_line": true,
+        "fix": "added assert(output =~= spec_add_fe51_limbs(self, _rhs))",
+        "notes": "closest to correct approach — uses extensional equality. The backward reasoning hint helped."
+      }
+    },
+    "summary": {
+      "C1_error_only": {"fix_rate": "0/2", "right_line_rate": "1/2"},
+      "C2_dispatch_hint": {"fix_rate": "1/2", "right_line_rate": "1/2"},
+      "C4_backward": {"fix_rate": "0/2", "right_line_rate": "1/2", "notes": "partial credit on T5, wrong target on T4"}
+    }
+  },
+
+  "group_c_vague": {
+    "description": "1 test with vstd cross-reference confusion",
+    "T10_missing_constant_bounds": {
+      "correct_fix": "uncomment lemma_edwards_d_limbs_bounded()",
+      "C1": {"result": "correct", "right_line": true, "fix": "restore lemma_edwards_d_limbs_bounded()"},
+      "C2": {"result": "correct", "right_line": true, "fix": "restore lemma_edwards_d_limbs_bounded()"},
+      "C3": {"result": "correct", "right_line": true, "fix": "restore lemma_edwards_d_limbs_bounded()"},
+      "C4": {"result": "correct", "right_line": true, "fix": "restore lemma_edwards_d_limbs_bounded()"}
+    },
+    "summary": {
+      "C1": "1/1", "C2": "1/1", "C3": "1/1", "C4": "1/1"
+    }
+  },
+
+  "overall_summary": {
+    "C1_error_only": {
+      "group_a": "7/7",
+      "group_b": "0/2",
+      "group_c": "1/1",
+      "total": "8/10 (80%)"
+    },
+    "C2_dispatch_hint": {
+      "group_a": "7/7",
+      "group_b": "1/2",
+      "group_c": "1/1",
+      "total": "9/10 (90%)"
+    },
+    "C3_sibling_fix": {
+      "group_a": "7/7",
+      "group_c": "1/1",
+      "total_tested": "8/8 (100% of tested)"
+    },
+    "C4_backward": {
+      "group_b": "0/2",
+      "group_c": "1/1",
+      "total_tested": "1/3 (33% of tested)"
+    }
+  },
+
+  "analysis": {
+    "key_finding_1": "For direct errors (Group A, 7/10 of all errors), ALL variants achieve 100%. Error messages are sufficient — no extra hints needed.",
+    "key_finding_2": "For misleading errors (Group B, 2/10), C2 (dispatch hint) is the ONLY variant that fixed T4. The hint 'check for arg swaps' was load-bearing.",
+    "key_finding_3": "C4 (backward reasoning) did NOT help as expected on Group B. On T4 it targeted the wrong call; on T5 it produced a partial fix.",
+    "key_finding_4": "T10 (vague, vstd cross-ref) was fixed by ALL variants. Despite the confusing vstd error, the comment '// MUTATION: removed' made it obvious what was missing. In a real pipeline without the comment, this would be harder.",
+    "key_finding_5": "The dispatch hint (C2) is the ONLY variant that improves over error-only (C1): 90% vs 80%. The improvement is entirely on misleading errors.",
+
+    "pipeline_recommendation": {
+      "default_repair": "C1 (error only) — sufficient for 80% of errors",
+      "when_c1_fails": "classify error type, if 'assertion failed downstream' → use C2 dispatch hint",
+      "dispatch_worth_it": true,
+      "backward_reasoning_worth_it": false,
+      "sibling_fix_worth_it": "no additional benefit over C1 for direct errors"
+    }
+  }
+}

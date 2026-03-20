@@ -1,0 +1,22 @@
+A proof of a caller function fails because negate's ensures clause
+doesn't guarantee a property the caller needs.
+
+== CALLEE (negate) CURRENT SPEC ==
+ensures
+    ensures
+        fe51_as_canonical_nat(self) == field_neg(old(fe51_as_canonical_nat(self))),
+        fe51_limbs_bounded(self, 52),
+
+
+== ERROR ==
+error: postcondition not satisfied
+   --> negate_lemmas.rs:42:9
+   |
+42 |     assert(u64_5_as_nat(result.limbs) + u64_5_as_nat(old_limbs) == 15 * p()
+   |            || u64_5_as_nat(result.limbs) + u64_5_as_nat(old_limbs) == 16 * p());
+   |     assertion failed
+
+== INSTRUCTION ==
+Propose the minimum additional ensures clause to add to negate that would
+fix the caller's proof. Only add what is necessary — don't add unrelated properties.
+Output ONLY the new clause(s) to add.

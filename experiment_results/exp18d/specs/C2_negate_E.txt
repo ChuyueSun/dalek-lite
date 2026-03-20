@@ -1,0 +1,2 @@
+u64_5_as_nat(self.limbs) + u64_5_as_nat(old(self.limbs)) == 15 * p()
+    || u64_5_as_nat(self.limbs) + u64_5_as_nat(old(self.limbs)) == 16 * p(),

@@ -1,0 +1,4 @@
+    ensures
+        output == spec_add_fe51_limbs(self, _rhs),
+        fe51_as_canonical_nat(&output) == field_add(fe51_as_canonical_nat(self), fe51_as_canonical_nat(_rhs)),
+        fe51_limbs_bounded(&output, 52),

@@ -1,0 +1,15 @@
+{
+  "hole_id": "R3",
+  "group": "A_standalone",
+  "function": "lemma_carry_preserves_reconstruction",
+  "file": "radix16_lemmas.rs",
+  "layer": "L7",
+  "gt_loc_estimate": 54,
+  "attempt_1_result": "pass",
+  "attempt_1_loc": 74,
+  "attempt_2_result": null,
+  "approach": "Split reconstruction at position i using lemma_reconstruct_radix_2w_split. Show prefixes equal (digits 0..i unchanged). Split suffix at position 2 to isolate modified digits. Show tails from i+2 equal. Algebraic cancellation: -carry*pw + pw*carry = 0. Needed explicit recursive unfolding of reconstruct for 2-element sequences.",
+  "key_insight": "Carry operation redistributes value across digit boundary: subtracting carry*2^w from position i and adding carry to position i+1 nets zero in the weighted sum.",
+  "confidence": 4,
+  "notes": "First submission failed because SMT couldn't unfold reconstruct_radix_2w for 2-element sequences. Added explicit assertions for recursive unfolding (skip(1), skip(1).skip(1), len checks) which solved it."
+}

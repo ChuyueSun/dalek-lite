@@ -1,0 +1,67 @@
+{
+  "hole_id": "I",
+  "pair": 5,
+  "dimension_tested": "scaling",
+  "function": "lemma_as_nat_32_mod_255",
+  "file": "from_bytes_lemmas.rs",
+  "layer": "L3",
+  "taxonomy": "byte_representation",
+  "gt_body_loc": 55,
+  "gt_patterns": ["sub_lemma", "forall"],
+
+  "pre_assessment": {
+    "confidence": 2,
+    "planned_strategy": "Decompose bytes[31] via mod/div, factor out q*pow2(255), use lemma_small_mod after bounding the remainder",
+    "planned_lemmas": ["lemma_assemble_mod_div", "lemma_mod_sum_factor", "lemma_small_mod", "lemma_pow2_adds"],
+    "planned_verus_features": [],
+    "stated_uncertainties": ["How to bound the 31-byte prefix sum", "Whether SMT sees the flat sum structure"]
+  },
+
+  "attempt_1": {
+    "code": "[Algebraic decomposition + by(compute) for s_30 < pow2(248) + direct mul bounds]",
+    "strategy_used": "sub_lemma",
+    "lemmas_called": ["lemma_assemble_mod_div", "lemma_pow2_adds", "lemma_mod_sum_factor", "lemma_mul_is_distributive_add", "lemma_mul_is_associative", "lemma_mul_is_commutative"],
+    "verus_features_used": ["by(compute)"],
+    "verification_result": "fail",
+    "error_message": "3 assertion failures: (1) u8_32_as_nat == rhs + q*pow2(255) — SMT can't chain the algebra, (2) s_30 < pow2(248) by(compute) — can't compute with symbolic bytes, (3) r*pow2(248) < pow2(255) — lemma_mul_strict_inequality arguments wrong",
+    "error_classified": "missing_intermediate"
+  },
+
+  "attempt_2": {
+    "revision_description": "Added to_nat_lemmas import, used case split on q with lemma_u8_32_as_nat_lt_pow2_255 (q==0) and lemma_bytes_as_nat_prefix_bounded + lemma_u8_32_as_nat_mod_truncates (q>=1)",
+    "code": "[Case split approach with bridge lemmas from to_nat_lemmas]",
+    "strategy_used": "sub_lemma",
+    "lemmas_called": ["lemma_assemble_mod_div", "lemma_pow2_adds", "lemma_mod_sum_factor", "lemma_u8_32_as_nat_lt_pow2_255", "lemma_bytes_as_nat_prefix_bounded", "lemma_u8_32_as_nat_mod_truncates", "lemma_mul_inequality", "lemma_small_mod"],
+    "verus_features_used": ["case split"],
+    "verification_result": "fail",
+    "error_message": "2 assertion failures: (1) rhs < p255 in q==0 case — SMT can't see rhs == u8_32_as_nat when q==0 because the flat expressions don't match, (2) rhs < p255 in q>=1 case — SMT can't bridge bytes_as_nat_prefix (recursive) to the flat rhs expression",
+    "error_classified": "missing_intermediate"
+  },
+
+  "post_assessment": {
+    "stated_surprises": "The fundamental bottleneck was bridging between the flat sum (u8_32_as_nat definition) and the recursive bytes_as_nat_prefix. The SMT solver cannot see they are equal without reveal_with_fuel or extensive intermediate assertions. The GT proof likely uses a chain of pre-existing bridge lemmas (lemma_from_u8_32_as_nat_01234 etc.) that build up the connection incrementally.",
+    "alternate_strategy": "Would need reveal_with_fuel(bytes_as_nat_prefix, 32) or use the existing lemma_from_u8_32_as_nat chain instead of trying to build the bridge from scratch. The key missing piece is connecting the flat 32-term sum to the recursive prefix representation.",
+    "confidence_after": 1
+  },
+
+  "diagnosis": {
+    "final_result": "fail",
+    "strategy_correct": true,
+    "strategy_detail": "The algebraic decomposition (mod/div on byte 31, factor out pow2(255), small_mod) is correct",
+    "lemma_discovery": true,
+    "lemma_detail": "Found all needed lemmas (assemble_mod_div, mod_sum_factor, small_mod, prefix_bounded, lt_pow2_255)",
+    "lemma_instantiation": true,
+    "instantiation_detail": "Lemma calls were correct",
+    "verus_pattern_correct": false,
+    "verus_detail": "Failed to bridge flat sum ↔ recursive bytes_as_nat_prefix. Needed reveal_with_fuel or the existing chain of bridge lemmas in the file",
+    "intermediate_assertions_correct": false,
+    "over_engineered": false,
+    "over_detail": "N/A",
+    "under_engineered": true,
+    "under_detail": "Missing the recursive ↔ flat bridge assertions that the GT proof presumably includes",
+    "matches_gt_strategy": false,
+    "matches_gt_lemmas": false,
+    "body_loc_delta": null,
+    "alternative_valid_proof": false
+  }
+}

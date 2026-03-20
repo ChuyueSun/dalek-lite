@@ -1,0 +1,67 @@
+Your proof has an error. Fix it.
+
+== CURRENT CODE (around the error) ==
+ 387:                 )
+ 388:                     &&
+ 389:                 // X is the non-negative root (LSB = 0) - from sqrt_ratio_i
+ 390:                 // This is needed in the proof of decompress
+ 391:                 fe51_as_canonical_nat(&X) % 2 == 0
+ 392:             }),
+ 393:     {
+ 394:         // =================================================================
+ 395:         // PHASE 1: Setup Y, Z, compute u = y² - 1, v = d·y² + 1
+ 396:         // =================================================================
+ 397:         let Y = FieldElement::from_bytes(repr.as_bytes());
+ 398:         assert(field_element_from_bytes(&repr.0) == fe51_as_canonical_nat(&Y));
+ 399:         let Z = FieldElement::ONE;
+ 400:         proof {
+ 401:             // Y is 51-bit bounded (from from_bytes), which implies 54-bit for square
+ 402:             assert((1u64 << 51) < (1u64 << 54)) by (bit_vector);
+ 403:         }
+ 404: 
+ 405:         let YY = Y.square();  // Y² - requires 54-bit bounded input
+ 406: 
+ 407:         proof {
+ 408:             // Limb bounds for field operation preconditions (overflow prevention):
+ 409:             // - lemma_one_limbs_bounded_51: ONE.limbs[i] < 2^51, needed for `u = &YY - &Z`
+ 410:             // - lemma_edwards_d_limbs_bounded: EDWARDS_D.limbs[i] < 2^51, needed for `yy_times_d = &YY * &EDWARDS_D`
+ 411:             lemma_one_limbs_bounded_51();
+ 412:             // lemma_edwards_d_limbs_bounded(); // MUTATION: removed
+ 413:         }
+ 414: 
+ 415:         let u = &YY - &Z;  // u = y² - 1
+ 416:         let yy_times_d = &YY * &constants::EDWARDS_D;
+ 417: 
+ 418:         proof {
+ 419:             // Setup for Add: yy_times_d (52-bit from mul) + Z = ONE
+ 420:             // (inlined from lemma_decompress_add_no_overflow)
+ 421:             // 2^52 + 1 < u64::MAX
+ 422:             assert((1u64 << 52) + 1 < u64::MAX) by (bit_vector);
+ 423:             // Each limb sum is bounded
+ 424:             assert forall|i: int| 0 <= i < 5 implies yy_times_d.limbs[i] + Z.limbs[i]
+ 425:                 < u64::MAX by {
+ 426:                 // limb[i] < 2^52 (from 52-bit bound)
+ 427:                 // Z.limbs[0] = 1, Z.limbs[1..4] = 0
+ 428:             };
+ 429:         }
+ 430: 
+ 431:         let v = &yy_times_d + &Z;  // v = d·y² + 1
+ 432: 
+ 433:         proof {
+ 434:             // v bounds: 52-bit + 1 < 54-bit
+ 435:             assert((1u64 << 52) + 1 < (1u64 << 54)) by (bit_vector);
+ 436:             assert(forall|i: int| 0 <= i < 5 ==> v.limbs[i] < (1u64 << 54));
+
+== ERROR ==
+error: precondition not satisfied
+   --> curve25519-dalek/src/edwards.rs:416:26
+    |
+416 |         let yy_times_d = &YY * &constants::EDWARDS_D;
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+   ::: /root/.cargo/git/checkouts/verus-e4ebf515fa1de14c/88f7396/source/vstd/std_specs/ops.rs:68:25
+    |
+ 68 |                         self.$req(rhs),
+    |                         -------------- failed precondition
+
+Fix the error. Return the corrected code for the relevant section.

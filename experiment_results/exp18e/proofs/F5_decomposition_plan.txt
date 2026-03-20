@@ -1,0 +1,202 @@
+== DECOMPOSITION PLAN FOR lemma_naf_even_step ==
+
+Goal: Given naf[pos] == 0 and (carry + extracted) % 2 == 0, advance the invariant from pos to pos+1.
+
+The invariant at pos:
+  reconstruct(naf.take(pos)) + carry * pow2(pos) == scalar_val % pow2(pos)
+
+The invariant at pos+1 (goal):
+  reconstruct(naf.take(pos+1)) + carry * pow2(pos+1) == scalar_val % pow2(pos+1)
+
+Key insight: Since naf[pos] == 0, reconstruct(naf.take(pos+1)) == reconstruct(naf.take(pos)).
+So the LHS becomes:
+  reconstruct(naf.take(pos)) + carry * pow2(pos+1)
+  = reconstruct(naf.take(pos)) + carry * (2 * pow2(pos))
+
+And the RHS:
+  scalar_val % pow2(pos+1)
+  = pow2(pos) * ((scalar_val / pow2(pos)) % 2) + scalar_val % pow2(pos)   [by lemma_mod_breakdown]
+
+Since (carry + extracted) % 2 == 0, and extracted = (scalar_val / pow2(pos)) % pow2(w),
+and pow2(w) >= 4, the lowest bit of extracted equals the lowest bit of (scalar_val / pow2(pos)).
+Because (carry + extracted) % 2 == 0, we get (carry + (scalar_val / pow2(pos))) % 2 == 0,
+i.e., (scalar_val / pow2(pos)) % 2 == carry % 2.
+Since carry <= 1, either both are 0 or both are 1.
+
+After substituting the old invariant and doing arithmetic, both sides equal the same value.
+
+------------------------------------------------------------------------
+SUB-LEMMA 1: lemma_take_pos_plus_one_zero
+------------------------------------------------------------------------
+Name: lemma_take_pos_plus_one_zero
+
+Signature:
+  proof fn lemma_take_pos_plus_one_zero(naf: Seq<i8>, pos: nat)
+    requires
+      pos < 256,
+      naf.len() == 256,
+      naf[pos as int] == 0i8,
+    ensures
+      reconstruct(naf.take((pos + 1) as int)) == reconstruct(naf.take(pos as int)),
+
+Key lemma used: lemma_reconstruct_zero_extend(naf, pos, pos+1)
+  -- this directly gives the ensure since pos < pos+1 <= 256 == naf.len() and naf[pos] == 0.
+
+Depends on: (none)
+
+Body sketch:
+  lemma_reconstruct_zero_extend(naf, pos, pos + 1);
+
+------------------------------------------------------------------------
+SUB-LEMMA 2: lemma_pow2_step
+------------------------------------------------------------------------
+Name: lemma_pow2_step
+
+Signature:
+  proof fn lemma_pow2_step(pos: nat)
+    ensures
+      pow2(pos + 1) == 2 * pow2(pos),
+
+Key lemma used: lemma_pow2_adds(1, pos), lemma2_to64() (to get pow2(1) == 2)
+
+Depends on: (none)
+
+Body sketch:
+  lemma_pow2_adds(1, pos);   // pow2(1) * pow2(pos) == pow2(1 + pos) == pow2(pos + 1)
+  lemma2_to64();             // pow2(1) == 2
+  // Now: pow2(pos + 1) == 2 * pow2(pos)  (by commutativity of multiplication)
+  lemma_mul_is_commutative(2, pow2(pos) as int);
+
+------------------------------------------------------------------------
+SUB-LEMMA 3: lemma_scalar_mod_breakdown_step
+------------------------------------------------------------------------
+Name: lemma_scalar_mod_breakdown_step
+
+Signature:
+  proof fn lemma_scalar_mod_breakdown_step(scalar_val: nat, pos: nat)
+    requires
+      pos < 256,
+    ensures
+      (scalar_val as int) % pow2(pos + 1) as int
+        == pow2(pos) as int * (((scalar_val as int) / pow2(pos) as int) % 2) + (scalar_val as int) % pow2(pos) as int,
+
+Key lemma used: lemma_mod_breakdown(scalar_val, pow2(pos), 2), lemma_pow2_step(pos)
+
+Depends on: lemma_pow2_step (sub-lemma 2)
+
+Body sketch:
+  lemma_pow2_step(pos);
+  // pow2(pos+1) == 2 * pow2(pos), so pow2(pos+1) == pow2(pos) * 2
+  lemma_mul_is_commutative(pow2(pos) as int, 2);
+  // scalar_val % (pow2(pos) * 2) == pow2(pos) * ((scalar_val / pow2(pos)) % 2) + scalar_val % pow2(pos)
+  lemma_mod_breakdown(scalar_val as int, pow2(pos) as int, 2);
+
+------------------------------------------------------------------------
+SUB-LEMMA 4: lemma_carry_bit_from_window_parity
+------------------------------------------------------------------------
+Name: lemma_carry_bit_from_window_parity
+
+Signature:
+  proof fn lemma_carry_bit_from_window_parity(
+      scalar_val: nat,
+      pos: nat,
+      carry: nat,
+      w: nat,
+      extracted: nat,
+  )
+    requires
+      w >= 2,
+      carry <= 1,
+      extracted == (scalar_val / pow2(pos)) % pow2(w),
+      (carry + extracted) % 2 == 0,
+    ensures
+      (((scalar_val as int) / pow2(pos) as int) % 2) == carry as int,
+
+Key lemma used: lemma_mod_mod, lemma_pow2_adds, lemma2_to64, lemma_small_mod
+
+Depends on: (none — only arithmetic facts)
+
+Proof sketch:
+  // pow2(w) is a multiple of 2 because w >= 2, so pow2(w) = 2 * pow2(w-1).
+  // extracted = (scalar_val / pow2(pos)) % pow2(w)
+  // (scalar_val / pow2(pos)) % 2 == extracted % 2   [by lemma_mod_mod with a=2, b=pow2(w-1)]
+  // (carry + extracted) % 2 == 0  =>  extracted % 2 == (2 - carry) % 2 == carry % 2
+  //   (since carry <= 1, carry % 2 == carry, and extracted % 2 == (2 - carry) % 2 == carry)
+  // Therefore (scalar_val / pow2(pos)) % 2 == carry.
+  lemma_pow2_adds(1, w - 1);  // pow2(w) == pow2(1) * pow2(w-1) == 2 * pow2(w-1)
+  lemma2_to64();              // pow2(1) == 2
+  lemma_mul_is_commutative(2, pow2(w - 1) as int);
+  // Now pow2(w) == 2 * pow2(w-1), so:
+  lemma_mod_mod(scalar_val as int / pow2(pos) as int, 2, pow2(w - 1) as int);
+  // (scalar_val/pow2(pos)) % (2 * pow2(w-1)) % 2 == (scalar_val/pow2(pos)) % 2
+  // i.e., extracted % 2 == (scalar_val/pow2(pos)) % 2
+  // Since (carry + extracted) % 2 == 0 and carry <= 1:
+  //   if carry == 0: extracted % 2 == 0 => result is 0 == carry. Check.
+  //   if carry == 1: extracted % 2 == 1 => result is 1 == carry. Check.
+  // Verus should close by arithmetic after the above.
+
+------------------------------------------------------------------------
+MAIN LEMMA BODY
+------------------------------------------------------------------------
+
+pub proof fn lemma_naf_even_step(
+    naf: Seq<i8>,
+    pos: nat,
+    carry: nat,
+    scalar_val: nat,
+    w: nat,
+    extracted: nat,
+)
+    requires
+        pos < 256,
+        naf.len() == 256,
+        carry <= 1,
+        w >= 2,
+        reconstruct(naf.take(pos as int)) + (carry as int) * pow2(pos) as int
+            == (scalar_val as int) % pow2(pos) as int,
+        naf[pos as int] == 0i8,
+        extracted == (scalar_val / pow2(pos)) % pow2(w),
+        (carry + extracted) % 2 == 0,
+    ensures
+        reconstruct(naf.take((pos + 1) as int)) + (carry as int) * pow2((pos + 1) as nat) as int
+            == (scalar_val as int) % pow2((pos + 1) as nat) as int,
+{
+    // Step 1: reconstruct doesn't change when we extend by a zero digit.
+    lemma_take_pos_plus_one_zero(naf, pos);
+    // Now: reconstruct(naf.take(pos+1)) == reconstruct(naf.take(pos))
+
+    // Step 2: pow2(pos+1) == 2 * pow2(pos)
+    lemma_pow2_step(pos);
+    // Now: pow2(pos+1) as int == 2 * pow2(pos) as int
+
+    // Step 3: Expand scalar_val % pow2(pos+1) via mod_breakdown.
+    lemma_scalar_mod_breakdown_step(scalar_val, pos);
+    // Now: scalar_val % pow2(pos+1)
+    //   == pow2(pos) * ((scalar_val / pow2(pos)) % 2) + scalar_val % pow2(pos)
+
+    // Step 4: Identify (scalar_val / pow2(pos)) % 2 == carry.
+    lemma_carry_bit_from_window_parity(scalar_val, pos, carry, w, extracted);
+    // Now: (scalar_val / pow2(pos)) % 2 == carry
+
+    // Assemble: LHS = reconstruct(naf.take(pos+1)) + carry * pow2(pos+1)
+    //              = reconstruct(naf.take(pos)) + carry * (2 * pow2(pos))   [steps 1,2]
+    //           RHS = pow2(pos) * carry + scalar_val % pow2(pos)            [steps 3,4]
+    //              = carry * pow2(pos) + scalar_val % pow2(pos)
+    // From old invariant: reconstruct(naf.take(pos)) == scalar_val % pow2(pos) - carry * pow2(pos)
+    // So LHS = (scalar_val % pow2(pos) - carry * pow2(pos)) + carry * 2 * pow2(pos)
+    //        = scalar_val % pow2(pos) + carry * pow2(pos)
+    //        = RHS.
+    // Verus closes by linear arithmetic.
+    lemma_mul_is_distributive_add(carry as int, pow2(pos) as int, pow2(pos) as int);
+    lemma_mul_is_commutative(carry as int, 2 * pow2(pos) as int);
+    // (All remaining steps are linear arithmetic that Verus's default solver handles.)
+}
+
+------------------------------------------------------------------------
+DEPENDENCY ORDER
+------------------------------------------------------------------------
+1. lemma_take_pos_plus_one_zero   (no deps)
+2. lemma_pow2_step                (no deps)
+3. lemma_scalar_mod_breakdown_step  (depends on lemma_pow2_step)
+4. lemma_carry_bit_from_window_parity (no deps on the above sub-lemmas)
+5. lemma_naf_even_step (main, calls 1-4 in order)

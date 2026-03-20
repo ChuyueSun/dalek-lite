@@ -1,0 +1,58 @@
+{
+  "hole_id": "B",
+  "pair": 1,
+  "dimension_tested": "verus_strategy_knowledge",
+  "function": "lemma_fe51_limbs_bounded_weaken",
+  "file": "add_lemmas.rs",
+  "layer": "L4",
+  "taxonomy": "bounds_propagation",
+  "gt_body_loc": 8,
+  "gt_patterns": ["bitvec", "forall"],
+
+  "pre_assessment": {
+    "confidence": 4,
+    "planned_strategy": "assert forall |i| ... by { assert by(bit_vector) } — show 1<<a <= 1<<b when a < b",
+    "planned_lemmas": [],
+    "planned_verus_features": ["assert forall", "by(bit_vector)"],
+    "stated_uncertainties": ["Whether bitvector solver handles symbolic shift comparison"]
+  },
+
+  "attempt_1": {
+    "code": "assert forall|i: int| 0 <= i < 5 implies fe.limbs[i] < (1u64 << b) by {\n    assert(fe.limbs[i] < (1u64 << a));\n    assert((1u64 << a) <= (1u64 << b)) by (bit_vector)\n        requires\n            a < b,\n            b <= 63,\n    ;\n}",
+    "strategy_used": "bitvec",
+    "lemmas_called": [],
+    "verus_features_used": ["assert forall", "by(bit_vector)", "requires in by-block"],
+    "verification_result": "pass",
+    "error_message": null,
+    "error_classified": null
+  },
+
+  "attempt_2": null,
+
+  "post_assessment": {
+    "stated_surprises": "None — the bitvector solver handled the symbolic shift comparison as hoped",
+    "alternate_strategy": "Could also use vstd pow2 lemmas instead of bit_vector",
+    "confidence_after": 5
+  },
+
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "Correctly identified need for assert forall + by(bit_vector)",
+    "lemma_discovery": true,
+    "lemma_detail": "No external lemmas needed — pure bitvector reasoning",
+    "lemma_instantiation": true,
+    "instantiation_detail": "N/A",
+    "verus_pattern_correct": true,
+    "verus_detail": "Used assert forall |i| ... by { ... } and by(bit_vector) with requires correctly",
+    "intermediate_assertions_correct": true,
+    "over_engineered": false,
+    "over_detail": "Minimal proof",
+    "under_engineered": false,
+    "under_detail": "N/A",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": 0,
+    "alternative_valid_proof": false
+  }
+}

@@ -1,0 +1,4 @@
+    ensures
+        fe51_limbs_bounded(&r, 52),
+        fe51_limbs_bounded(&r, 54),
+        fe51_as_canonical_nat(&r) == field_canonical(pow(u64_5_as_nat(self.limbs) as int, pow2(k as nat) as int) as nat),

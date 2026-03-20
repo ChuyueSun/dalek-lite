@@ -1,0 +1,142 @@
+You are writing a Verus proof body.
+
+== SIBLING PROOF (adapt this approach) ==
+// =============================================================================
+// Lemma: Bytes to nibbles reconstruction
+// =============================================================================
+/// After extracting nibbles from each byte, reconstruct_radix_16 of the
+/// nibble array equals u8_32_as_nat of the original bytes.
+///
+/// Uses the algebraic identity: output[2*i] + 16 * output[2*i+1] == bytes[i]
+/// which holds because bot_half gives byte % 16 and top_half gives byte / 16.
+pub proof fn lemma_bytes32_to_radix16_nibbles(output: [i8; 64], bytes: [u8; 32])
+    requires
+        forall|i: int|
+            #![trigger output[2 * i], output[2 * i + 1]]
+            0 <= i < 32 ==> output[2 * i] as int + 16 * (output[2 * i + 1] as int)
+                == bytes[i] as int,
+        forall|i: int| 0 <= i < 64 ==> output[i] >= 0,
+    ensures
+        reconstruct_radix_16(output@) == u8_32_as_nat(&bytes) as int,
+{
+    let out_seq = output@;
+    let byte_seq = bytes@;
+
+    // Bridge array indexing to Seq indexing for quantifier triggers
+    assert forall|i: int|
+        #![trigger out_seq[2 * i], out_seq[2 * i + 1]]
+        0 <= i < 32 implies out_seq[2 * i] as int + 16 * (out_seq[2 * i + 1] as int)
+        == byte_seq[i] as int by {
+        assert(out_seq[2 * i] == output[2 * i]);
+        assert(out_seq[2 * i + 1] == output[2 * i + 1]);
+        assert(byte_seq[i] == bytes[i]);
+    }
+    assert forall|i: int| 0 <= i < 64 implies out_seq[i] >= 0 by {
+        assert(out_seq[i] == output[i]);
+    }
+
+    // Subgoal 1: nibbles reconstruct to bytes_as_nat_prefix
+    lemma_nibbles_equal_bytes_prefix(out_seq, byte_seq, 32);
+    assert(out_seq.take(64) =~= out_seq);
+
+    // Subgoal 2: bytes_as_nat_prefix(bytes@, 32) == u8_32_as_nat(&bytes)
+    lemma_decomposition_prefix_rec(&bytes, 32);
+    lemma_u8_32_as_nat_equals_rec(&bytes);
+}
+
+/// Helper: reconstruct_radix_2w of first 2*k nibbles equals bytes_as_nat_prefix of first k bytes
+proof fn lemma_nibbles_equal_bytes_prefix(output: Seq<i8>, bytes: Seq<u8>, k: nat)
+    requires
+        output.len() == 64,
+        bytes.len() == 32,
+        k <= 32,
+        forall|i: int|
+            #![trigger output[2 * i], output[2 * i + 1]]
+            0 <= i < 32 ==> output[2 * i] as int + 16 * (output[2 * i + 1] as int)
+                == bytes[i] as int,
+        forall|i: int| 0 <= i < 64 ==> output[i] >= 0,
+    ensures
+        reconstruct_radix_2w(output.take((2 * k) as int), 4) == bytes_as_nat_prefix(
+            bytes,
+            k,
+        ) as int,
+    decreases k,
+{
+    if k == 0 {
+        assert(output.take(0).len() == 0);
+        assert(reconstruct_radix_2w(output.take(0), 4) == 0);
+    } else {
+        let km1 = (k - 1) as nat;
+
+        // IH: first 2*km1 nibbles reconstruct to first km1 bytes
+        lemma_nibbles_equal_bytes_prefix(output, bytes, km1);
+
+        let prefix = output.take((2 * k) as int);
+        assert(prefix.len() == 2 * k);
+
+        // Split prefix at position 2*km1: known part + last two nibbles
+        lemma_reconstruct_radix_2w_split(prefix, 2 * km1, 4);
+        assert(prefix.take((2 * km1) as int) =~= output.take((2 * km1) as int));
+
+        // The last two elements are the nibbles for byte km1
+        let tail = prefix.skip((2 * km1) as int);
+        assert(tail.len() == 2);
+        assert(tail[0] == output[(2 * km1) as int]);
+        assert(tail[1] == output[(2 * km1 + 1) as int]);
+
+        // Unroll reconstruction of the 2-element tail
+        let tail_skip1 = tail.skip(1);
+        let tail_skip2 = tail_skip1.skip(1);
+        assert(tail_skip1.len() == 1);
+        assert(tail_skip1[0] == tail[1]);
+        assert(tail_skip2.len() == 0);
+        assert(reconstruct_radix_2w(tail_skip2, 4) == 0);
+        assert(reconstruct_radix_2w(tail_skip1, 4) == (tail[1] as int) + pow2(4) * 0);
+        assert(reconstruct_radix_2w(tail_skip1, 4) == tail[1] as int) by {
+            lemma_mul_basics(pow2(4) as int);
+        }
+        assert(reconstruct_radix_2w(tail, 4) == (tail[0] as int) + pow2(4) * (tail[1] as int));
+
+        // pow2(4) == 16, so tail reconstructs to the nibble identity
+        assert(pow2(4) == 16) by {
+            lemma2_to64();
+        }
+        assert(output[(2 * km1) as int] as int + 16 * (output[(2 * km1 + 1) as int] as int)
+            == bytes[km1 as int] as int);
+        assert(reconstruct_radix_2w(tail, 4) == bytes[km1 as int] as int);
+
+        // pow2(4 * 2*km1) == pow2(8*km1)
+        assert(4 * (2 * km1) == 8 * km1) by {
+            lemma_mul_is_associative(4, 2, km1 as int);
+        }
+    }
+}
+
+== OBLIGATION ==
+// =============================================================================
+// Lemma: Carry operation preserves reconstruction
+// =============================================================================
+/// The carry operation at position i preserves the radix-2^w reconstruction.
+pub proof fn lemma_carry_preserves_reconstruction(
+    old_digits: Seq<i8>,
+    new_digits: Seq<i8>,
+    i: nat,
+    carry: int,
+    w: nat,
+)
+    requires
+        w > 0,
+        old_digits.len() == new_digits.len(),
+        i + 1 < old_digits.len(),
+        new_digits[i as int] == old_digits[i as int] - carry * (pow2(w) as int),
+        new_digits[(i + 1) as int] == old_digits[(i + 1) as int] + carry,
+        forall|j: int|
+            0 <= j < old_digits.len() && j != i && j != i + 1 ==> old_digits[j] == new_digits[j],
+    ensures
+        reconstruct_radix_2w(new_digits, w) == reconstruct_radix_2w(old_digits, w),
+
+== FILE IMPORTS ==
+// See file imports in context above
+
+Write the proof body. Follow the structure of the sibling proof where applicable.
+Return ONLY the proof body content (between { and }).

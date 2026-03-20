@@ -1,0 +1,92 @@
+{
+  "S1": {
+    "function": "m",
+    "file": "src/backend/serial/u64/field.rs",
+    "hole_file": "S1_m_hole.rs",
+    "full_file": "S1_m_full.rs",
+    "ensures_removed_lines": 3,
+    "hole_body_lines": 12,
+    "complexity": "simple"
+  },
+  "S10": {
+    "function": "conditional_select",
+    "file": "src/backend/serial/u64/field.rs",
+    "hole_file": "S10_conditional_select_hole.rs",
+    "full_file": "S10_conditional_select_full.rs",
+    "ensures_removed_lines": 5,
+    "hole_body_lines": 17,
+    "complexity": "medium"
+  },
+  "S2": {
+    "function": "add",
+    "file": "src/backend/serial/u64/field.rs",
+    "hole_file": "S2_add_hole.rs",
+    "full_file": "S2_add_full.rs",
+    "ensures_removed_lines": 16,
+    "hole_body_lines": 29,
+    "complexity": "medium"
+  },
+  "S3": {
+    "function": "from_bytes",
+    "file": "src/backend/serial/u64/field.rs",
+    "hole_file": "S3_from_bytes_hole.rs",
+    "full_file": "S3_from_bytes_full.rs",
+    "ensures_removed_lines": 12,
+    "hole_body_lines": 84,
+    "complexity": "medium"
+  },
+  "S4": {
+    "function": "negate",
+    "file": "src/backend/serial/u64/field.rs",
+    "hole_file": "S4_negate_hole.rs",
+    "full_file": "S4_negate_full.rs",
+    "ensures_removed_lines": 21,
+    "hole_body_lines": 36,
+    "complexity": "complex"
+  },
+  "S5": {
+    "function": "reduce",
+    "file": "src/backend/serial/u64/field.rs",
+    "hole_file": "S5_reduce_hole.rs",
+    "full_file": "S5_reduce_full.rs",
+    "ensures_removed_lines": 7,
+    "hole_body_lines": 44,
+    "complexity": "medium"
+  },
+  "S6": {
+    "function": "decompress",
+    "file": "src/edwards.rs",
+    "hole_file": "S6_decompress_hole.rs",
+    "full_file": "S6_decompress_full.rs",
+    "ensures_removed_lines": 22,
+    "hole_body_lines": 19,
+    "complexity": "complex"
+  },
+  "S7": {
+    "function": "compress",
+    "file": "src/ristretto.rs",
+    "hole_file": "S7_compress_hole.rs",
+    "full_file": "S7_compress_full.rs",
+    "ensures_removed_lines": 2,
+    "hole_body_lines": 311,
+    "complexity": "medium"
+  },
+  "S8": {
+    "function": "batch_invert",
+    "file": "src/scalar.rs",
+    "hole_file": "S8_batch_invert_hole.rs",
+    "full_file": "S8_batch_invert_full.rs",
+    "ensures_removed_lines": 13,
+    "hole_body_lines": 327,
+    "complexity": "complex"
+  },
+  "S9": {
+    "function": "mul_base_clamped",
+    "file": "src/montgomery.rs",
+    "hole_file": "S9_mul_base_clamped_hole.rs",
+    "full_file": "S9_mul_base_clamped_full.rs",
+    "ensures_removed_lines": 9,
+    "hole_body_lines": 15,
+    "complexity": "medium"
+  }
+}

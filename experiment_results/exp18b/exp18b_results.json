@@ -1,0 +1,85 @@
+{
+  "experiment": "exp18b_context_supplement",
+  "date": "2026-03-20",
+  "protocol": {
+    "blind": true,
+    "gt_removed": "proof bodies replaced with admit() before agent launch",
+    "model": "claude-sonnet-4-6",
+    "single_shot": true
+  },
+
+  "variants": {
+    "B1": "sibling + imports (baseline)",
+    "B2": "B1 + strategy catalog hint",
+    "B3": "B1 + proven lemma registry (exact names + signatures)",
+    "B4": "B1 + strategy + registry + spec definitions"
+  },
+
+  "results_matrix": {
+    "F1_easy":   {"B1": "pass", "B2": "pass", "B3": "pass", "B4": "pass"},
+    "F2_easy":   {"B1": "fail", "B2": "pass", "B3": "fail", "B4": "pass"},
+    "F3_medium": {"B1": "fail", "B2": "fail", "B3": "pass", "B4": "pass"},
+    "F4_medium": {"B1": "fail", "B2": "fail", "B3": "pass", "B4": "pass"},
+    "F5_hard":   {"B1": "fail", "B2": "fail", "B3": "pass", "B4": "fail"},
+    "F6_hard":   {"B1": "pass", "B2": "fail", "B3": "fail", "B4": "pass"}
+  },
+
+  "loc_matrix": {
+    "F1_easy":   {"B1": 14, "B2": 13, "B3": 12, "B4": 12},
+    "F2_easy":   {"B1": 20, "B2": 16, "B3": 13, "B4": 13},
+    "F3_medium": {"B1": 53, "B2": 3,  "B3": 18, "B4": 16},
+    "F4_medium": {"B1": 34, "B2": 23, "B3": 30, "B4": 31},
+    "F5_hard":   {"B1": 114,"B2": 123,"B3": 91, "B4": 170},
+    "F6_hard":   {"B1": 134,"B2": 175,"B3": 149,"B4": 135}
+  },
+
+  "per_variant_summary": {
+    "B1_baseline":    {"pass_rate": "2/6 (33%)", "passes": ["F1_easy", "F6_hard"]},
+    "B2_strategy":    {"pass_rate": "2/6 (33%)", "passes": ["F1_easy", "F2_easy"]},
+    "B3_registry":    {"pass_rate": "4/6 (67%)", "passes": ["F1_easy", "F3_medium", "F4_medium", "F5_hard"]},
+    "B4_full":        {"pass_rate": "4/6 (67%)", "passes": ["F1_easy", "F2_easy", "F3_medium", "F4_medium"]}
+  },
+
+  "analysis": {
+    "key_finding_1": {
+      "title": "Proven lemma registry is the #1 context supplement",
+      "detail": "B3 (registry) goes from 2/6 (B1) to 4/6, including F5_hard which failed ALL 18a variants (0/4). The registry provides exact lemma names, preventing hallucination.",
+      "evidence": "F5_hard B3 PASSES at 91 LOC — the 18a universal failure was purely a lemma name problem, not a reasoning problem."
+    },
+    "key_finding_2": {
+      "title": "Strategy hints alone don't help medium/hard functions",
+      "detail": "B2 (strategy) only helps F2_easy (where it provides the p_gt_2() reminder). For medium+ functions, knowing WHAT to do (strategy) doesn't help if you don't know the exact lemma NAMES (registry).",
+      "evidence": "B2 fails F3, F4, F5 — same as B1. Strategy without tools is empty advice."
+    },
+    "key_finding_3": {
+      "title": "Full context (B4) ≈ registry (B3) with different coverage",
+      "detail": "B4 passes 4/6 like B3, but on different functions. B4 gets F2 (via strategy) but loses F5 (too much context → longer/worse proof at 170 LOC). B3 gets F5 (focused registry) but loses F2 (no strategy hint for p_gt_2).",
+      "evidence": "Union of B3+B4 would be 5/6. Adding spec definitions may actually hurt by bloating context."
+    },
+    "key_finding_4": {
+      "title": "F5_hard solved by registry alone",
+      "detail": "The 18a universal failure (0/4 prompt variants) was broken by B3 which provides exact lemma names. The proof at 91 LOC is correct Verus. This confirms the 18a diagnosis: the model's REASONING was correct but NAMES were wrong.",
+      "note": "B4 (which includes registry + more) fails F5 at 170 LOC — too much context caused a bloated, incorrect proof. Registry alone is better."
+    },
+    "key_finding_5": {
+      "title": "B1 baseline is weaker than 18a V1",
+      "detail": "B1 only gets 2/6 vs 18a V1's 4/6. This is because 18b's B1 prompt uses a simpler structure (no full mechanical lemma list from 18a). The 18a prompts included 60+ mechanically-extracted lemma signatures which served as a partial registry.",
+      "note": "This means the 18a 'available lemmas' section was partially doing what B3 does explicitly."
+    }
+  },
+
+  "comparison_to_18a": {
+    "18a_best_single": "4/6 (V1, V2, or V3 — all tied)",
+    "18a_union":       "5/6 (V1+V2+V3)",
+    "18b_best_single": "4/6 (B3 or B4)",
+    "18b_union":       "5/6 (B3+B4)",
+    "combined_best":   "6/6 would require B3 for F5 + any 18a variant for F6 (B3 loses F6)"
+  },
+
+  "pipeline_recommendation": {
+    "always_include": ["sibling proof (18a finding)", "proven lemma registry with exact signatures (18b finding)"],
+    "include_when_available": ["strategy hint (helps easy functions, provides boilerplate reminders)"],
+    "avoid": ["spec definitions in prompt (bloats context, may hurt hard functions)"],
+    "optimal_prompt": "B3 (sibling + registry) as default, add strategy hint for known gotchas (p_gt_2, by(bit_vector) etc.)"
+  }
+}

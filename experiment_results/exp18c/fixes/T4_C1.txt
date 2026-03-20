@@ -1,0 +1,11 @@
+LINE 432: assert(fe51_as_canonical_nat(&output) == field_sub(
+LINE 433:     fe51_as_canonical_nat(self),
+LINE 434:     fe51_as_canonical_nat(_rhs))) by {
+LINE 435:     assert(u64_5_as_nat(output.limbs) == u64_5_as_nat(augmented) - u64_5_as_nat(_rhs.limbs));
+LINE 436:     assert(u64_5_as_nat(output.limbs) as int == (x + (16 as int) * modulus) - y);
+LINE 437:     assert(((x + (16 as int) * modulus) - y) % modulus == (x - y) % modulus) by {
+LINE 438:         lemma_mod_sum_factor(x - y, 16 as int, modulus);
+LINE 439:     }
+LINE 440:     assert(fe51_as_canonical_nat(&output) == (u64_5_as_nat(output.limbs) as int % modulus) as nat);
+LINE 441:     assert((x - y) % modulus == ((x_mod + modulus) - y_mod) % modulus);
+LINE 442: }

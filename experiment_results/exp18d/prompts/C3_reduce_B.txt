@@ -1,0 +1,40 @@
+Here is a function and its algebraic ensures clause (generated in Phase A):
+
+== FUNCTION ==
+reduce in backend/serial/u64/field.rs
+Body: Weak reduction: parallel carry-outs. Extracts carries c0..c4 = limbs[i] >> 51, masks limbs, propagates carries cyclically (c4*19 to limbs[0]).
+
+== CURRENT ENSURES (from Phase A) ==
+ensures
+    ensures
+        fe51_as_canonical_nat(&r) == fe51_as_canonical_nat(self),
+        fe51_limbs_bounded(&r, 51),
+
+
+== SIBLING BOUNDS PATTERNS ==
+fn pow2k(&self, mut k: u32) -> (r: FieldElement51)
+    requires k > 0, fe51_limbs_bounded(self, 54),
+    ensures
+        fe51_limbs_bounded(&r, 52),
+        fe51_limbs_bounded(&r, 54),
+        fe51_as_canonical_nat(&r) == field_canonical(pow(fe51_as_nat(self) as int, pow2(k as nat)) as nat),
+
+fn from_bytes(bytes: &[u8; 32]) -> (r: FieldElement51)
+    ensures
+        fe51_as_nat(&r) == u8_32_as_nat(bytes) % pow2(255),
+        fe51_limbs_bounded(&r, 51),
+        is_uniform_bytes(bytes) ==> is_uniform_field_element(&r),
+
+== INSTRUCTION ==
+Does this function need bounds-propagation clauses? Specifically:
+- If inputs have limb bounds B, what bounds does the output have?
+- Add conditional clauses like:
+  fe51_limbs_bounded(input, B) ==> fe51_limbs_bounded(&output, B+K)
+
+Also check:
+- Is there a < 2*p() value bound?
+- Is there an identity-when-already-reduced property?
+- Is there an exact nat-level intermediate formula?
+
+Only add clauses that are NOT trivially derivable from existing ensures.
+Output the COMPLETE ensures clause (Phase A clauses + new bounds clauses).

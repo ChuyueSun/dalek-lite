@@ -1,0 +1,58 @@
+{
+  "hole_id": "F",
+  "pair": 3,
+  "dimension_tested": "sub_lemma_composition",
+  "function": "lemma_from_bytes_as_bytes_roundtrip",
+  "file": "as_bytes_lemmas.rs",
+  "layer": "L4",
+  "taxonomy": "representation_equivalence",
+  "gt_body_loc": 19,
+  "gt_patterns": ["sub_lemma", "vstd"],
+
+  "pre_assessment": {
+    "confidence": 2,
+    "planned_strategy": "Chain: (1) as_bytes_post gives bytes = v%p, (2) from_bytes_post gives decoded = bytes % pow2(255), (3) lemma_small_mod since v%p < p < pow2(255), (4) lemma_mod_twice for (v%p)%p = v%p",
+    "planned_lemmas": ["p_gt_2", "pow255_gt_19", "lemma_mod_pos_bound", "lemma_small_mod", "lemma_mod_twice"],
+    "planned_verus_features": [],
+    "stated_uncertainties": ["Whether I need explicit assertions to connect the specs", "What the exact precondition flow is"]
+  },
+
+  "attempt_1": {
+    "code": "let v = fe51_as_nat(fe_orig) as int;\nlet pp = p() as int;\np_gt_2();\npow255_gt_19();\nassert(0 <= v % pp < pp) by {\n    lemma_mod_pos_bound(v, pp);\n}\nlemma_small_mod((v % pp) as nat, pow2(255));\nlemma_mod_twice(v, pp);",
+    "strategy_used": "sub_lemma",
+    "lemmas_called": ["p_gt_2", "pow255_gt_19", "lemma_mod_pos_bound", "lemma_small_mod", "lemma_mod_twice"],
+    "verus_features_used": ["assert-by block"],
+    "verification_result": "pass",
+    "error_message": null,
+    "error_classified": null
+  },
+
+  "attempt_2": null,
+
+  "post_assessment": {
+    "stated_surprises": "The proof comment gave an excellent roadmap — the key insight was that p < pow2(255) enables lemma_small_mod",
+    "alternate_strategy": "Could potentially skip the assert-by block if the solver infers mod bounds automatically",
+    "confidence_after": 4
+  },
+
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "Correctly identified the small_mod + mod_twice chain from the proof outline",
+    "lemma_discovery": true,
+    "lemma_detail": "Found all required lemmas: lemma_small_mod, lemma_mod_twice, lemma_mod_pos_bound, pow255_gt_19",
+    "lemma_instantiation": true,
+    "instantiation_detail": "Correct casts: (v % pp) as nat for lemma_small_mod, int casts elsewhere",
+    "verus_pattern_correct": true,
+    "verus_detail": "Used assert-by block to establish mod bound as intermediate assertion",
+    "intermediate_assertions_correct": true,
+    "over_engineered": false,
+    "over_detail": "Proof is concise",
+    "under_engineered": false,
+    "under_detail": "N/A",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": -5,
+    "alternative_valid_proof": false
+  }
+}

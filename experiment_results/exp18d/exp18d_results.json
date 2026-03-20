@@ -1,0 +1,159 @@
+{
+  "experiment": "exp18d_spec_generation_recipe",
+  "date": "2026-03-20",
+  "protocol": {
+    "model": "claude-sonnet-4-6",
+    "phases": ["A: single-pass spec", "B: bounds supplement", "E: reactive strengthening"],
+    "phase_c_d_skipped": "proptest and derivability filter require runtime infrastructure"
+  },
+
+  "phase_a_results": {
+    "description": "Single-pass spec generation with sibling specs as context",
+    "C1_add": {
+      "generated": "output == spec_add_fe51_limbs, canonical_nat == field_add, limbs_bounded 52",
+      "gt_clauses": 5,
+      "generated_clauses": 3,
+      "algebraic_correct": true,
+      "missing": ["fe51_as_nat == fe51_as_nat(self) + fe51_as_nat(_rhs)", "51->52 bounds", "52->53 bounds"],
+      "verdict": "too_weak (missing nat identity and bounds propagation)"
+    },
+    "C2_negate": {
+      "generated": "canonical_nat == field_neg, limbs_bounded 52",
+      "gt_clauses": 4,
+      "generated_clauses": 2,
+      "algebraic_correct": true,
+      "missing": ["exact nat formula (16p - old - carry)", "spec_negate structural eq", "field_canonical sum == 0"],
+      "verdict": "too_weak (missing intermediate formula and structural eq)"
+    },
+    "C3_reduce": {
+      "generated": "canonical_nat preserved, limbs_bounded 51",
+      "gt_clauses": 5,
+      "generated_clauses": 2,
+      "algebraic_correct": false,
+      "issues": ["says canonical_nat(r) == canonical_nat(self) but reduce is a standalone fn not method",
+                  "says limbs_bounded 51 but GT says 52 (reduce outputs 52-bit limbs, not 51)"],
+      "verdict": "wrong (incorrect bound level and self-referential spec)"
+    },
+    "C4_from_bytes": {
+      "generated": "canonical_nat == u8_32_as_nat % p(), limbs_bounded 51, uniformity",
+      "gt_clauses": 3,
+      "generated_clauses": 3,
+      "algebraic_correct": true,
+      "note": "Uses %p() instead of GT's % pow2(255) — SEMANTICALLY DIFFERENT. from_bytes strips bit 255, not reduces mod p. This is an incorrect spec.",
+      "verdict": "wrong (% p() vs % pow2(255) is semantically different)"
+    },
+    "C5_compress": {
+      "generated": "result.0 == spec_ristretto_compress(self.0), is_uniform_bytes",
+      "gt_clauses": 1,
+      "generated_clauses": 2,
+      "algebraic_correct": true,
+      "extra": ["is_uniform_bytes(&result.0) — hallucinated, compress output is deterministic not uniform"],
+      "verdict": "too_strong (spurious uniformity clause)"
+    },
+    "C6_mul_base_clamped": {
+      "generated": "is_valid_montgomery_point, scalar_mul_u with u8_32_as_nat",
+      "gt_clauses": 2,
+      "generated_clauses": 2,
+      "algebraic_correct": false,
+      "issues": ["Uses u8_32_as_nat(&spec_clamp_integer(bytes)) instead of scalar_as_nat(&Scalar{bytes: spec_clamp_integer(bytes)}) — different: scalar_as_nat interprets as little-endian scalar, u8_32_as_nat interprets as byte-level nat"],
+      "verdict": "wrong (scalar_as_nat vs u8_32_as_nat mismatch)"
+    },
+    "C7_sub": {
+      "generated": "canonical_nat == field_sub, conditional bounds 52->52",
+      "gt_clauses": 4,
+      "generated_clauses": 2,
+      "algebraic_correct": true,
+      "missing": ["spec_sub_limbs structural eq", "unconditional limbs_bounded 52 and 54"],
+      "note": "Bounds clause is conditional but GT has unconditional. Sub always produces 52-bit output.",
+      "verdict": "too_weak (missing structural eq and unconditional bounds)"
+    },
+    "C8_pow2k": {
+      "generated": "limbs_bounded 52, limbs_bounded 54, field_canonical(pow(...))",
+      "gt_clauses": 3,
+      "generated_clauses": 3,
+      "algebraic_correct": true,
+      "note": "Uses u64_5_as_nat instead of GT's fe51_as_nat — semantically equivalent since fe51_as_nat = u64_5_as_nat",
+      "verdict": "semantically_correct"
+    },
+    "summary": {
+      "semantically_correct": 1,
+      "too_weak": 3,
+      "too_strong": 1,
+      "wrong": 3,
+      "total": 8,
+      "accuracy": "1/8 (12.5%)"
+    }
+  },
+
+  "phase_b_results": {
+    "description": "Bounds supplement pass on field functions",
+    "C1_add": {
+      "new_clauses_added": ["50->51 bound (correct but not in GT)", "51->52 bound (MATCHES GT)", "51-bounded => nat < 2p (true)"],
+      "fixed_from_too_weak": "partially — got 51->52 but not 52->53",
+      "verdict": "improved but still too_weak"
+    },
+    "C2_negate": {
+      "new_clauses_added": ["limbs_bounded 54 (correct, true)"],
+      "fixed_from_too_weak": false,
+      "verdict": "still too_weak (intermediate formula not a bounds property)"
+    },
+    "C3_reduce": {
+      "new_clauses_added": ["identity-when-already-51-bit (similar direction to GT's identity clause)"],
+      "fixed_from_too_weak": false,
+      "verdict": "still wrong (base spec was wrong, bounds can't fix it)"
+    },
+    "C4_from_bytes": {
+      "new_clauses_added": ["fe51_as_nat < 2*p() (true but not in GT)"],
+      "fixed_from_too_weak": "N/A (base spec was wrong — %p instead of %pow2(255))",
+      "verdict": "still wrong"
+    }
+  },
+
+  "phase_e_results": {
+    "description": "Reactive strengthening from degraded caller errors",
+    "C2_negate": {
+      "error_given": "assertion failed: u64_5_as_nat(result) + u64_5_as_nat(old) == 15*p || == 16*p",
+      "proposed_clause": "u64_5_as_nat(self.limbs) + u64_5_as_nat(old(self.limbs)) == 15*p() || ... == 16*p()",
+      "gt_missing": "u64_5_as_nat(self.limbs) == 16*p() - u64_5_as_nat(old) - p()*carry",
+      "evaluation": "PARTIAL — proposed clause is a consequence of the GT clause but less precise. It captures the 15p/16p dichotomy but not the exact formula. Would unblock the caller's proof.",
+      "verdict": "partial_fix"
+    },
+    "C3_reduce": {
+      "error_given": "postcondition failed: r.limbs[0] == expected_limbs[0]",
+      "proposed_clause": "forall|i| r.limbs[i] == fe51_canonical_limbs(self)[i]",
+      "gt_missing": "r.limbs == spec_reduce(limbs)",
+      "evaluation": "WRONG DIRECTION — fe51_canonical_limbs doesn't exist, and the proposal conflates reduce with canonical form. The GT just needs spec_reduce structural equality.",
+      "verdict": "wrong"
+    }
+  },
+
+  "end_to_end_accuracy": {
+    "after_phase_a": "1/8 correct (12.5%)",
+    "after_phase_a_plus_b": "1/8 correct (Phase B didn't fully fix any too_weak case)",
+    "after_all_phases": "1/8 correct + 1 partial reactive fix",
+    "note": "The recipe's Phase A accuracy (1/8) is LOWER than Exp 9's single-pass (4/10 = 40%). This is likely because: (1) 18d prompts used body SUMMARIES instead of full bodies, (2) the model was sonnet not opus, (3) some specs (C3 reduce, C4 from_bytes) got fundamentally wrong answers rather than just missing clauses."
+  },
+
+  "comparison": {
+    "exp9_single_pass": {"correct": 4, "total": 10, "rate": "40%"},
+    "exp9c_two_pass": {"correct": 5, "total": 8, "rate": "62.5%"},
+    "exp18d_recipe": {"correct": 1, "total": 8, "rate": "12.5%"},
+    "note": "18d underperforms prior experiments. Key difference: 18d used body SUMMARIES (not full function bodies) to keep prompts compact. This lost critical information — e.g., C4 from_bytes does '%pow2(255)' masking which only appears in the actual code, not the summary. The recipe should use FULL function bodies."
+  },
+
+  "key_findings": {
+    "finding_1": "Body summaries are INSUFFICIENT for spec generation. The model needs the actual code to infer the right spec. C3 (reduce) and C4 (from_bytes) both got fundamentally wrong specs because the summary omitted key implementation details.",
+    "finding_2": "Phase B (bounds supplement) adds true-but-not-GT clauses and partially recovers missing bounds (C1 got 51->52). But it can't fix fundamentally wrong Phase A specs.",
+    "finding_3": "Phase E (reactive strengthening) works when the error message directly names the missing property (C2: partial fix). Fails when the error is about structural equality (C3: wrong direction).",
+    "finding_4": "C8 (pow2k) was the only correct spec — it has the simplest relationship (repeated squaring) and its sibling specs (square, square2) directly model the pattern.",
+    "finding_5": "Sibling specs help when the target function is structurally similar to siblings. C5 (compress) and C6 (mul_base_clamped) had less-similar siblings and got wrong specs."
+  },
+
+  "pipeline_recommendation": {
+    "critical": "Use FULL function bodies in spec generation prompts, not summaries",
+    "phase_a": "Effective for algebraic properties when full body is provided (Exp 9 showed 100% algebraic accuracy with full bodies)",
+    "phase_b": "Marginal value — adds some bounds clauses but doesn't fix fundamental errors",
+    "phase_e": "Useful for the ~30% of too-weak specs where the caller error names the missing property",
+    "key_limitation": "Implementation-level intermediate formulas (negate carry, reduce exact nat) remain systematically missed across all approaches"
+  }
+}

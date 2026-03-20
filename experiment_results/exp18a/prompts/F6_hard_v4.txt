@@ -1,0 +1,422 @@
+[OBLIGATION]
+// =============================================================================
+// Lemma: Carry operation preserves reconstruction
+// =============================================================================
+/// The carry operation at position i preserves the radix-2^w reconstruction.
+pub proof fn lemma_carry_preserves_reconstruction(
+    old_digits: Seq<i8>,
+    new_digits: Seq<i8>,
+    i: nat,
+    carry: int,
+    w: nat,
+)
+    requires
+        w > 0,
+        old_digits.len() == new_digits.len(),
+        i + 1 < old_digits.len(),
+        new_digits[i as int] == old_digits[i as int] - carry * (pow2(w) as int),
+        new_digits[(i + 1) as int] == old_digits[(i + 1) as int] + carry,
+        forall|j: int|
+            0 <= j < old_digits.len() && j != i && j != i + 1 ==> old_digits[j] == new_digits[j],
+    ensures
+        reconstruct_radix_2w(new_digits, w) == reconstruct_radix_2w(old_digits, w),
+
+[CONTEXT]
+Available lemmas from imported modules:
+
+pub proof fn lemma_bytes_as_nat_prefix_bounded(bytes: Seq<u8>, n: nat)
+    requires
+        n <= bytes.len(),
+    ensures
+        bytes_as_nat_prefix(bytes, n) < pow2((n * 8) as nat),
+    decreases n,
+
+pub proof fn lemma_u8_32_as_nat_lt_pow2_255(bytes: &[u8; 32])
+    requires
+        bytes[31] <= 127,
+    ensures
+        u8_32_as_nat(bytes) < pow2(255),
+
+pub proof fn lemma_bytes_seq_as_nat_equals_prefix(seq: Seq<u8>)
+    ensures
+        bytes_seq_as_nat(seq) == bytes_as_nat_prefix(seq, seq.len() as nat),
+    decreases seq.len(),
+
+pub proof fn lemma_decomposition_prefix_rec(bytes: &[u8; 32], n: nat)
+    requires
+        n <= 32,
+    ensures
+        u8_32_as_nat_rec(bytes, 0) == bytes_as_nat_prefix(bytes@, n) + u8_32_as_nat_rec(bytes, n),
+    decreases n,
+
+pub proof fn lemma_rec_suffix_divisible(bytes: &[u8; 32], n: nat)
+    requires
+        n <= 32,
+    ensures
+        u8_32_as_nat_rec(bytes, n) % pow2((n * 8) as nat) == 0,
+    decreases (32 - n),
+
+pub proof fn lemma_u8_32_as_nat_mod_truncates(bytes: &[u8; 32], n: nat)
+    requires
+        n <= 32,
+    ensures
+        u8_32_as_nat(bytes) % pow2(n * 8) == bytes_as_nat_prefix(bytes@, n),
+
+pub proof fn lemma_prefix_div_extracts_byte(bytes: &[u8; 32], i: nat)
+    requires
+        i < 32,
+    ensures
+        (bytes_as_nat_prefix(bytes@, i + 1) / pow2(i * 8)) % pow2(8) == bytes[i as int] as nat,
+
+pub proof fn lemma_extract_byte_at_index(bytes: &[u8; 32], i: nat)
+    requires
+        i < 32,
+    ensures
+        bytes[i as int] as nat == (u8_32_as_nat(bytes) / pow2(i * 8)) % pow2(8),
+
+pub proof fn lemma_canonical_bytes_equal(bytes1: &[u8; 32], bytes2: &[u8; 32])
+    requires
+        u8_32_as_nat(bytes1) == u8_32_as_nat(bytes2),
+    ensures
+        forall|i: int| 0 <= i < 32 ==> bytes1[i] == bytes2[i],
+
+pub proof fn lemma_suffix_zero_when_bytes_zero(bytes: &[u8; 32], n: nat)
+    requires
+        n <= 32,
+        forall|i: int| n <= i < 32 ==> bytes[i] == 0,
+    ensures
+        u8_32_as_nat_rec(bytes, n) == 0,
+    decreases 32 - n,
+
+pub proof fn lemma_u8_32_as_nat_with_trailing_zeros(bytes: &[u8; 32], n: nat)
+    requires
+        n <= 32,
+        forall|i: int| n <= i < 32 ==> bytes[i] == 0,
+    ensures
+        u8_32_as_nat(bytes) == bytes_as_nat_prefix(bytes@, n),
+
+pub proof fn lemma_u8_32_as_nat_first_byte_only(bytes: &[u8; 32])
+    requires
+        forall|i: int| 1 <= i < 32 ==> bytes[i] == 0,
+    ensures
+        u8_32_as_nat(bytes) == bytes[0] as nat,
+
+pub proof fn lemma_prefix_equal_when_bytes_match(seq1: Seq<u8>, seq2: Seq<u8>, n: nat)
+    requires
+        seq1.len() >= n,
+        seq2.len() >= n,
+        forall|i: int| #![auto] 0 <= i < n ==> seq1[i] == seq2[i],
+    ensures
+        bytes_as_nat_prefix(seq1, n) == bytes_as_nat_prefix(seq2, n),
+    decreases n,
+
+pub proof fn lemma_from_le_bytes(le_seq: Seq<u8>, bytes: &[u8; 32], n: nat)
+    requires
+        n <= 32,
+        le_seq.len() == n,
+        forall|i: int| #![auto] 0 <= i < n ==> le_seq[i] == bytes[i],
+        forall|i: int| n <= i < 32 ==> bytes[i] == 0,
+    ensures
+        u8_32_as_nat(bytes) == bytes_as_nat_prefix(le_seq, n),
+
+pub proof fn lemma_u8_32_as_nat_lower_bound(bytes: &[u8; 32], index: usize)
+    requires
+        index < 32,
+    ensures
+        u8_32_as_nat(bytes) >= (bytes[index as int] as nat) * pow2((index * 8) as nat),
+
+pub proof fn lemma_u8_32_as_nat_equals_rec(bytes: &[u8; 32])
+    ensures
+        u8_32_as_nat(bytes) == u8_32_as_nat_rec(bytes, 0),
+
+pub proof fn lemma_u8_32_as_nat_eq_bytes_seq_as_nat(bytes: &[u8; 32])
+    ensures
+        u8_32_as_nat(bytes) == bytes_seq_as_nat(bytes@),
+
+pub proof fn lemma_u8_32_as_nat_equals_suffix_64(bytes: &[u8; 64])
+    ensures
+        bytes_seq_as_nat(bytes@) == bytes_as_nat_suffix(bytes, 0),
+
+pub proof fn lemma_u8_32_as_nat_identity(bytes: &[u8; 32])
+    requires
+        bytes[0] == 1,
+        forall|i: int| 1 <= i < 32 ==> bytes[i] == 0,
+    ensures
+        u8_32_as_nat(bytes) == 1,
+
+pub proof fn lemma_words_as_nat_upper_bound(words: &[u64; 8], count: int)
+    requires
+        0 <= count <= 8,
+        forall|k: int| 0 <= k < 8 ==> words[k] < pow2(64),
+    ensures
+        words_as_nat_u64(words, count, 64) <= pow2((count * 64) as nat) - 1,
+    decreases count,
+
+pub proof fn lemma_words_as_nat_equals_bytes(words: &[u64; 8], bytes: &[u8; 64], count: int)
+    requires
+        0 <= count <= 8,
+        forall|k: int| #![auto] 0 <= k < 8 ==> words@[k] as nat == word64_from_bytes(bytes@, k),
+    ensures
+        words_as_nat_u64(words, count, 64) == words64_from_bytes_to_nat(bytes@, count),
+    decreases count,
+
+pub proof fn lemma_words64_from_bytes_to_nat_wide(bytes: &[u8; 64])
+    ensures
+        words64_from_bytes_to_nat(bytes@, 8) == word64_from_bytes(bytes@, 0) + pow2(64)
+            * word64_from_bytes(bytes@, 1) + pow2(128) * word64_from_bytes(bytes@, 2) + pow2(192)
+            * word64_from_bytes(bytes@, 3) + pow2(256) * word64_from_bytes(bytes@, 4) + pow2(320)
+            * word64_from_bytes(bytes@, 5) + pow2(384) * word64_from_bytes(bytes@, 6) + pow2(448)
+            * word64_from_bytes(bytes@...
+
+pub proof fn lemma_bytes_as_nat_prefix_chunk(bytes: Seq<u8>, chunk: Seq<u8>, k: nat, remaining: nat)
+    requires
+        remaining <= 8,
+        bytes.len() >= k * 8 + 8,
+        chunk.len() == 8,
+        forall|j: int| 0 <= j < 8 ==> chunk[j] == bytes[k * 8 + j],
+    ensures
+        bytes_as_nat_prefix(bytes, (k * 8 + remaining) as nat) == bytes_as_nat_prefix(
+            bytes,
+            (k * 8) as nat,
+        ) + bytes_as_nat_prefix(chunk, remaining) * pow2((k * 64) as nat),
+    decreases...
+
+pub proof fn lemma_u64x4_from_le_bytes(
+    bytes: [u8; 32],
+    chunk0: [u8; 8],
+    chunk1: [u8; 8],
+    chunk2: [u8; 8],
+    chunk3: [u8; 8],
+)
+    requires
+        forall|j: int| 0 <= j < 8 ==> chunk0[j] == bytes[j],
+        forall|j: int| 0 <= j < 8 ==> chunk1[j] == bytes[8 + j],
+        forall|j: int| 0 <= j < 8 ==> chunk2[j] == bytes[16 + j],
+        forall|j: int| 0 <= j < 8 ==> chunk3[j] == bytes[24 + j],
+    ensures
+        bytes_as_nat_prefix(chunk0@, 8) + bytes_as_nat_prefix(chunk1@,...
+
+pub proof fn lemma_u64x4_mod_strip_above(words: [u64; 4], boundary: nat)
+    requires
+        0 < boundary <= 256,
+    ensures
+        u64_4_as_nat(&words) % pow2(boundary) == (if boundary <= 64
+
+pub proof fn lemma_u64x4_lower_words_bounded(words: [u64; 4], base_idx: usize)
+    requires
+        1 <= base_idx <= 3,
+    ensures
+        (
+
+pub proof fn lemma_reconstruct_radix_2w_split(digits: Seq<i8>, k: nat, w: nat)
+    requires
+        k <= digits.len(),
+        w > 0,
+    ensures
+        reconstruct_radix_2w(digits, w) == reconstruct_radix_2w(digits.take(k as int), w) + pow2(
+            w * k,
+        ) * reconstruct_radix_2w(digits.skip(k as int), w),
+    decreases k,
+
+pub proof fn lemma_u64x4_bit_extraction(
+    words: [u64; 4],
+    bit_buf: u64,
+    window_mask: u64,
+    w: usize,
+    bit_offset: usize,
+    u64_idx: usize,
+    bit_idx: usize,
+)
+    requires
+        w >= 2 && w <= 8,
+        bit_offset <= 255,
+        u64_idx == bit_offset / 64,
+        bit_idx == bit_offset % 64,
+        window_mask == (1u64 << (w as u64)) - 1,
+        (bit_idx < 64 - w || u64_idx == 3) ==> bit_buf == words[u64_idx as int] >> (bit_idx as u64),
+        !(bit_idx < 64 - w || u...
+
+pub proof fn lemma_u64_shl_low_bits(b: u64, k: u64, w: u64)
+    requires
+        k > 0,
+        k < 64,
+        w > k,
+        w <= 8,
+    ensures
+        (
+
+pub proof fn lemma_as_radix_2w_postconditions(
+    digits: [i8; 64],
+    w: usize,
+    digits_count: usize,
+    carry: u64,
+    scalar_val: nat,
+)
+    requires
+        w >= 5,
+        w <= 8,
+        carry <= 1,
+        digits_count as int == (256 + w as int - 1) / w as int,
+        // Core loop invariant at i == digits_count
+        reconstruct_radix_2w(digits@.take(digits_count as int), w as nat) + (carry as int) * (pow2(
+            (w * digits_count) as nat,
+        ) as int) == (scalar_val ...
+
+pub proof fn lemma_digits_count_radix_bounds(w: usize, digits_count: usize)
+    requires
+        5 <= w <= 8,
+        digits_count as int == (256 + w as int - 1) / w as int,
+    ensures
+        digits_count <= 52,
+        digits_count > 0,
+        digits_count * w >= 256,
+        digits_count * w <= 256 + w - 1,
+        (1u64 << (w as u64)) <= 256u64,
+        (1u64 << (w as u64)) as nat == pow2(w as nat),
+
+pub proof fn lemma_last_iter_carry_zero(
+    scalar_val: nat,
+    old_carry: u64,
+    extracted: u64,
+    w: usize,
+    i: usize,
+)
+    requires
+        w >= 5 && w < 8,
+        (i + 1) as int == (256 + w as int - 1) / w as int,
+        scalar_val < pow2(256),
+        old_carry <= 1,
+        extracted as nat == (scalar_val / pow2((w * i) as nat)) % pow2(w as nat),
+    ensures
+        old_carry + extracted < (1u64 << (w as u64)) / 2,
+
+pub proof fn lemma_radix_2w_digit_bounds(coef: u64, w: usize, new_carry: u64)
+    requires
+        coef <= (1u64 << (w as u64)),
+        5 <= w <= 8,
+        new_carry <= 1,
+        new_carry == ((coef + (1u64 << (w as u64)) / 2) as u64) >> (w as u64),
+    ensures
+        (
+
+pub proof fn lemma_radix_2w_loop_reconstruction_step(
+    digits_new: Seq<i8>,
+    i: usize,
+    w: usize,
+    scalar_val: nat,
+    old_carry: u64,
+    new_carry: u64,
+    extracted: nat,
+)
+    requires
+        5 <= w <= 8,
+        i < 64,
+        digits_new.len() == (i + 1) as int,
+        // Old loop invariant
+        reconstruct_radix_2w(digits_new.take(i as int), w as nat) + (old_carry as int) * pow2(
+            (w * i) as nat,
+        ) as int == (scalar_val as int) % pow2((w * i) as nat) ...
+
+pub open spec fn u8_32_as_nat(bytes: &[u8; 32]) -> nat
+
+pub open spec fn bytes_as_nat_suffix<const N: usize>(bytes: &[u8; N], start: int) -> nat
+    decreases (N as int) - start,
+
+pub open spec fn u8_32_as_nat_rec(bytes: &[u8; 32], index: nat) -> nat
+    decreases 32 - index,
+
+pub open spec fn spec_load8_at(input: &[u8], i: usize) -> nat
+
+pub open spec fn u64_5_as_nat_generic_radix(arr: [u64;5], radix: nat) -> nat
+
+pub open spec fn bytes_seq_as_nat(bytes: Seq<u8>) -> nat
+    decreases bytes.len(),
+
+pub open spec fn bytes_as_nat_prefix(bytes: Seq<u8>, j: nat) -> nat
+    recommends
+        j <= bytes.len(),
+    decreases j,
+
+pub open spec fn words_as_nat_gen(words: Seq<nat>, num_words: int, bits_per_word: int) -> nat
+    decreases num_words,
+
+pub open spec fn words_as_nat_u64(words: &[u64], num_words: int, bits_per_word: int) -> nat
+
+pub open spec fn word64_from_bytes(bytes: Seq<u8>, word_idx: int) -> nat
+
+pub open spec fn word64_from_bytes_partial(bytes: Seq<u8>, word_idx: int, upto: int) -> nat
+    decreases
+            if upto <= 0
+
+pub open spec fn words64_from_bytes_to_nat(bytes: Seq<u8>, count: int) -> nat
+    decreases
+            if count <= 0
+
+pub open spec fn bits_as_nat(bits: [bool; 256]) -> nat
+
+pub open spec fn bits_as_nat_rec(bits: [bool; 256], index: int) -> nat
+    decreases 256 - index,
+
+pub open spec fn bits_be_as_nat(bits: &[bool], len: int) -> nat
+    recommends
+        0 <= len <= bits.len(),
+    decreases len,
+
+pub open spec fn bits_from_index_to_nat(bits: [bool; 256], start: nat, len: nat) -> nat
+    recommends
+        start + len <= 256,
+    decreases len,
+
+pub open spec fn byte_bits_value(byte: u8, bit_start: nat, len: nat) -> nat
+    recommends
+        bit_start + len <= 8,
+    decreases len,
+
+pub open spec fn scalar_as_nat(s: &Scalar) -> nat
+
+pub open spec fn u8_32_as_group_canonical(bytes: [u8; 32]) -> nat
+
+pub open spec fn scalar_as_canonical(s: &Scalar) -> nat
+
+pub open spec fn is_canonical_scalar(s: &Scalar) -> bool
+
+pub open spec fn is_inverse(a: &Scalar, b: &Scalar) -> bool
+
+pub open spec fn product_of_scalars(scalars: Seq<Scalar>) -> nat
+    decreases scalars.len(),
+
+pub open spec fn sum_of_scalars(scalars: Seq<Scalar>) -> nat
+    decreases scalars.len(),
+
+pub open spec fn scalar_congruent_nat(s: &Scalar, n: nat) -> bool
+
+pub open spec fn is_inverse_of_nat(s: &Scalar, n: nat) -> bool
+
+// From vstd::arithmetic::div_mod:
+//   lemma_mod_multiples_vanish(b: int, a: int, n: int) requires n > 0 ensures a % n == (a + b * n) % n
+//   lemma_small_mod(x: nat, m: nat) requires x < m ensures x % m == x
+//   lemma_mod_twice(x: int, m: int) requires m > 0 ensures (x % m) % m == x % m
+//   lemma_add_mod_noop(x: int, y: int, m: int) requires m > 0 ensures (x + y) % m == ((x % m) + (y % m)) % m
+//   lemma_mod_pos_bound(x: int, m: int) requires m > 0 ensures 0 <= x % m < m
+//   lemma_mod_bound(x: int, m: int) requires m > 0 ensures x % m < m
+//   lemma_mod_mod(x: int, a: int, b: int) requires a > 0, b > 0 ensures (x % (a * b)) % a == x % a
+//   lemma_mod_breakdown(x: int, a: int, b: int) requires a > 0, b > 0 ensures x % (a * b) == a * ((x / a) % b) + x % a
+//   lemma_mod_division_less_than_divisor(x: int, m: int) requires m > 0 ensures x % m < m
+
+// From vstd::arithmetic::mul:
+//   lemma_mul_basics(x: int) ensures x * 0 == 0, 0 * x == 0, x * 1 == x
+//   lemma_mul_is_commutative(x: int, y: int) ensures x * y == y * x
+//   lemma_mul_is_associative(x: int, y: int, z: int) ensures x * (y * z) == (x * y) * z
+//   lemma_mul_is_distributive_add(x: int, y: int, z: int) ensures x * (y + z) == x * y + x * z
+//   lemma_mul_mod_noop_left(x: int, y: int, m: int) requires m > 0 ensures (x % m) * y % m == x * y % m
+//   lemma_mul_mod_noop_right(x: int, y: int, m: int) requires m > 0 ensures x * (y % m) % m == x * y % m
+//   lemma_mul_strict_inequality(x: int, y: int, z: int) requires x < y, z > 0 ensures x * z < y * z
+//   lemma_mul_by_zero_is_zero(x: int) ensures x * 0 == 0 && 0 * x == 0
+
+// From vstd::arithmetic::power2:
+//   lemma_pow2_pos(e: nat) ensures pow2(e) > 0
+//   lemma_pow2_adds(e1: nat, e2: nat) ensures pow2(e1) * pow2(e2) == pow2(e1 + e2)
+//   lemma2_to64() ensures pow2(0)==1, pow2(1)==2, pow2(2)==4, ..., pow2(64)==0x10000000000000000
+
+[INSTRUCTION]
+Write the proof body for the function in [OBLIGATION]. Use only lemmas from the available list. Return ONLY the proof body content (what goes between { and }), no function signature.

@@ -1,0 +1,1288 @@
+{
+  "spec_files": {
+    "arithm_trait_specs.rs": {
+      "file": "arithm_trait_specs.rs",
+      "total_commits": 7,
+      "current_spec_fns": 108,
+      "changes": {
+        "refactored": 2,
+        "new_function": 1
+      },
+      "first_commit": "2025-11-23",
+      "last_commit": "2026-02-16",
+      "authors": [
+        "Sergiu Bursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "aab56f60",
+          "date": "2026-02-16",
+          "author": "Sergiu Bursuc",
+          "message": "Verify Montgomery functions (#692)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "4419e6f9",
+          "date": "2026-02-03",
+          "author": "Sergiu Bursuc",
+          "message": "Verify EdwardsBasepointTable::mul_base function (#668)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "424bf80b",
+          "date": "2026-01-19",
+          "author": "Sergiu Bursuc",
+          "message": "remaining Ristretto specs (#637)",
+          "change_type": "new_function"
+        }
+      ]
+    },
+    "core_specs.rs": {
+      "file": "core_specs.rs",
+      "total_commits": 10,
+      "current_spec_fns": 17,
+      "changes": {
+        "refactored": 4,
+        "new_function": 1,
+        "weakened": 1,
+        "strengthened": 1
+      },
+      "first_commit": "2025-11-04",
+      "last_commit": "2026-02-16",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc",
+        "astefano"
+      ],
+      "commit_details": [
+        {
+          "hash": "a5c3ad2c",
+          "date": "2026-02-16",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify Scalar::bits_le (#705)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "aab56f60",
+          "date": "2026-02-16",
+          "author": "Sergiu Bursuc",
+          "message": "Verify Montgomery functions (#692)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "5d8a873e",
+          "date": "2026-02-12",
+          "author": "Kukovec",
+          "message": "Refactoring: field and scalar specs (#695)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "a3202f48",
+          "date": "2025-12-25",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Consolidate nat conversion specs (#609)",
+          "change_type": "weakened"
+        },
+        {
+          "hash": "03f7ba87",
+          "date": "2025-11-18",
+          "author": "Lacramioara Astefanoaei",
+          "message": "proofs for FieldElement::eq and ConstantTimeEq::ct_eq (#310)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "f1274d40",
+          "date": "2025-11-17",
+          "author": "Kukovec",
+          "message": "Refactor `specs` (#306)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "c2794c10",
+          "date": "2025-11-11",
+          "author": "Kukovec",
+          "message": "Move specs/lemmas according to lates style guideline updates (#262)",
+          "change_type": "refactored"
+        }
+      ]
+    },
+    "edwards_specs.rs": {
+      "file": "edwards_specs.rs",
+      "total_commits": 44,
+      "current_spec_fns": 63,
+      "changes": {
+        "new_function": 10,
+        "refactored": 18,
+        "strengthened": 2
+      },
+      "first_commit": "2025-10-28",
+      "last_commit": "2026-03-06",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc",
+        "sbursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "c2e862ef",
+          "date": "2026-03-06",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Transform some axioms into lemmas (#757)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "63471152",
+          "date": "2026-03-01",
+          "author": "Sergiu Bursuc",
+          "message": "restore spec_ prefix on elligator_ristretto_flavor and nonspec_map_to_curve (#752)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "613ae3cb",
+          "date": "2026-02-28",
+          "author": "Sergiu Bursuc",
+          "message": "prove is_identity in traits.rs; spec renamings (#747)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "47ba69d8",
+          "date": "2026-02-24",
+          "author": "Kukovec",
+          "message": "Comprehensive refactoring - ensures clauses + verification notes (#734)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "0564b9ab",
+          "date": "2026-02-24",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify LookupTable<ProjectiveNielsPoint>::select (#738)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "1fa414e3",
+          "date": "2026-02-24",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Verify AffineNielsPoint::select (#735)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "a054dc03",
+          "date": "2026-02-23",
+          "author": "Sergiu Bursuc",
+          "message": "Refactor specs to allow type invariant for EdwardsPoint (#728)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "84f6ec47",
+          "date": "2026-02-22",
+          "author": "Sergiu Bursuc",
+          "message": "Strauss multiplication (#721)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "a509df8d",
+          "date": "2026-02-19",
+          "author": "Sergiu Bursuc",
+          "message": "Verify to_edwards in montgomery.rs (#709)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "d7b87120",
+          "date": "2026-02-17",
+          "author": "Sergiu Bursuc",
+          "message": "Verify edwards add functions (#693)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "aab56f60",
+          "date": "2026-02-16",
+          "author": "Sergiu Bursuc",
+          "message": "Verify Montgomery functions (#692)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "22bfb3e7",
+          "date": "2026-02-12",
+          "author": "Sergiu Bursuc",
+          "message": "Verify MontgomeryPoint::mul_base and mul_base_clamped (#689)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "5d8a873e",
+          "date": "2026-02-12",
+          "author": "Kukovec",
+          "message": "Refactoring: field and scalar specs (#695)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "561fc7c2",
+          "date": "2026-02-10",
+          "author": "Sergiu Bursuc",
+          "message": "Verify Elligator/map-to-curve conversions (#675)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "4419e6f9",
+          "date": "2026-02-03",
+          "author": "Sergiu Bursuc",
+          "message": "Verify EdwardsBasepointTable::mul_base function (#668)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "99199884",
+          "date": "2026-01-27",
+          "author": "Sergiu Bursuc",
+          "message": "Verify 3 edwards functions and fix problem in scalar mul specs  (#654)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "cb8387b2",
+          "date": "2026-01-22",
+          "author": "Sergiu Bursuc",
+          "message": "Proofs for EdwardsPoint::is_valid and field element <-> bytes conversion (#652)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "424bf80b",
+          "date": "2026-01-19",
+          "author": "Sergiu Bursuc",
+          "message": "remaining Ristretto specs (#637)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "60ae00d4",
+          "date": "2026-01-12",
+          "author": "Sergiu Bursuc",
+          "message": "ristretto specs (#629)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "9f5556b5",
+          "date": "2026-01-08",
+          "author": "Sergiu Bursuc",
+          "message": "Review edwards point bounds (#623)",
+          "change_type": "refactored"
+        }
+      ]
+    },
+    "field_specs.rs": {
+      "file": "field_specs.rs",
+      "total_commits": 33,
+      "current_spec_fns": 40,
+      "changes": {
+        "strengthened": 3,
+        "new_function": 6,
+        "refactored": 13
+      },
+      "first_commit": "2025-10-23",
+      "last_commit": "2026-03-05",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "S M A Nahian",
+        "Sergiu Bursuc",
+        "astefano",
+        "sbursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "f91fea43",
+          "date": "2026-03-05",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify ristretto double_and_compress_batch_verus (#755)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "1d01da71",
+          "date": "2026-03-03",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify elligator_ristretto_flavor (#753)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "8325bb6d",
+          "date": "2026-02-27",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify ristretto::decompress (#743)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "f59f9fa4",
+          "date": "2026-02-18",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify sub_assign and mul (#719)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "b01225f9",
+          "date": "2026-02-16",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify field batch_invert (#706)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "aab56f60",
+          "date": "2026-02-16",
+          "author": "Sergiu Bursuc",
+          "message": "Verify Montgomery functions (#692)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "5d8a873e",
+          "date": "2026-02-12",
+          "author": "Kukovec",
+          "message": "Refactoring: field and scalar specs (#695)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "a1855f4a",
+          "date": "2026-01-16",
+          "author": "S M A Nahian",
+          "message": "Verify FieldElement::batch_invert(&[FieldElement]) from field.rs (#574)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "60ae00d4",
+          "date": "2026-01-12",
+          "author": "Sergiu Bursuc",
+          "message": "ristretto specs (#629)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "a3202f48",
+          "date": "2025-12-25",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Consolidate nat conversion specs (#609)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "9e48741f",
+          "date": "2025-12-19",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Add 2 roundtrip lemmas for field element bytes serialization (#606)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "8f11f253",
+          "date": "2025-12-17",
+          "author": "Lacramioara Astefanoaei",
+          "message": "La/prove edwards decompress (#576)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "010b36a4",
+          "date": "2025-12-03",
+          "author": "S M A Nahian",
+          "message": "Prove integers mod p are invertible (#350)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "0dbd44f4",
+          "date": "2025-12-02",
+          "author": "Sergiu Bursuc",
+          "message": "cleanup Edwards specs (#352)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "6b856d4c",
+          "date": "2025-11-24",
+          "author": "Lacramioara Astefanoaei",
+          "message": "add fermat lemma and refactor (#335)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "7bfd3bec",
+          "date": "2025-11-23",
+          "author": "Sergiu Bursuc",
+          "message": "Mul specs in montgomery edwards (#315)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "14e5f9a7",
+          "date": "2025-11-21",
+          "author": "Lacramioara Astefanoaei",
+          "message": "prove FieldElement::invert (#324)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "649b1e60",
+          "date": "2025-11-18",
+          "author": "Sergiu Bursuc",
+          "message": "edwards and montgomery specs (#301)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "f1274d40",
+          "date": "2025-11-17",
+          "author": "Kukovec",
+          "message": "Refactor `specs` (#306)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "94e49637",
+          "date": "2025-11-12",
+          "author": "Sergiu Bursuc",
+          "message": "Notation changes: (#268)",
+          "change_type": "refactored"
+        }
+      ]
+    },
+    "field_specs_u64.rs": {
+      "file": "field_specs_u64.rs",
+      "total_commits": 20,
+      "current_spec_fns": 13,
+      "changes": {
+        "refactored": 4,
+        "strengthened": 1
+      },
+      "first_commit": "2025-08-27",
+      "last_commit": "2026-02-12",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Theodore Ehrenborg",
+        "astefano"
+      ],
+      "commit_details": [
+        {
+          "hash": "5d8a873e",
+          "date": "2026-02-12",
+          "author": "Kukovec",
+          "message": "Refactoring: field and scalar specs (#695)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "a3202f48",
+          "date": "2025-12-25",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Consolidate nat conversion specs (#609)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "14e5f9a7",
+          "date": "2025-11-21",
+          "author": "Lacramioara Astefanoaei",
+          "message": "prove FieldElement::invert (#324)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "f1274d40",
+          "date": "2025-11-17",
+          "author": "Kukovec",
+          "message": "Refactor `specs` (#306)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "c2794c10",
+          "date": "2025-11-11",
+          "author": "Kukovec",
+          "message": "Move specs/lemmas according to lates style guideline updates (#262)",
+          "change_type": "refactored"
+        }
+      ]
+    },
+    "iterator_specs.rs": {
+      "file": "iterator_specs.rs",
+      "total_commits": 2,
+      "current_spec_fns": 8,
+      "changes": {
+        "refactored": 1,
+        "new_function": 1
+      },
+      "first_commit": "2026-01-19",
+      "last_commit": "2026-02-09",
+      "authors": [
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "6637419b",
+          "date": "2026-02-09",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Verify montgomery_reduce (#670)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "424bf80b",
+          "date": "2026-01-19",
+          "author": "Sergiu Bursuc",
+          "message": "remaining Ristretto specs (#637)",
+          "change_type": "new_function"
+        }
+      ]
+    },
+    "lizard_specs.rs": {
+      "file": "lizard_specs.rs",
+      "total_commits": 1,
+      "current_spec_fns": 10,
+      "changes": {
+        "new_function": 1
+      },
+      "first_commit": "2026-03-08",
+      "last_commit": "2026-03-08",
+      "authors": [
+        "Sergiu Bursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "f5dbd2c3",
+          "date": "2026-03-08",
+          "author": "Sergiu Bursuc",
+          "message": "Specifications for lizard functions (#754)",
+          "change_type": "new_function"
+        }
+      ]
+    },
+    "montgomery_reduce_specs.rs": {
+      "file": "montgomery_reduce_specs.rs",
+      "total_commits": 2,
+      "current_spec_fns": 5,
+      "changes": {
+        "refactored": 1,
+        "new_function": 1
+      },
+      "first_commit": "2026-02-09",
+      "last_commit": "2026-02-24",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei"
+      ],
+      "commit_details": [
+        {
+          "hash": "47ba69d8",
+          "date": "2026-02-24",
+          "author": "Kukovec",
+          "message": "Comprehensive refactoring - ensures clauses + verification notes (#734)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "6637419b",
+          "date": "2026-02-09",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Verify montgomery_reduce (#670)",
+          "change_type": "new_function"
+        }
+      ]
+    },
+    "montgomery_specs.rs": {
+      "file": "montgomery_specs.rs",
+      "total_commits": 12,
+      "current_spec_fns": 28,
+      "changes": {
+        "strengthened": 2,
+        "refactored": 5,
+        "new_function": 5
+      },
+      "first_commit": "2025-11-18",
+      "last_commit": "2026-03-06",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "c2e862ef",
+          "date": "2026-03-06",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Transform some axioms into lemmas (#757)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "613ae3cb",
+          "date": "2026-02-28",
+          "author": "Sergiu Bursuc",
+          "message": "prove is_identity in traits.rs; spec renamings (#747)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "47ba69d8",
+          "date": "2026-02-24",
+          "author": "Kukovec",
+          "message": "Comprehensive refactoring - ensures clauses + verification notes (#734)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "5d8a873e",
+          "date": "2026-02-12",
+          "author": "Kukovec",
+          "message": "Refactoring: field and scalar specs (#695)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "c0bfeb90",
+          "date": "2026-02-04",
+          "author": "Sergiu Bursuc",
+          "message": "Simplify mul_base proof and verify some edwards functions (#671)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "4df455ac",
+          "date": "2026-02-02",
+          "author": "Sergiu Bursuc",
+          "message": "Verify montgomery ladder (#669)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "a9185171",
+          "date": "2026-01-28",
+          "author": "Kukovec",
+          "message": "Zeroize and Identity proofs (#666)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "a320cbf3",
+          "date": "2025-12-08",
+          "author": "Sergiu Bursuc",
+          "message": "specs for elligator_encode function in montgomery.rs (#394)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "d8b7c2c3",
+          "date": "2025-12-04",
+          "author": "Sergiu Bursuc",
+          "message": "Specify mul functions from edwards.rs (#379)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "fc83ccd7",
+          "date": "2025-11-26",
+          "author": "Sergiu Bursuc",
+          "message": "Window select specs (#337)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "7bfd3bec",
+          "date": "2025-11-23",
+          "author": "Sergiu Bursuc",
+          "message": "Mul specs in montgomery edwards (#315)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "649b1e60",
+          "date": "2025-11-18",
+          "author": "Sergiu Bursuc",
+          "message": "edwards and montgomery specs (#301)",
+          "change_type": "new_function"
+        }
+      ]
+    },
+    "primality_specs.rs": {
+      "file": "primality_specs.rs",
+      "total_commits": 2,
+      "current_spec_fns": 1,
+      "changes": {
+        "strengthened": 1,
+        "refactored": 1
+      },
+      "first_commit": "2025-11-24",
+      "last_commit": "2026-02-18",
+      "authors": [
+        "Lacramioara Astefanoaei"
+      ],
+      "commit_details": [
+        {
+          "hash": "c36b395a",
+          "date": "2026-02-18",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify montgomery_invert (#720)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "6b856d4c",
+          "date": "2025-11-24",
+          "author": "Lacramioara Astefanoaei",
+          "message": "add fermat lemma and refactor (#335)",
+          "change_type": "refactored"
+        }
+      ]
+    },
+    "proba_specs.rs": {
+      "file": "proba_specs.rs",
+      "total_commits": 4,
+      "current_spec_fns": 9,
+      "changes": {
+        "refactored": 3,
+        "new_function": 1
+      },
+      "first_commit": "2026-01-19",
+      "last_commit": "2026-03-01",
+      "authors": [
+        "Kukovec",
+        "Sergiu Bursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "63471152",
+          "date": "2026-03-01",
+          "author": "Sergiu Bursuc",
+          "message": "restore spec_ prefix on elligator_ristretto_flavor and nonspec_map_to_curve (#752)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "613ae3cb",
+          "date": "2026-02-28",
+          "author": "Sergiu Bursuc",
+          "message": "prove is_identity in traits.rs; spec renamings (#747)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "5d8a873e",
+          "date": "2026-02-12",
+          "author": "Kukovec",
+          "message": "Refactoring: field and scalar specs (#695)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "424bf80b",
+          "date": "2026-01-19",
+          "author": "Sergiu Bursuc",
+          "message": "remaining Ristretto specs (#637)",
+          "change_type": "new_function"
+        }
+      ]
+    },
+    "ristretto_specs.rs": {
+      "file": "ristretto_specs.rs",
+      "total_commits": 12,
+      "current_spec_fns": 20,
+      "changes": {
+        "new_function": 4,
+        "refactored": 6,
+        "strengthened": 2
+      },
+      "first_commit": "2026-01-12",
+      "last_commit": "2026-03-08",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "f5dbd2c3",
+          "date": "2026-03-08",
+          "author": "Sergiu Bursuc",
+          "message": "Specifications for lizard functions (#754)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "f91fea43",
+          "date": "2026-03-05",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify ristretto double_and_compress_batch_verus (#755)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "1d01da71",
+          "date": "2026-03-03",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify elligator_ristretto_flavor (#753)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "63471152",
+          "date": "2026-03-01",
+          "author": "Sergiu Bursuc",
+          "message": "restore spec_ prefix on elligator_ristretto_flavor and nonspec_map_to_curve (#752)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "9ebf74d1",
+          "date": "2026-03-01",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify ristretto identity, from_slice, eq, ct_eq (#751)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "a3b7280d",
+          "date": "2026-02-28",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify ristretto::compress (#748)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "613ae3cb",
+          "date": "2026-02-28",
+          "author": "Sergiu Bursuc",
+          "message": "prove is_identity in traits.rs; spec renamings (#747)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "8325bb6d",
+          "date": "2026-02-27",
+          "author": "Lacramioara Astefanoaei",
+          "message": "verify ristretto::decompress (#743)",
+          "change_type": "strengthened"
+        },
+        {
+          "hash": "a054dc03",
+          "date": "2026-02-23",
+          "author": "Sergiu Bursuc",
+          "message": "Refactor specs to allow type invariant for EdwardsPoint (#728)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "5d8a873e",
+          "date": "2026-02-12",
+          "author": "Kukovec",
+          "message": "Refactoring: field and scalar specs (#695)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "424bf80b",
+          "date": "2026-01-19",
+          "author": "Sergiu Bursuc",
+          "message": "remaining Ristretto specs (#637)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "60ae00d4",
+          "date": "2026-01-12",
+          "author": "Sergiu Bursuc",
+          "message": "ristretto specs (#629)",
+          "change_type": "new_function"
+        }
+      ]
+    },
+    "scalar52_specs.rs": {
+      "file": "scalar52_specs.rs",
+      "total_commits": 6,
+      "current_spec_fns": 19,
+      "changes": {
+        "refactored": 3,
+        "new_function": 3
+      },
+      "first_commit": "2025-12-25",
+      "last_commit": "2026-02-24",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "Sergiu Bursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "47ba69d8",
+          "date": "2026-02-24",
+          "author": "Kukovec",
+          "message": "Comprehensive refactoring - ensures clauses + verification notes (#734)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "5d8a873e",
+          "date": "2026-02-12",
+          "author": "Kukovec",
+          "message": "Refactoring: field and scalar specs (#695)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "6637419b",
+          "date": "2026-02-09",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Verify montgomery_reduce (#670)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "99199884",
+          "date": "2026-01-27",
+          "author": "Sergiu Bursuc",
+          "message": "Verify 3 edwards functions and fix problem in scalar mul specs  (#654)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "7964735b",
+          "date": "2026-01-22",
+          "author": "Kukovec",
+          "message": "Bound relaxation (#657)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "a3202f48",
+          "date": "2025-12-25",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Consolidate nat conversion specs (#609)",
+          "change_type": "new_function"
+        }
+      ]
+    },
+    "scalar_specs.rs": {
+      "file": "scalar_specs.rs",
+      "total_commits": 44,
+      "current_spec_fns": 21,
+      "changes": {
+        "new_function": 7,
+        "refactored": 7
+      },
+      "first_commit": "2025-10-06",
+      "last_commit": "2026-02-25",
+      "authors": [
+        "Kukovec",
+        "Lacramioara Astefanoaei",
+        "S M A Nahian",
+        "Sergiu Bursuc",
+        "Theodore Ehrenborg",
+        "astefano",
+        "sbursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "f372db34",
+          "date": "2026-02-25",
+          "author": "Sergiu Bursuc",
+          "message": "Pippenger multiplication (#730)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "aab56f60",
+          "date": "2026-02-16",
+          "author": "Sergiu Bursuc",
+          "message": "Verify Montgomery functions (#692)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "2dc1564f",
+          "date": "2026-02-13",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Verify Scalar::as_radix_2w (#696)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "5d8a873e",
+          "date": "2026-02-12",
+          "author": "Kukovec",
+          "message": "Refactoring: field and scalar specs (#695)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "4419e6f9",
+          "date": "2026-02-03",
+          "author": "Sergiu Bursuc",
+          "message": "Verify EdwardsBasepointTable::mul_base function (#668)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "99199884",
+          "date": "2026-01-27",
+          "author": "Sergiu Bursuc",
+          "message": "Verify 3 edwards functions and fix problem in scalar mul specs  (#654)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "05b6422d",
+          "date": "2026-01-19",
+          "author": "S M A Nahian",
+          "message": "Verify function Scalar::batch_invert(&[Scalar]) from scalar.rs (#584)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "a3202f48",
+          "date": "2025-12-25",
+          "author": "Lacramioara Astefanoaei",
+          "message": "Consolidate nat conversion specs (#609)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "a3693770",
+          "date": "2025-12-10",
+          "author": "Sergiu Bursuc",
+          "message": "Scalar sum product of slice (#542)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "d8b7c2c3",
+          "date": "2025-12-04",
+          "author": "Sergiu Bursuc",
+          "message": "Specify mul functions from edwards.rs (#379)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "e6527d89",
+          "date": "2025-12-03",
+          "author": "Sergiu Bursuc",
+          "message": "specs for mul from variable_base.rs (#354)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "7bfd3bec",
+          "date": "2025-11-23",
+          "author": "Sergiu Bursuc",
+          "message": "Mul specs in montgomery edwards (#315)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "649b1e60",
+          "date": "2025-11-18",
+          "author": "Sergiu Bursuc",
+          "message": "edwards and montgomery specs (#301)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "c2794c10",
+          "date": "2025-11-11",
+          "author": "Kukovec",
+          "message": "Move specs/lemmas according to lates style guideline updates (#262)",
+          "change_type": "refactored"
+        }
+      ]
+    },
+    "window_specs.rs": {
+      "file": "window_specs.rs",
+      "total_commits": 5,
+      "current_spec_fns": 32,
+      "changes": {
+        "refactored": 2,
+        "new_function": 3
+      },
+      "first_commit": "2025-12-08",
+      "last_commit": "2026-03-09",
+      "authors": [
+        "Sergiu Bursuc"
+      ],
+      "commit_details": [
+        {
+          "hash": "f93c3410",
+          "date": "2026-03-09",
+          "author": "Sergiu Bursuc",
+          "message": "Prove vartime double-base multiplication (#760)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "4419e6f9",
+          "date": "2026-02-03",
+          "author": "Sergiu Bursuc",
+          "message": "Verify EdwardsBasepointTable::mul_base function (#668)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "9f5556b5",
+          "date": "2026-01-08",
+          "author": "Sergiu Bursuc",
+          "message": "Review edwards point bounds (#623)",
+          "change_type": "refactored"
+        },
+        {
+          "hash": "ec3b997e",
+          "date": "2025-12-16",
+          "author": "Sergiu Bursuc",
+          "message": "Scalar to point multiplication (#591)",
+          "change_type": "new_function"
+        },
+        {
+          "hash": "29281f97",
+          "date": "2025-12-08",
+          "author": "Sergiu Bursuc",
+          "message": "Window naf specs (#401)",
+          "change_type": "new_function"
+        }
+      ]
+    }
+  },
+  "total_spec_changes": 127,
+  "change_type_totals": {
+    "refactored": 70,
+    "new_function": 44,
+    "weakened": 1,
+    "strengthened": 12
+  },
+  "total_bugfixes": 0,
+  "bugfix_discovery_method": {},
+  "spec_churn_rate": 0.08,
+  "total_spec_fns": 394,
+  "most_changed_specs": [
+    {
+      "file": "edwards_specs.rs",
+      "commits": 44,
+      "spec_fns": 63
+    },
+    {
+      "file": "scalar_specs.rs",
+      "commits": 44,
+      "spec_fns": 21
+    },
+    {
+      "file": "field_specs.rs",
+      "commits": 33,
+      "spec_fns": 40
+    },
+    {
+      "file": "field_specs_u64.rs",
+      "commits": 20,
+      "spec_fns": 13
+    },
+    {
+      "file": "montgomery_specs.rs",
+      "commits": 12,
+      "spec_fns": 28
+    },
+    {
+      "file": "ristretto_specs.rs",
+      "commits": 12,
+      "spec_fns": 20
+    },
+    {
+      "file": "core_specs.rs",
+      "commits": 10,
+      "spec_fns": 17
+    },
+    {
+      "file": "arithm_trait_specs.rs",
+      "commits": 7,
+      "spec_fns": 108
+    },
+    {
+      "file": "scalar52_specs.rs",
+      "commits": 6,
+      "spec_fns": 19
+    },
+    {
+      "file": "window_specs.rs",
+      "commits": 5,
+      "spec_fns": 32
+    }
+  ],
+  "ripple_effects": [
+    {
+      "spec_file": "arithm_trait_specs.rs",
+      "commit": "aab56f60",
+      "message": "Verify Montgomery functions (#692)",
+      "total_files_changed": 24,
+      "proof_files_affected": 13
+    },
+    {
+      "spec_file": "arithm_trait_specs.rs",
+      "commit": "4419e6f9",
+      "message": "Verify EdwardsBasepointTable::mul_base function (#668)",
+      "total_files_changed": 16,
+      "proof_files_affected": 7
+    },
+    {
+      "spec_file": "arithm_trait_specs.rs",
+      "commit": "60ae00d4",
+      "message": "ristretto specs (#629)",
+      "total_files_changed": 13,
+      "proof_files_affected": 1
+    },
+    {
+      "spec_file": "core_specs.rs",
+      "commit": "a5c3ad2c",
+      "message": "verify Scalar::bits_le (#705)",
+      "total_files_changed": 4,
+      "proof_files_affected": 1
+    },
+    {
+      "spec_file": "core_specs.rs",
+      "commit": "aab56f60",
+      "message": "Verify Montgomery functions (#692)",
+      "total_files_changed": 24,
+      "proof_files_affected": 13
+    },
+    {
+      "spec_file": "core_specs.rs",
+      "commit": "5d8a873e",
+      "message": "Refactoring: field and scalar specs (#695)",
+      "total_files_changed": 63,
+      "proof_files_affected": 32
+    },
+    {
+      "spec_file": "core_specs.rs",
+      "commit": "a3202f48",
+      "message": "Consolidate nat conversion specs (#609)",
+      "total_files_changed": 34,
+      "proof_files_affected": 15
+    },
+    {
+      "spec_file": "core_specs.rs",
+      "commit": "03f7ba87",
+      "message": "proofs for FieldElement::eq and ConstantTimeEq::ct_eq (#310)",
+      "total_files_changed": 7,
+      "proof_files_affected": 4
+    },
+    {
+      "spec_file": "core_specs.rs",
+      "commit": "f1274d40",
+      "message": "Refactor `specs` (#306)",
+      "total_files_changed": 24,
+      "proof_files_affected": 16
+    },
+    {
+      "spec_file": "core_specs.rs",
+      "commit": "c2794c10",
+      "message": "Move specs/lemmas according to lates style guideline updates (#262)",
+      "total_files_changed": 50,
+      "proof_files_affected": 31
+    },
+    {
+      "spec_file": "core_specs.rs",
+      "commit": "23b15685",
+      "message": "make verusfmt happy",
+      "total_files_changed": 4,
+      "proof_files_affected": 2
+    },
+    {
+      "spec_file": "core_specs.rs",
+      "commit": "bed0a286",
+      "message": "create backend_64_core",
+      "total_files_changed": 11,
+      "proof_files_affected": 6
+    },
+    {
+      "spec_file": "edwards_specs.rs",
+      "commit": "c2e862ef",
+      "message": "Transform some axioms into lemmas (#757)",
+      "total_files_changed": 17,
+      "proof_files_affected": 6
+    },
+    {
+      "spec_file": "edwards_specs.rs",
+      "commit": "613ae3cb",
+      "message": "prove is_identity in traits.rs; spec renamings (#747)",
+      "total_files_changed": 12,
+      "proof_files_affected": 3
+    },
+    {
+      "spec_file": "edwards_specs.rs",
+      "commit": "47ba69d8",
+      "message": "Comprehensive refactoring - ensures clauses + verification notes (#734)",
+      "total_files_changed": 36,
+      "proof_files_affected": 18
+    },
+    {
+      "spec_file": "edwards_specs.rs",
+      "commit": "0564b9ab",
+      "message": "verify LookupTable<ProjectiveNielsPoint>::select (#738)",
+      "total_files_changed": 8,
+      "proof_files_affected": 2
+    },
+    {
+      "spec_file": "edwards_specs.rs",
+      "commit": "1fa414e3",
+      "message": "Verify AffineNielsPoint::select (#735)",
+      "total_files_changed": 11,
+      "proof_files_affected": 4
+    },
+    {
+      "spec_file": "edwards_specs.rs",
+      "commit": "a054dc03",
+      "message": "Refactor specs to allow type invariant for EdwardsPoint (#728)",
+      "total_files_changed": 20,
+      "proof_files_affected": 7
+    },
+    {
+      "spec_file": "edwards_specs.rs",
+      "commit": "84f6ec47",
+      "message": "Strauss multiplication (#721)",
+      "total_files_changed": 10,
+      "proof_files_affected": 4
+    },
+    {
+      "spec_file": "edwards_specs.rs",
+      "commit": "a509df8d",
+      "message": "Verify to_edwards in montgomery.rs (#709)",
+      "total_files_changed": 9,
+      "proof_files_affected": 6
+    }
+  ]
+}

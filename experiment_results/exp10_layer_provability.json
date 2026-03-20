@@ -1,0 +1,100 @@
+{
+  "total_proof_fns": 729,
+  "total_lemma_calls": 2480,
+  "calls_to_same_layer": 717,
+  "calls_to_lower_layer": 301,
+  "calls_to_higher_layer": 3,
+  "calls_to_vstd_or_unknown": 1459,
+  "violations": [
+    {
+      "caller": "lemma_words_as_nat_upper_bound",
+      "caller_file": "lemmas/common_lemmas/to_nat_lemmas.rs",
+      "caller_layer": 1,
+      "caller_layer_name": "common_lemmas",
+      "callee": "lemma_mul_upper_bound",
+      "callee_file": "lemmas/field_lemmas/to_bytes_reduction_lemmas.rs",
+      "callee_layer": 2,
+      "callee_layer_name": "field_lemmas",
+      "severity": "hard_violation"
+    },
+    {
+      "caller": "lemma_elligator_constants_bounded",
+      "caller_file": "lemmas/field_lemmas/constants_lemmas.rs",
+      "caller_layer": 2,
+      "caller_layer_name": "field_lemmas",
+      "callee": "lemma_edwards_d_limbs_bounded",
+      "callee_file": "lemmas/edwards_lemmas/constants_lemmas.rs",
+      "callee_layer": 5,
+      "callee_layer_name": "edwards_lemmas",
+      "severity": "hard_violation"
+    },
+    {
+      "caller": "lemma_elligator_constants_bounded",
+      "caller_file": "lemmas/field_lemmas/constants_lemmas.rs",
+      "caller_layer": 2,
+      "caller_layer_name": "field_lemmas",
+      "callee": "lemma_edwards_d_limbs_bounded_54",
+      "callee_file": "lemmas/edwards_lemmas/constants_lemmas.rs",
+      "callee_layer": 5,
+      "callee_layer_name": "edwards_lemmas",
+      "severity": "hard_violation"
+    }
+  ],
+  "total_violations": 3,
+  "layer_self_sufficiency": {
+    "common_lemmas": {
+      "layer_number": 1,
+      "proof_fns": 146,
+      "all_deps_satisfied_by_lower_or_same": false,
+      "violation_count": 1,
+      "violations": [
+        "lemma_words_as_nat_upper_bound -> lemma_mul_upper_bound"
+      ]
+    },
+    "field_lemmas": {
+      "layer_number": 2,
+      "proof_fns": 268,
+      "all_deps_satisfied_by_lower_or_same": false,
+      "violation_count": 2,
+      "violations": [
+        "lemma_elligator_constants_bounded -> lemma_edwards_d_limbs_bounded",
+        "lemma_elligator_constants_bounded -> lemma_edwards_d_limbs_bounded_54"
+      ]
+    },
+    "scalar_byte/support_lemmas": {
+      "layer_number": 3,
+      "proof_fns": 43,
+      "all_deps_satisfied_by_lower_or_same": true,
+      "violation_count": 0,
+      "violations": []
+    },
+    "scalar_lemmas": {
+      "layer_number": 4,
+      "proof_fns": 67,
+      "all_deps_satisfied_by_lower_or_same": true,
+      "violation_count": 0,
+      "violations": []
+    },
+    "edwards_lemmas": {
+      "layer_number": 5,
+      "proof_fns": 132,
+      "all_deps_satisfied_by_lower_or_same": true,
+      "violation_count": 0,
+      "violations": []
+    },
+    "ristretto_lemmas": {
+      "layer_number": 6,
+      "proof_fns": 33,
+      "all_deps_satisfied_by_lower_or_same": true,
+      "violation_count": 0,
+      "violations": []
+    },
+    "montgomery_lemmas": {
+      "layer_number": 7,
+      "proof_fns": 40,
+      "all_deps_satisfied_by_lower_or_same": true,
+      "violation_count": 0,
+      "violations": []
+    }
+  }
+}
