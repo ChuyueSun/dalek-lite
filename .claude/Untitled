@@ -1,0 +1,81 @@
+  How Claude Code uses these files                                                                                                                   
+                                                                                                                                                     
+  The .codex/skills/ directory                                                                                                                       
+                                                                                                                                                     
+  These are Claude Code skills — the .codex/skills/ convention is the Codex (OpenAI) agent format, but Claude Code also supports them. Look at the 
+  system prompt in this conversation — you can see both skills listed:
+
+  - verus-proof-helper: Help complete Verus proofs for cryptographic functions...
+  - verus-spec-helper: Write, review, and tighten Verus specifications...
+
+  Trigger mechanism: When I (Claude Code) detect that the user's task matches a skill description, I invoke it via the Skill tool. The skill's
+  SKILL.md gets loaded into context, and I follow its instructions. The references/ files are available for me to Read on demand — they're not
+  auto-loaded, but the SKILL.md points to them:
+
+  - references/workflow.md: step-by-step workflow
+  - references/techniques.md: proof tactics and patterns
+  - references/common-issues.md: common Verus errors
+  ...
+
+  So the flow is: user asks to prove something → Claude Code triggers verus-proof-helper skill → SKILL.md loads (~89 lines of instructions) → I read
+  specific reference files as needed (techniques.md for tactics, common-issues.md for errors, etc.).
+
+  The docs/ directory
+
+  These are not automatically loaded — they're regular documentation files that I discover and read when exploring the codebase. The key ones for
+  proof work:
+
+  ┌─────────────────────────┬──────────────────────────────────────────────────────────────────────┐
+  │          File           │                           When I'd read it                           │
+  ├─────────────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ axiom_references.md     │ When I need to understand what axioms exist and their justifications │
+  ├─────────────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ style_guide.md          │ When writing new lemmas (naming, placement, organization)            │
+  ├─────────────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ onboarding.md           │ Not used by me — it's for human contributors                         │
+  ├─────────────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ limb_bounds_analysis.md │ When working on FieldElement51/Scalar52 bounds proofs                │
+  ├─────────────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ proofs_on_paper/        │ When I need the mathematical derivation behind a proof               │
+  └─────────────────────────┴──────────────────────────────────────────────────────────────────────┘
+
+  Relevance to inference_dalek
+
+  The skills references are exactly the kind of content that should feed inference_dalek's prompts. Compare:
+
+  ┌──────────────────────────────────────────────────────────┬─────────────────────────────────────────────────┐
+  │                inference_dalek v26 prompt                │           Equivalent skill reference            │
+  ├──────────────────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ "Proof Generation Rules" (loop invariants, proof blocks) │ techniques.md (18 techniques)                   │
+  ├──────────────────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ "Verus Syntax Rules"                                     │ common-issues.md (error fixes)                  │
+  ├──────────────────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Generic domain knowledge                                 │ SKILL.md (type invariants, where to put lemmas) │
+  ├──────────────────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ "IMPORTANT CONSTRAINTS" (in repair prompt)               │ quality-bar.md (checklist)                      │
+  ├──────────────────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Available Lemmas section                                 │ lemma-reference.md (search priority, placement) │
+  └──────────────────────────────────────────────────────────┴─────────────────────────────────────────────────┘
+
+  Key differences in quality:
+
+  1. techniques.md is better organized than v26's rules — it has 18 numbered techniques with clear "when to use" guidance. The v26 prompt mixes loop
+  invariants with proof fn rules and Seq updates into one blob.
+  2. common-issues.md addresses real failure modes — "Extract array elements before entering proof blocks", "nested proof blocks not supported", "SMT
+   rlimit fixes". The v26 repair prompt has none of this.
+  3. workflow.md has the incremental approach — "moving assume(false) technique" which is proven to work for complex proofs. inference_dalek's repair
+   loop doesn't use this pattern.
+  4. patterns.md has worked examples from the actual codebase — not synthetic pseudocode like v26's f(x, n) example.
+
+  What inference_dalek should steal from these files
+
+  1. Replace the generic "Proof Generation Rules" section with a filtered subset of techniques.md relevant to the proof type (induction → techniques
+  #7, #14, #15; loop invariant → techniques #8, #15, #18).
+  2. Use common-issues.md in the repair prompt — when the repair loop sees a specific error type, include only the relevant fix from
+  common-issues.md. E.g., AssertFail → include "scope lemma calls with assert-by"; rlimit → include "opaque specs + targeted reveal".
+  3. Use lemma-reference.md search priority for filtering available lemmas — "same file → common_lemmas/ → domain folders" is a better relevance
+  heuristic than name-matching.
+  4. Use quality-bar.md as the success criteria for the repair loop — "all admits replaced, verification passes, minimal assertions" instead of just
+  "errors == 0".
+  5. The axiom_references.md could help inference_dalek understand which admit() calls are intentional axioms (don't try to prove them) vs provable
+  gaps (do try). Currently inference_dalek treats all admit() the same.
