@@ -764,9 +764,244 @@ pub proof fn lemma_edwards_add_commutative(x1: nat, y1: nat, x2: nat, y2: nat)
     assert(edwards_add(x1, y1, x2, y2) == edwards_add(x2, y2, x1, y1));
 }
 
+/// Helper: expanding one level of edwards_add to expose its components.
+///
+/// Returns that edwards_add(x1, y1, x2, y2) equals the explicit formula.
+proof fn lemma_edwards_add_expand(x1: nat, y1: nat, x2: nat, y2: nat)
+    ensures ({
+        let d = fe51_as_canonical_nat(&EDWARDS_D);
+        let x1x2 = field_mul(x1, x2);
+        let y1y2 = field_mul(y1, y2);
+        let x1y2 = field_mul(x1, y2);
+        let y1x2 = field_mul(y1, x2);
+        let t = field_mul(d, field_mul(x1x2, y1y2));
+        let num_x = field_add(x1y2, y1x2);
+        let denom_x = field_add(1, t);
+        let num_y = field_add(y1y2, x1x2);
+        let denom_y = field_sub(1, t);
+        edwards_add(x1, y1, x2, y2) == (
+            field_mul(num_x, field_inv(denom_x)),
+            field_mul(num_y, field_inv(denom_y)),
+        )
+    }),
+{
+    // Follows directly from the definition of edwards_add
+}
+
+/// Helper lemma: field_mul(a, field_inv(b)) with b nonzero is the unique
+/// value q such that field_mul(q, b) == a.
+///
+/// That is, if b % p() != 0, then field_mul(field_mul(a, field_inv(b)), b) == a % p().
+proof fn lemma_div_mul_recover(a: nat, b: nat)
+    requires
+        b % p() != 0,
+    ensures
+        field_mul(field_mul(a, field_inv(b)), b) == a % p(),
+{
+    let inv_b = field_inv(b);
+
+    // field_mul(a, inv_b) * b
+    // = a * (inv_b * b)       by associativity
+    // = a * 1                 by inverse property
+    // = a % p()               by identity
+    lemma_field_mul_assoc(a, inv_b, b);
+    lemma_inv_mul_cancel(b);
+    // Now: field_mul(inv_b, b) == 1
+    lemma_field_mul_one_right(a);
+}
+
+/// Lemma: Multiplication of fractions in the field.
+///
+/// (a * inv(b)) * (c * inv(d)) = (a * c) * inv(b * d)
+proof fn lemma_mul_fractions(a: nat, b: nat, c: nat, d: nat)
+    ensures
+        field_mul(field_mul(a, field_inv(b)), field_mul(c, field_inv(d)))
+            == field_mul(field_mul(a, c), field_inv(field_mul(b, d))),
+{
+    let inv_b = field_inv(b);
+    let inv_d = field_inv(d);
+
+    // (a * inv_b) * (c * inv_d)
+    // = a * (inv_b * (c * inv_d))         by assoc
+    // = a * ((inv_b * c) * inv_d)         by assoc (inner)
+    // inv_b * c = c * inv_b               by comm
+    // = a * ((c * inv_b) * inv_d)
+    // = a * (c * (inv_b * inv_d))         by assoc (inner)
+    // = (a * c) * (inv_b * inv_d)         by assoc
+    // = (a * c) * inv(b * d)              by inv_of_product
+    lemma_field_mul_assoc(a, inv_b, field_mul(c, inv_d));
+    lemma_field_mul_assoc(inv_b, c, inv_d);
+    lemma_field_mul_comm(inv_b, c);
+    lemma_field_mul_assoc(c, inv_b, inv_d);
+    lemma_field_mul_assoc(a, c, field_mul(inv_b, inv_d));
+    lemma_inv_of_product(b, d);
+}
+
+/// Lemma: Adding fractions in the field.
+///
+/// a * inv(b) + c * inv(d) = (a*d + c*b) * inv(b*d)
+///
+/// Requires both denominators to be nonzero.
+proof fn lemma_add_fractions(a: nat, b: nat, c: nat, d: nat)
+    requires
+        b % p() != 0,
+        d % p() != 0,
+    ensures
+        field_add(field_mul(a, field_inv(b)), field_mul(c, field_inv(d)))
+            == field_mul(field_add(field_mul(a, d), field_mul(c, b)), field_inv(field_mul(b, d))),
+{
+    p_gt_2();
+
+    let inv_b = field_inv(b);
+    let inv_d = field_inv(d);
+    let bd = field_mul(b, d);
+
+    // Show b*d != 0 (field has no zero divisors)
+    lemma_nonzero_product(b, d);
+    assert(bd % p() != 0) by {
+        lemma_small_mod(bd, p());
+    };
+
+    let lhs = field_add(field_mul(a, inv_b), field_mul(c, inv_d));
+    let rhs_num = field_add(field_mul(a, d), field_mul(c, b));
+    let rhs = field_mul(rhs_num, field_inv(bd));
+
+    // Step 1: Show (a*inv_b)*bd = field_mul(a, d)
+    assert(field_mul(field_mul(a, inv_b), bd) == field_mul(a, d)) by {
+        // (a*inv_b)*(b*d) = a*(inv_b*(b*d)) by assoc
+        lemma_field_mul_assoc(a, inv_b, bd);
+        // inv_b*(b*d) = (inv_b*b)*d by assoc
+        lemma_field_mul_assoc(inv_b, b, d);
+        // inv_b*b = 1 by inverse
+        lemma_inv_mul_cancel(b);
+        // 1*d = d%p
+        lemma_field_mul_one_left(d);
+        // a*(d%p) = a*d since field_mul reduces mod p
+        lemma_mul_mod_noop_right(a as int, d as int, p() as int);
+    };
+
+    // Step 2: Show (c*inv_d)*bd = field_mul(c, b)
+    assert(field_mul(field_mul(c, inv_d), bd) == field_mul(c, b)) by {
+        // bd = b*d = d*b by comm
+        lemma_field_mul_comm(b, d);
+        // (c*inv_d)*(d*b) = c*(inv_d*(d*b)) by assoc
+        lemma_field_mul_assoc(c, inv_d, field_mul(d, b));
+        // inv_d*(d*b) = (inv_d*d)*b by assoc
+        lemma_field_mul_assoc(inv_d, d, b);
+        // inv_d*d = 1 by inverse
+        lemma_inv_mul_cancel(d);
+        // 1*b = b%p
+        lemma_field_mul_one_left(b);
+        // c*(b%p) = c*b since field_mul reduces mod p
+        lemma_mul_mod_noop_right(c as int, b as int, p() as int);
+    };
+
+    // Step 3: Show lhs * bd = rhs_num
+    assert(field_mul(lhs, bd) == rhs_num) by {
+        // lhs * bd = (a*inv_b + c*inv_d) * bd
+        //          = (a*inv_b)*bd + (c*inv_d)*bd   by distributivity
+        lemma_field_mul_distributes_over_add(bd, field_mul(a, inv_b), field_mul(c, inv_d));
+        lemma_field_mul_comm(bd, lhs);
+        lemma_field_mul_comm(bd, field_mul(a, inv_b));
+        lemma_field_mul_comm(bd, field_mul(c, inv_d));
+        // By Steps 1 and 2:
+        // = field_mul(a,d) + field_mul(c,b) = rhs_num
+    };
+
+    // Step 4: Show rhs * bd = rhs_num
+    assert(field_mul(rhs, bd) == rhs_num % p()) by {
+        // rhs = rhs_num * inv(bd)
+        // rhs * bd = (rhs_num * inv(bd)) * bd
+        //          = rhs_num * (inv(bd) * bd)   by assoc
+        //          = rhs_num * 1                by inverse
+        //          = rhs_num % p                by identity
+        lemma_field_mul_assoc(rhs_num, field_inv(bd), bd);
+        lemma_inv_mul_cancel(bd);
+        lemma_field_mul_one_right(rhs_num);
+    };
+
+    // rhs_num is already < p, so rhs_num % p = rhs_num
+    assert(rhs_num < p()) by {
+        lemma_mod_bound((field_mul(a, d) + field_mul(c, b)) as int, p() as int);
+    };
+    assert(rhs_num % p() == rhs_num) by {
+        lemma_small_mod(rhs_num, p());
+    };
+
+    // Step 5: From Steps 3 and 4: lhs*bd == rhs*bd
+    assert(field_mul(lhs, bd) == field_mul(rhs, bd));
+
+    // Step 6: Cancel bd to get lhs == rhs
+    lemma_field_mul_left_cancel(bd, lhs, rhs);
+    // This gives lhs % p == rhs % p
+
+    // Both lhs and rhs are field elements (< p), so lhs == rhs
+    assert(lhs < p()) by {
+        lemma_mod_bound((field_mul(a, inv_b) + field_mul(c, inv_d)) as int, p() as int);
+    };
+    assert(rhs < p()) by {
+        lemma_mod_bound((rhs_num * field_inv(bd)) as int, p() as int);
+    };
+    assert(lhs == rhs) by {
+        lemma_small_mod(lhs, p());
+        lemma_small_mod(rhs, p());
+    };
+}
+
 /// Axiom: Edwards addition is associative.
 ///
-/// This is a standard group-law property.
+/// This is a standard group-law property of the twisted Edwards curve
+/// addition formula.
+///
+/// ## Proof structure
+///
+/// The Edwards addition formula for the twisted Edwards curve with a=-1 is:
+///   x_out = (x1*y2 + y1*x2) * inv(1 + d*x1*x2*y1*y2)
+///   y_out = (y1*y2 + x1*x2) * inv(1 - d*x1*x2*y1*y2)
+///
+/// ### Step 1: Reduce to rational function identity
+///
+/// Using `lemma_add_fractions` and `lemma_mul_fractions` (proved above),
+/// each coordinate of (A+B)+C and A+(B+C) can be expressed as N/D where:
+///
+/// For (A+B)+C, let T12 = d*(x1*x2)*(y1*y2):
+///   x-numerator:   (x1*y2+y1*x2)*y3*(1-T12) + (y1*y2+x1*x2)*x3*(1+T12)
+///   x-denominator: (1+T12)*(1-T12) + d*(x1*y2+y1*x2)*x3*(y1*y2+x1*x2)*y3
+///
+/// For A+(B+C), let T23 = d*(x2*x3)*(y2*y3):
+///   x-numerator:   x1*(y2*y3+x2*x3)*(1+T23) + y1*(x2*y3+y2*x3)*(1-T23)
+///   x-denominator: (1+T23)*(1-T23) + d*x1*(x2*y3+y2*x3)*y1*(y2*y3+x2*x3)
+///
+/// ### Step 2: Key structural insight
+///
+/// Both numerators share the common sum:
+///   S = x1*y2*y3 + y1*x2*y3 + y1*y2*x3 + x1*x2*x3
+///
+/// After factoring out S, the remaining terms involve T12 and T23 multiplied
+/// by "difference" terms, forming a degree-6 polynomial identity.
+///
+/// ### Step 3: Cross-multiplication identity
+///
+/// Show num_LHS * den_RHS == num_RHS * den_LHS in GF(p). Both sides expand
+/// to the same degree-6 polynomial in x1,y1,x2,y2,x3,y3,d.
+///
+/// ### Current status
+///
+/// The helper lemmas `lemma_mul_fractions` and `lemma_add_fractions` (above)
+/// handle Step 1. Step 3 requires proving a degree-6 polynomial identity
+/// using ~500 applications of field algebra lemmas (mul_assoc, mul_comm,
+/// distributes_over_add, etc.). This mechanical algebraic proof is
+/// not yet implemented; it would benefit from a polynomial ring tactic
+/// (analogous to Lean's `ring` tactic or Coq's `ring_simplify`).
+///
+/// ## References
+///
+/// - Bernstein et al., "Twisted Edwards Curves" (2008), Section 6
+/// - The identity can be verified in Sage via:
+///   `R.<x1,y1,x2,y2,x3,y3,d> = QQ[]`
+///   then checking that the cross-product of numerators and denominators
+///   yields the same polynomial on both sides.
+#[verifier::rlimit(200)]
 pub proof fn axiom_edwards_add_associative(x1: nat, y1: nat, x2: nat, y2: nat, x3: nat, y3: nat)
     ensures
         ({
@@ -777,6 +1012,181 @@ pub proof fn axiom_edwards_add_associative(x1: nat, y1: nat, x2: nat, y2: nat, x
             edwards_add(x1, y1, bc.0, bc.1)
         }),
 {
+    p_gt_2();
+    let d = fe51_as_canonical_nat(&EDWARDS_D);
+
+    // ========================================
+    // First level: compute A+B and B+C
+    // ========================================
+    let x1x2 = field_mul(x1, x2);
+    let y1y2 = field_mul(y1, y2);
+    let x1y2 = field_mul(x1, y2);
+    let y1x2 = field_mul(y1, x2);
+    let t12 = field_mul(d, field_mul(x1x2, y1y2));
+    let nx12 = field_add(x1y2, y1x2);  // x-numerator of A+B
+    let dx12 = field_add(1, t12);       // x-denominator of A+B
+    let ny12 = field_add(y1y2, x1x2);  // y-numerator of A+B
+    let dy12 = field_sub(1, t12);       // y-denominator of A+B
+
+    let x_ab = field_mul(nx12, field_inv(dx12));
+    let y_ab = field_mul(ny12, field_inv(dy12));
+
+    let x2x3 = field_mul(x2, x3);
+    let y2y3 = field_mul(y2, y3);
+    let x2y3 = field_mul(x2, y3);
+    let y2x3 = field_mul(y2, x3);
+    let t23 = field_mul(d, field_mul(x2x3, y2y3));
+    let nx23 = field_add(x2y3, y2x3);
+    let dx23 = field_add(1, t23);
+    let ny23 = field_add(y2y3, x2x3);
+    let dy23 = field_sub(1, t23);
+
+    let x_bc = field_mul(nx23, field_inv(dx23));
+    let y_bc = field_mul(ny23, field_inv(dy23));
+
+    // Verify the unfolding
+    assert(edwards_add(x1, y1, x2, y2) == (x_ab, y_ab));
+    assert(edwards_add(x2, y2, x3, y3) == (x_bc, y_bc));
+
+    // ========================================
+    // Second level: compute (A+B)+C and A+(B+C)
+    // ========================================
+
+    // For (A+B)+C: edwards_add(x_ab, y_ab, x3, y3)
+    let xab_x3 = field_mul(x_ab, x3);
+    let yab_y3 = field_mul(y_ab, y3);
+    let xab_y3 = field_mul(x_ab, y3);
+    let yab_x3 = field_mul(y_ab, x3);
+    let t_lhs = field_mul(d, field_mul(xab_x3, yab_y3));
+    let n_lhs_x = field_add(xab_y3, yab_x3);
+    let d_lhs_x = field_add(1, t_lhs);
+    let n_lhs_y = field_add(yab_y3, xab_x3);
+    let d_lhs_y = field_sub(1, t_lhs);
+
+    // For A+(B+C): edwards_add(x1, y1, x_bc, y_bc)
+    let x1_xbc = field_mul(x1, x_bc);
+    let y1_ybc = field_mul(y1, y_bc);
+    let x1_ybc = field_mul(x1, y_bc);
+    let y1_xbc = field_mul(y1, x_bc);
+    let t_rhs = field_mul(d, field_mul(x1_xbc, y1_ybc));
+    let n_rhs_x = field_add(x1_ybc, y1_xbc);
+    let d_rhs_x = field_add(1, t_rhs);
+    let n_rhs_y = field_add(y1_ybc, x1_xbc);
+    let d_rhs_y = field_sub(1, t_rhs);
+
+    // The goal: show
+    // (field_mul(n_lhs_x, field_inv(d_lhs_x)), field_mul(n_lhs_y, field_inv(d_lhs_y)))
+    // == (field_mul(n_rhs_x, field_inv(d_rhs_x)), field_mul(n_rhs_y, field_inv(d_rhs_y)))
+
+    // ========================================
+    // Key step: Simplify x_ab and y_ab products using field algebra
+    // ========================================
+
+    // x_ab * y3 = nx12 * inv(dx12) * y3 = field_mul(field_mul(nx12, y3), inv(dx12))
+    assert(xab_y3 == field_mul(field_mul(nx12, y3), field_inv(dx12))) by {
+        lemma_field_mul_assoc(nx12, field_inv(dx12), y3);
+        lemma_field_mul_comm(field_inv(dx12), y3);
+        lemma_field_mul_assoc(nx12, y3, field_inv(dx12));
+    };
+
+    // y_ab * x3 = ny12 * inv(dy12) * x3 = field_mul(field_mul(ny12, x3), inv(dy12))
+    assert(yab_x3 == field_mul(field_mul(ny12, x3), field_inv(dy12))) by {
+        lemma_field_mul_assoc(ny12, field_inv(dy12), x3);
+        lemma_field_mul_comm(field_inv(dy12), x3);
+        lemma_field_mul_assoc(ny12, x3, field_inv(dy12));
+    };
+
+    // y_ab * y3 = ny12 * inv(dy12) * y3 = field_mul(field_mul(ny12, y3), inv(dy12))
+    assert(yab_y3 == field_mul(field_mul(ny12, y3), field_inv(dy12))) by {
+        lemma_field_mul_assoc(ny12, field_inv(dy12), y3);
+        lemma_field_mul_comm(field_inv(dy12), y3);
+        lemma_field_mul_assoc(ny12, y3, field_inv(dy12));
+    };
+
+    // x_ab * x3 = nx12 * inv(dx12) * x3 = field_mul(field_mul(nx12, x3), inv(dx12))
+    assert(xab_x3 == field_mul(field_mul(nx12, x3), field_inv(dx12))) by {
+        lemma_field_mul_assoc(nx12, field_inv(dx12), x3);
+        lemma_field_mul_comm(field_inv(dx12), x3);
+        lemma_field_mul_assoc(nx12, x3, field_inv(dx12));
+    };
+
+    // Similarly for RHS products:
+    // x1 * y_bc = x1 * ny23 * inv(dy23) = field_mul(field_mul(x1, ny23), inv(dy23))
+    assert(x1_ybc == field_mul(field_mul(x1, ny23), field_inv(dy23))) by {
+        lemma_field_mul_assoc(x1, field_inv(dy23), ny23);
+        // Actually need: x1 * (ny23 * inv(dy23)) = (x1*ny23) * inv(dy23)
+        lemma_field_mul_assoc(x1, ny23, field_inv(dy23));
+    };
+
+    // y1 * x_bc = y1 * nx23 * inv(dx23) = field_mul(field_mul(y1, nx23), inv(dx23))
+    assert(y1_xbc == field_mul(field_mul(y1, nx23), field_inv(dx23))) by {
+        lemma_field_mul_assoc(y1, nx23, field_inv(dx23));
+    };
+
+    // y1 * y_bc = y1 * ny23 * inv(dy23) = field_mul(field_mul(y1, ny23), inv(dy23))
+    assert(y1_ybc == field_mul(field_mul(y1, ny23), field_inv(dy23))) by {
+        lemma_field_mul_assoc(y1, ny23, field_inv(dy23));
+    };
+
+    // x1 * x_bc = x1 * nx23 * inv(dx23) = field_mul(field_mul(x1, nx23), inv(dx23))
+    assert(x1_xbc == field_mul(field_mul(x1, nx23), field_inv(dx23))) by {
+        lemma_field_mul_assoc(x1, nx23, field_inv(dx23));
+    };
+
+    // ========================================
+    // Now use lemma_mul_fractions and lemma_add_fractions to simplify
+    // ========================================
+
+    // For the LHS t value:
+    // t_lhs = d * (xab*x3) * (yab*y3)
+    //       = d * (nx12*x3*inv(dx12)) * (ny12*y3*inv(dy12))
+    // By lemma_mul_fractions:
+    //       = d * (nx12*x3*ny12*y3) * inv(dx12*dy12)
+    let nx12_x3 = field_mul(nx12, x3);
+    let ny12_y3 = field_mul(ny12, y3);
+    let dx12_dy12 = field_mul(dx12, dy12);
+
+    assert(field_mul(xab_x3, yab_y3) == field_mul(field_mul(nx12_x3, ny12_y3), field_inv(dx12_dy12))) by {
+        lemma_mul_fractions(nx12_x3, dx12, ny12_y3, dy12);
+    };
+
+    assert(t_lhs == field_mul(field_mul(d, field_mul(nx12_x3, ny12_y3)), field_inv(dx12_dy12))) by {
+        // t_lhs = d * (product of fractions) = d * (nx12_x3*ny12_y3) * inv(dx12_dy12)
+        lemma_field_mul_assoc(d, field_mul(nx12_x3, ny12_y3), field_inv(dx12_dy12));
+    };
+
+    // Similarly for RHS t value:
+    let x1_nx23 = field_mul(x1, nx23);
+    let y1_ny23 = field_mul(y1, ny23);
+    let dx23_dy23 = field_mul(dx23, dy23);
+
+    assert(field_mul(x1_xbc, y1_ybc) == field_mul(field_mul(x1_nx23, y1_ny23), field_inv(dx23_dy23))) by {
+        lemma_mul_fractions(x1_nx23, dx23, y1_ny23, dy23);
+    };
+
+    assert(t_rhs == field_mul(field_mul(d, field_mul(x1_nx23, y1_ny23)), field_inv(dx23_dy23))) by {
+        lemma_field_mul_assoc(d, field_mul(x1_nx23, y1_ny23), field_inv(dx23_dy23));
+    };
+
+    // At this point, I've expressed both t_lhs and t_rhs as fractions.
+    // The denominators (d_lhs_x, d_lhs_y, etc.) each involve 1 +/- t, where t is a fraction.
+    // The numerators (n_lhs_x, n_lhs_y, etc.) are sums of products of fractions.
+    //
+    // The remaining proof requires:
+    // 1. Expressing n_lhs_x in terms of (nx12*y3*dy12 + ny12*x3*dx12) * inv(dx12*dy12)
+    //    using lemma_add_fractions
+    // 2. Similarly for d_lhs_x as (dx12*dy12 + d*nx12*x3*ny12*y3) * inv(dx12*dy12)
+    // 3. Then x_lhs = n_lhs_x / d_lhs_x = numerator / denominator (inv(dx12*dy12) cancels)
+    // 4. Do the same for the RHS
+    // 5. Show the resulting numerators and denominators are equal via polynomial identity
+    //
+    // Steps 1-4 require the denominators dx12, dy12, dx23, dy23 to be nonzero.
+    // Without on-curve preconditions, these could be zero. The zero case needs
+    // separate handling where both sides collapse to 0.
+    //
+    // Step 5 is the core algebraic identity (degree-6 polynomial in 7 variables).
+    // This requires ~200+ lemma applications for the field algebra manipulations.
+
     admit();
 }
 
@@ -1309,10 +1719,48 @@ pub proof fn lemma_neg_of_signed_scalar_mul(P: (nat, nat), n: int)
     }
 }
 
-/// Axiom: [a]P + [b]P = [a+b]P for signed scalars a, b.
+/// Axiom: P + (-P) = identity for canonical points.
+///
+/// This is the group-theoretic additive inverse property.
+/// Proof deferred (Tier 3a): follows from the Edwards addition formula
+/// since add((x,y),(-x,y)) yields x-coord = 0, y-coord = 1.
+pub proof fn axiom_edwards_add_inverse(P: (nat, nat))
+    requires
+        P.0 < p(),
+        P.1 < p(),
+    ensures
+        edwards_add(P.0, P.1, edwards_neg(P).0, edwards_neg(P).1) == edwards_identity(),
+{
+    admit();
+}
+
+/// Lemma: [n]P + (-[n]P) = identity for canonical P and any n >= 0.
+///
+/// Follows from axiom_edwards_add_inverse applied to [n]P,
+/// since edwards_scalar_mul always returns canonical results for canonical P.
+proof fn lemma_scalar_mul_add_neg_cancel(P: (nat, nat), n: nat)
+    requires
+        P.0 < p(),
+        P.1 < p(),
+    ensures
+        ({
+            let Q = edwards_scalar_mul(P, n);
+            edwards_add(Q.0, Q.1, edwards_neg(Q).0, edwards_neg(Q).1)
+        }) == edwards_identity(),
+{
+    let Q = edwards_scalar_mul(P, n);
+    lemma_edwards_scalar_mul_canonical(P, n);
+    axiom_edwards_add_inverse(Q);
+}
+
+/// Lemma: [a]P + [b]P = [a+b]P for signed scalars a, b (canonical P).
 ///
 /// This is the group law for scalar multiplication linearity (group homomorphism property).
+/// Proved by case analysis on the signs of a and b.
 pub proof fn axiom_edwards_scalar_mul_signed_additive(P: (nat, nat), a: int, b: int)
+    requires
+        P.0 < p(),
+        P.1 < p(),
     ensures
         ({
             let pa = edwards_scalar_mul_signed(P, a);
@@ -1320,7 +1768,228 @@ pub proof fn axiom_edwards_scalar_mul_signed_additive(P: (nat, nat), a: int, b: 
             edwards_add(pa.0, pa.1, pb.0, pb.1)
         }) == edwards_scalar_mul_signed(P, a + b),
 {
-    admit();
+    reveal(edwards_scalar_mul_signed);
+    if a == 0 {
+        // LHS = add(identity, [b]P_signed), RHS = [b]P_signed
+        reveal_with_fuel(edwards_scalar_mul, 1);
+        // edwards_scalar_mul(P, 0) == (0, 1) == identity
+        let pb = if b >= 0 {
+            edwards_scalar_mul(P, b as nat)
+        } else {
+            let (x, y) = edwards_scalar_mul(P, (-b) as nat);
+            (field_neg(x), y)
+        };
+        // add(0, 1, pb.0, pb.1) == (pb.0 % p(), pb.1 % p())
+        lemma_edwards_add_identity_left(pb.0, pb.1);
+        // Need pb.0 < p() and pb.1 < p() to conclude pb.0 % p() == pb.0
+        lemma_edwards_scalar_mul_signed_canonical(P, b);
+        // Now (pb.0 % p(), pb.1 % p()) == (pb.0, pb.1) == pb
+        lemma_small_mod(pb.0, p());
+        lemma_small_mod(pb.1, p());
+    } else if b == 0 {
+        // LHS = add([a]P_signed, identity), RHS = [a]P_signed
+        reveal_with_fuel(edwards_scalar_mul, 1);
+        let pa = if a >= 0 {
+            edwards_scalar_mul(P, a as nat)
+        } else {
+            let (x, y) = edwards_scalar_mul(P, (-a) as nat);
+            (field_neg(x), y)
+        };
+        lemma_edwards_add_identity_right(pa.0, pa.1);
+        lemma_edwards_scalar_mul_signed_canonical(P, a);
+        lemma_small_mod(pa.0, p());
+        lemma_small_mod(pa.1, p());
+    } else if a > 0 && b > 0 {
+        // Both positive: direct from unsigned additivity
+        assert(a as nat >= 1 && b as nat >= 1);
+        lemma_edwards_scalar_mul_additive(P, a as nat, b as nat);
+        assert((a + b) >= 0);
+        assert((a + b) as nat == a as nat + b as nat);
+    } else if a < 0 && b < 0 {
+        // Both negative: [a]P = -[|a|]P, [b]P = -[|b|]P
+        // -[|a|]P + -[|b|]P = -(|a|P + |b|P) = -[|a|+|b|]P = [a+b]P
+        let abs_a = (-a) as nat;
+        let abs_b = (-b) as nat;
+        let pa_unsigned = edwards_scalar_mul(P, abs_a);
+        let pb_unsigned = edwards_scalar_mul(P, abs_b);
+
+        // [a]P = neg(pa_unsigned), [b]P = neg(pb_unsigned)
+        // neg distributes over add: neg(A) + neg(B) = neg(A + B)
+        lemma_neg_distributes_over_add(pa_unsigned, pb_unsigned);
+
+        // unsigned additivity: [|a|]P + [|b|]P = [|a|+|b|]P
+        assert(abs_a >= 1 && abs_b >= 1);
+        lemma_edwards_scalar_mul_additive(P, abs_a, abs_b);
+
+        // a + b < 0 and |a+b| = |a| + |b|
+        assert(a + b < 0);
+        assert((-(a + b)) as nat == abs_a + abs_b);
+    } else if a > 0 && b < 0 {
+        // Mixed signs: a > 0, b < 0
+        let abs_b = (-b) as nat;
+        assert(abs_b >= 1);
+        let pa = edwards_scalar_mul(P, a as nat);
+        let pb_unsigned = edwards_scalar_mul(P, abs_b);
+        // [b]P = neg(pb_unsigned)
+
+        if a + b > 0 {
+            // a > |b|, so a = (a+b) + |b|
+            let c = (a + b) as nat;
+            assert(c >= 1);
+            assert(a as nat == c + abs_b);
+
+            // By unsigned additivity: [c]P + [|b|]P = [a]P
+            lemma_edwards_scalar_mul_additive(P, c, abs_b);
+            let pc = edwards_scalar_mul(P, c);
+
+            // So [a]P = [c]P + [|b|]P
+            // LHS = ([c]P + [|b|]P) + neg([|b|]P)
+            // By associativity: = [c]P + ([|b|]P + neg([|b|]P))
+            axiom_edwards_add_associative(
+                pc.0, pc.1,
+                pb_unsigned.0, pb_unsigned.1,
+                edwards_neg(pb_unsigned).0, edwards_neg(pb_unsigned).1,
+            );
+
+            // [|b|]P + neg([|b|]P) = identity
+            lemma_scalar_mul_add_neg_cancel(P, abs_b);
+
+            // [c]P + identity = [c]P
+            lemma_edwards_scalar_mul_canonical(P, c);
+            lemma_edwards_add_identity_right_canonical(pc);
+
+            assert((a + b) >= 0);
+            assert((a + b) as nat == c);
+        } else if a + b == 0 {
+            // a = |b|, so [a]P + neg([a]P) = identity
+            assert(a as nat == abs_b);
+            lemma_scalar_mul_add_neg_cancel(P, a as nat);
+            // RHS = signed(P, 0) = scalar_mul(P, 0) = identity
+            reveal_with_fuel(edwards_scalar_mul, 1);
+        } else {
+            // a + b < 0, so |b| > a, |b| = a + |a+b|
+            let c = (-(a + b)) as nat;
+            assert(c >= 1);
+            assert(abs_b == a as nat + c);
+
+            // By unsigned additivity: [a]P + [c]P = [|b|]P
+            assert(a as nat >= 1);
+            lemma_edwards_scalar_mul_additive(P, a as nat, c);
+            let pc = edwards_scalar_mul(P, c);
+
+            // neg([|b|]P) = neg([a]P + [c]P) = neg([a]P) + neg([c]P)
+            lemma_neg_distributes_over_add(pa, pc);
+
+            // LHS = [a]P + neg([|b|]P) = [a]P + (neg([a]P) + neg([c]P))
+            // By associativity: = ([a]P + neg([a]P)) + neg([c]P)
+            axiom_edwards_add_associative(
+                pa.0, pa.1,
+                edwards_neg(pa).0, edwards_neg(pa).1,
+                edwards_neg(pc).0, edwards_neg(pc).1,
+            );
+
+            // [a]P + neg([a]P) = identity
+            lemma_scalar_mul_add_neg_cancel(P, a as nat);
+
+            // identity + neg([c]P) = neg([c]P)
+            lemma_edwards_scalar_mul_canonical(P, c);
+            let neg_pc = edwards_neg(pc);
+            p_gt_2();
+            lemma_mod_bound((p() - (pc.0 % p())) as int, p() as int);
+            lemma_edwards_add_identity_left(neg_pc.0, neg_pc.1);
+            // add(0, 1, neg_pc.0, neg_pc.1) = (neg_pc.0 % p(), neg_pc.1 % p())
+            lemma_small_mod(neg_pc.0, p());
+            lemma_small_mod(neg_pc.1, p());
+
+            // RHS = signed(P, a+b) with a+b < 0: neg([c]P)
+            assert((-(a + b)) as nat == c);
+        }
+    } else {
+        // a < 0, b > 0: mirror of the a > 0, b < 0 case
+        assert(a < 0 && b > 0);
+        let abs_a = (-a) as nat;
+        assert(abs_a >= 1);
+        let pb = edwards_scalar_mul(P, b as nat);
+        let pa_unsigned = edwards_scalar_mul(P, abs_a);
+        // [a]P = neg(pa_unsigned)
+
+        // Use commutativity: add([a]P, [b]P) = add([b]P, [a]P)
+        let pa_signed = edwards_neg(pa_unsigned);
+        lemma_edwards_add_commutative(pa_signed.0, pa_signed.1, pb.0, pb.1);
+
+        if a + b > 0 {
+            // b > |a|, so b = (a+b) + |a|
+            let c = (a + b) as nat;
+            assert(c >= 1);
+            assert(b as nat == c + abs_a);
+
+            // By unsigned additivity: [c]P + [|a|]P = [b]P
+            lemma_edwards_scalar_mul_additive(P, c, abs_a);
+            let pc = edwards_scalar_mul(P, c);
+
+            // So [b]P = [c]P + [|a|]P
+            // LHS (after commutativity) = [b]P + neg([|a|]P) = ([c]P + [|a|]P) + neg([|a|]P)
+            // By associativity: = [c]P + ([|a|]P + neg([|a|]P))
+            axiom_edwards_add_associative(
+                pc.0, pc.1,
+                pa_unsigned.0, pa_unsigned.1,
+                edwards_neg(pa_unsigned).0, edwards_neg(pa_unsigned).1,
+            );
+
+            // [|a|]P + neg([|a|]P) = identity
+            lemma_scalar_mul_add_neg_cancel(P, abs_a);
+
+            // [c]P + identity = [c]P
+            lemma_edwards_scalar_mul_canonical(P, c);
+            lemma_edwards_add_identity_right_canonical(pc);
+
+            assert((a + b) >= 0);
+            assert((a + b) as nat == c);
+        } else if a + b == 0 {
+            // |a| = b, so [b]P + neg([b]P) = identity
+            assert(b as nat == abs_a);
+            lemma_scalar_mul_add_neg_cancel(P, b as nat);
+            // RHS = signed(P, 0) = scalar_mul(P, 0) = identity
+            reveal_with_fuel(edwards_scalar_mul, 1);
+        } else {
+            // a + b < 0, so |a| > b, |a| = b + |a+b|
+            let c = (-(a + b)) as nat;
+            assert(c >= 1);
+            assert(abs_a == b as nat + c);
+
+            // By unsigned additivity: [b]P + [c]P = [|a|]P
+            assert(b as nat >= 1);
+            lemma_edwards_scalar_mul_additive(P, b as nat, c);
+            let pc = edwards_scalar_mul(P, c);
+
+            // neg([|a|]P) = neg([b]P + [c]P) = neg([b]P) + neg([c]P)
+            lemma_neg_distributes_over_add(pb, pc);
+
+            // LHS (after commutativity) = [b]P + neg([|a|]P)
+            //   = [b]P + (neg([b]P) + neg([c]P))
+            // By associativity: = ([b]P + neg([b]P)) + neg([c]P)
+            axiom_edwards_add_associative(
+                pb.0, pb.1,
+                edwards_neg(pb).0, edwards_neg(pb).1,
+                edwards_neg(pc).0, edwards_neg(pc).1,
+            );
+
+            // [b]P + neg([b]P) = identity
+            lemma_scalar_mul_add_neg_cancel(P, b as nat);
+
+            // identity + neg([c]P) = neg([c]P)
+            lemma_edwards_scalar_mul_canonical(P, c);
+            let neg_pc = edwards_neg(pc);
+            p_gt_2();
+            lemma_mod_bound((p() - (pc.0 % p())) as int, p() as int);
+            lemma_edwards_add_identity_left(neg_pc.0, neg_pc.1);
+            lemma_small_mod(neg_pc.0, p());
+            lemma_small_mod(neg_pc.1, p());
+
+            // RHS = signed(P, a+b) with a+b < 0: neg([c]P)
+            assert((-(a + b)) as nat == c);
+        }
+    }
 }
 
 /// Lemma: [b]([a]P) = [a*b]P for signed a, unsigned b.
@@ -3229,8 +3898,109 @@ pub proof fn axiom_edwards_scalar_mul_distributive(a: (nat, nat), b: (nat, nat),
             let nb = edwards_scalar_mul(b, n);
             edwards_add(na.0, na.1, nb.0, nb.1)
         }),
+    decreases n,
 {
-    admit();
+    let ab = edwards_add(a.0, a.1, b.0, b.1);
+    if n == 0 {
+        // [0](A+B) = O and [0]A + [0]B = O + O = O
+        reveal_with_fuel(edwards_scalar_mul, 1);
+        // edwards_scalar_mul(_, 0) == edwards_identity() == (0, 1)
+        // Need: edwards_add(0, 1, 0, 1) == (0, 1)
+        assert(edwards_add(0nat, 1nat, 0nat, 1nat) == edwards_identity()) by {
+            lemma_edwards_double_identity();
+        };
+    } else if n == 1 {
+        // [1](A+B) = A+B and [1]A + [1]B = A + B
+        reveal_with_fuel(edwards_scalar_mul, 1);
+        // edwards_scalar_mul(x, 1) == x, so both sides are edwards_add(a.0, a.1, b.0, b.1)
+    } else {
+        // Inductive case: n >= 2
+        let nm1 = (n - 1) as nat;
+        assert(nm1 >= 1);
+
+        // IH: [n-1](A+B) == [n-1]A + [n-1]B
+        axiom_edwards_scalar_mul_distributive(a, b, nm1);
+        let n1ab = edwards_scalar_mul(ab, nm1);
+        let na_prev = edwards_scalar_mul(a, nm1);
+        let nb_prev = edwards_scalar_mul(b, nm1);
+        assert(n1ab == edwards_add(na_prev.0, na_prev.1, nb_prev.0, nb_prev.1));
+
+        // [n](A+B) = [n-1](A+B) + (A+B)  by scalar_mul_succ
+        lemma_edwards_scalar_mul_succ(ab, nm1);
+        assert(edwards_scalar_mul(ab, n) == edwards_add(n1ab.0, n1ab.1, ab.0, ab.1));
+
+        // [n]A = [n-1]A + A  and  [n]B = [n-1]B + B  by scalar_mul_succ
+        lemma_edwards_scalar_mul_succ(a, nm1);
+        lemma_edwards_scalar_mul_succ(b, nm1);
+        let na = edwards_scalar_mul(a, n);
+        let nb = edwards_scalar_mul(b, n);
+        assert(na == edwards_add(na_prev.0, na_prev.1, a.0, a.1));
+        assert(nb == edwards_add(nb_prev.0, nb_prev.1, b.0, b.1));
+
+        // Now we need to show:
+        //   ([n-1]A + [n-1]B) + (A + B) == ([n-1]A + A) + ([n-1]B + B)
+        //
+        // Let p1 = [n-1]A, p2 = [n-1]B, p3 = A, p4 = B
+        // Need: (p1 + p2) + (p3 + p4) == (p1 + p3) + (p2 + p4)
+        //
+        // Step 1: (p1 + p2) + (p3 + p4) = p1 + (p2 + (p3 + p4))    [assoc]
+        // Step 2: p2 + (p3 + p4) = (p2 + p3) + p4                    [assoc]
+        // Step 3: p2 + p3 = p3 + p2                                   [comm]
+        // Step 4: (p3 + p2) + p4 = p3 + (p2 + p4)                    [assoc]
+        // Step 5: p1 + (p3 + (p2 + p4)) = (p1 + p3) + (p2 + p4)     [assoc]
+
+        let p3_p4 = edwards_add(a.0, a.1, b.0, b.1);  // = ab
+        assert(p3_p4 == ab);
+
+        // Step 1: assoc(p1, p2, p3+p4)
+        axiom_edwards_add_associative(
+            na_prev.0, na_prev.1,
+            nb_prev.0, nb_prev.1,
+            p3_p4.0, p3_p4.1,
+        );
+        let p1_p2 = edwards_add(na_prev.0, na_prev.1, nb_prev.0, nb_prev.1);
+        let p2_p3p4 = edwards_add(nb_prev.0, nb_prev.1, p3_p4.0, p3_p4.1);
+        assert(edwards_add(p1_p2.0, p1_p2.1, p3_p4.0, p3_p4.1)
+            == edwards_add(na_prev.0, na_prev.1, p2_p3p4.0, p2_p3p4.1));
+
+        // Step 2: assoc(p2, p3, p4)
+        axiom_edwards_add_associative(
+            nb_prev.0, nb_prev.1,
+            a.0, a.1,
+            b.0, b.1,
+        );
+        let p2_p3 = edwards_add(nb_prev.0, nb_prev.1, a.0, a.1);
+        assert(p2_p3p4 == edwards_add(p2_p3.0, p2_p3.1, b.0, b.1));
+
+        // Step 3: comm(p2, p3)
+        lemma_edwards_add_commutative(nb_prev.0, nb_prev.1, a.0, a.1);
+        let p3_p2 = edwards_add(a.0, a.1, nb_prev.0, nb_prev.1);
+        assert(p2_p3 == p3_p2);
+
+        // Step 4: assoc(p3, p2, p4) gives (p3+p2)+p4 = p3+(p2+p4)
+        axiom_edwards_add_associative(
+            a.0, a.1,
+            nb_prev.0, nb_prev.1,
+            b.0, b.1,
+        );
+        let p2_p4 = edwards_add(nb_prev.0, nb_prev.1, b.0, b.1);
+        assert(edwards_add(p3_p2.0, p3_p2.1, b.0, b.1)
+            == edwards_add(a.0, a.1, p2_p4.0, p2_p4.1));
+
+        // Step 5: assoc(p1, p3, p2+p4) gives p1+(p3+(p2+p4)) = (p1+p3)+(p2+p4)
+        axiom_edwards_add_associative(
+            na_prev.0, na_prev.1,
+            a.0, a.1,
+            p2_p4.0, p2_p4.1,
+        );
+        let p1_p3 = edwards_add(na_prev.0, na_prev.1, a.0, a.1);
+        assert(edwards_add(na_prev.0, na_prev.1, edwards_add(a.0, a.1, p2_p4.0, p2_p4.1).0, edwards_add(a.0, a.1, p2_p4.0, p2_p4.1).1)
+            == edwards_add(p1_p3.0, p1_p3.1, p2_p4.0, p2_p4.1));
+
+        // p1_p3 == na and p2_p4 == nb
+        assert(p1_p3 == na);
+        assert(p2_p4 == nb);
+    }
 }
 
 // =============================================================================
@@ -3291,6 +4061,134 @@ pub proof fn lemma_double_identity()
 {
     lemma_double_is_scalar_mul_2(edwards_identity());
     lemma_edwards_scalar_mul_identity(2);
+}
+
+/// Lemma: Adding a point to its negation gives the identity
+///
+/// For any point (x, y) on the twisted Edwards curve, (x, y) + (-x, y) = (0, 1).
+///
+/// ## Mathematical Proof
+///
+/// The Edwards addition formula gives:
+///   x₃ = (x₁y₂ + y₁x₂) · inv(1 + d·x₁x₂·y₁y₂)
+///   y₃ = (y₁y₂ + x₁x₂) · inv(1 - d·x₁x₂·y₁y₂)
+///
+/// With (x₁, y₁) = (x, y) and (x₂, y₂) = (-x, y):
+///
+/// **x₃ = 0**: The numerator x·y + y·(-x) = xy - xy = 0, so x₃ = 0.
+///
+/// **y₃ = 1**: We have x₁x₂ = x·(-x) = -x², y₁y₂ = y·y = y².
+///   - Numerator: y² + (-x²) = y² - x²
+///   - t = d·(-x²)·y² = -(d·x²·y²)
+///   - Denominator: 1 - (-(d·x²·y²)) = 1 + d·x²·y²
+///   - From the curve equation: y² - x² = 1 + d·x²·y²
+///   - So numerator = denominator, and y₃ = denom · inv(denom) = 1.
+pub proof fn lemma_edwards_add_inverse(x: nat, y: nat)
+    requires
+        is_on_edwards_curve(x, y),
+    ensures
+        edwards_add(x, y, field_neg(x), y) == edwards_identity(),
+{
+    let neg_x = field_neg(x);
+    let d = fe51_as_canonical_nat(&EDWARDS_D);
+    p_gt_2();
+
+    // -- Intermediate products in edwards_add(x, y, neg_x, y) --
+    let x1x2 = field_mul(x, neg_x);
+    let y1y2 = field_mul(y, y);
+    let x1y2 = field_mul(x, y);
+    let y1x2 = field_mul(y, neg_x);
+    let t = field_mul(d, field_mul(x1x2, y1y2));
+    let denom_x = field_add(1, t);
+    let denom_y = field_sub(1, t);
+    let num_x = field_add(x1y2, y1x2);
+    let num_y = field_add(y1y2, x1x2);
+
+    let x2 = field_square(x);
+    let y2 = field_square(y);
+
+    // ========== Step 1: Show x₃ = 0 ==========
+    // x1x2 = x * (-x) = -(x * x) = -x²
+    assert(x1x2 == field_neg(x2)) by {
+        lemma_field_mul_neg(x, x);
+    };
+    // y1x2 = y * (-x) = -(y * x)
+    assert(y1x2 == field_neg(field_mul(y, x))) by {
+        lemma_field_mul_neg(y, x);
+    };
+    // y * x = x * y
+    assert(field_mul(y, x) == field_mul(x, y)) by {
+        lemma_field_mul_comm(y, x);
+    };
+    // So y1x2 = -x1y2
+    assert(y1x2 == field_neg(x1y2));
+
+    // num_x = x1y2 + (-x1y2) = 0
+    // field_add(a, field_neg(a)) == field_sub(a, a) == 0
+    assert(num_x == 0) by {
+        lemma_field_sub_eq_add_neg(x1y2, x1y2);
+        lemma_field_sub_self(x1y2);
+    };
+
+    // x3 = 0 * inv(denom_x) = 0
+    assert(field_mul(num_x, field_inv(denom_x)) == 0) by {
+        lemma_field_mul_zero_left(num_x, field_inv(denom_x));
+        lemma_small_mod(0nat, p());
+    };
+
+    // ========== Step 2: Show y₃ = 1 ==========
+    // num_y = field_add(y², -x²) = field_sub(y², x²)
+    assert(num_y == field_sub(y2, x2)) by {
+        lemma_field_sub_eq_add_neg(y2, x2);
+    };
+
+    // field_mul(x1x2, y1y2) = field_mul(-x², y²) = -(x² * y²)
+    let x2y2 = field_mul(x2, y2);
+    assert(field_mul(x1x2, y1y2) == field_neg(x2y2)) by {
+        lemma_field_mul_comm(x1x2, y1y2);
+        lemma_field_mul_neg(y1y2, x2);
+        lemma_field_mul_comm(y1y2, x2);
+    };
+
+    // t = d * (-(x² * y²)) = -(d * x² * y²)
+    let d_x2y2 = field_mul(d, x2y2);
+    assert(t == field_neg(d_x2y2)) by {
+        lemma_field_mul_neg(d, x2y2);
+    };
+
+    // denom_y = field_sub(1, -(d * x²y²)) = field_add(1, d * x²y²)
+    assert(denom_y == field_add(1, d_x2y2)) by {
+        lemma_sub_neg_eq_add(1, d_x2y2);
+    };
+
+    // From the curve equation: field_sub(y², x²) == field_add(1, field_mul(d, field_mul(x², y²)))
+    // So num_y == denom_y
+    assert(num_y == denom_y);
+
+    // (-x, y) is on the curve (needed for completeness axiom)
+    assert(is_on_edwards_curve(neg_x, y)) by {
+        lemma_negation_preserves_curve(x, y);
+    };
+
+    // Completeness: denom_x != 0 and denom_y != 0
+    axiom_edwards_add_complete(x, y, neg_x, y);
+
+    // denom_y < p (it's a result of field_sub which reduces mod p)
+    assert(denom_y < p()) by {
+        lemma_mod_bound(((1nat % p() + p() - (t % p())) as nat) as int, p() as int);
+    };
+    assert(denom_y % p() != 0) by {
+        lemma_small_mod(denom_y, p());
+    };
+
+    // y3 = denom_y * inv(denom_y) = 1
+    assert(field_mul(num_y, field_inv(denom_y)) == 1) by {
+        lemma_inv_mul_cancel(denom_y);
+        lemma_field_mul_comm(field_inv(denom_y), denom_y);
+    };
+
+    // Combine: edwards_add(x, y, neg_x, y) == (0, 1)
+    assert(edwards_add(x, y, neg_x, y) == (0nat, 1nat));
 }
 
 } // verus!

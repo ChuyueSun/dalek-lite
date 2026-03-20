@@ -14,6 +14,9 @@ use crate::lemmas::edwards_lemmas::curve_equation_lemmas::*;
 use crate::lemmas::edwards_lemmas::mul_base_lemmas::*;
 #[cfg(verus_keep_ghost)]
 #[allow(unused_imports)]
+use crate::lemmas::edwards_lemmas::straus_lemmas::lemma_edwards_point_as_affine_canonical;
+#[cfg(verus_keep_ghost)]
+#[allow(unused_imports)]
 use crate::specs::edwards_specs::*;
 #[cfg(verus_keep_ghost)]
 #[allow(unused_imports)]
@@ -252,6 +255,7 @@ pub(crate) fn mul(point: &EdwardsPoint, scalar: &Scalar) -> (result: EdwardsPoin
                 P_affine,
                 partial_j * 16 + scalar_digits[i as int] as int,
             )) by {
+                lemma_edwards_point_as_affine_canonical(*point);
                 axiom_edwards_scalar_mul_signed_additive(
                     P_affine,
                     partial_j * 16,

@@ -1361,7 +1361,6 @@ pub proof fn lemma_general_bound(a: Seq<u64>)
     }
 }
 
-// TODO: Fix for Verus 88f7396 - original proof causes Z3 panic (even with assume(false))
 pub proof fn lemma_decompose(a: u64, mask: u64)
     requires
         mask == (1u64 << 52) - 1,
