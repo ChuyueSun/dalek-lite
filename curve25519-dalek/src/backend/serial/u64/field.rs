@@ -265,7 +265,7 @@ impl<'a> Add<&'a FieldElement51> for &FieldElement51 {
             output.limbs[i] += _rhs.limbs[i];
         }
         /* </MODIFIED CODE> */
-        proof { admit(); // HOLE R6 block1 }
+        proof { admit(); } // HOLE R6 block1
 
         output
     }
