@@ -1,0 +1,184 @@
+{
+  "experiment": "exp16_sibling_less",
+  "date": "2026-03-21",
+  "description": "Can the agent prove functions when no structurally similar proof exists in the same file? Tests the genuine worst case: functions where the agent must rely entirely on imports + cross-file search, with no in-file proof template.",
+
+  "methodology": {
+    "target_selection": "5 functions chosen for: (1) non-trivial proof body (>10 LOC GT), (2) only proof of its pattern type in its file or file with few proofs, (3) spanning 4+ layers",
+    "hole_creation": "Each function's proof body replaced with admit() on a dedicated git branch",
+    "isolation": {
+      "worktree_per_function": "git worktree at /tmp/exp16-SN, one per candidate",
+      "agent_rules": [
+        "DO NOT run git log/show/diff/blame/stash",
+        "DO NOT read experiment_results/ or .claude/",
+        "DO NOT read files outside own worktree"
+      ],
+      "agent_prompt": "Sterile — contains ONLY file path, function name, verification command, and rules. ZERO strategy/pattern/LOC/difficulty hints.",
+      "orchestrator_GT_exposure": "Orchestrator read all GT during candidate selection (unavoidable). Agent prompts contain no GT-derived content."
+    },
+    "per_function_protocol": "Read contract → search codebase for lemmas → generate proof → verify → fix up to 5 cycles → report",
+    "agents_used": "Separate Claude Opus agent per function, each with fresh context",
+    "contamination_audit": {
+      "method": "grep agent transcripts for cross-worktree file access patterns",
+      "S1": "CLEAN — ls discovered other worktrees but did NOT read GT from them",
+      "S2": "CLEAN — no cross-worktree access",
+      "S3_original": "CONTAMINATED — read reduce_lemmas.rs from S2 and S4 worktrees (full GT visible). Result invalidated.",
+      "S3_redo": "CLEAN — other worktrees removed before re-run. Zero cross-worktree access confirmed.",
+      "S4": "CLEAN — no cross-worktree access",
+      "S5": "CLEAN — no cross-worktree access",
+      "root_cause_of_S3_contamination": "Shared /tmp/ namespace let agent traverse to /tmp/exp16-S2/ and read unholed files. Fixed by removing other worktrees before S3 redo."
+    }
+  },
+
+  "summary": {
+    "total_functions": 5,
+    "passed": 5,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "avg_compile_fix_cycles": 3.2,
+    "cross_file_analogue_found": 5,
+    "cross_file_analogue_helped": 5
+  },
+
+  "by_function": [
+    {
+      "id": "S1",
+      "function": "lemma_double_projective_completed_valid",
+      "file": "curve25519-dalek/src/lemmas/edwards_lemmas/double_correctness.rs",
+      "layer": "L6 (edwards)",
+      "gt_loc": 217,
+      "has_in_file_sibling": false,
+      "nearest_cross_file_analogue": "niels_addition_correctness.rs (similar algebraic chain pattern)",
+
+      "result": "pass",
+      "compile_fix_cycles": 3,
+      "loc_generated": 509,
+      "error_types": [],
+
+      "context_used": {
+        "read_imports": true,
+        "searched_codebase": true,
+        "found_cross_file_analogue": true,
+        "analogue_file": "curve25519-dalek/src/lemmas/edwards_lemmas/niels_addition_correctness.rs",
+        "analogue_helped": true
+      },
+
+      "notes": "Decomposed into 4 helper lemmas + main body. 2.3x GT LOC but correct. Used product_of_squares, curve equation, cancel_common_factor, axiom_edwards_add_complete."
+    },
+    {
+      "id": "S2",
+      "function": "lemma_neg",
+      "file": "curve25519-dalek/src/lemmas/field_lemmas/negate_lemmas.rs",
+      "layer": "L2 (field)",
+      "gt_loc": 103,
+      "has_in_file_sibling": false,
+      "nearest_cross_file_analogue": "div_mod_lemmas.rs (modular arithmetic reasoning)",
+
+      "result": "pass",
+      "compile_fix_cycles": 5,
+      "loc_generated": 82,
+      "error_types": [],
+
+      "context_used": {
+        "read_imports": true,
+        "searched_codebase": true,
+        "found_cross_file_analogue": true,
+        "analogue_file": "curve25519-dalek/src/lemmas/common_lemmas/div_mod_lemmas.rs",
+        "analogue_helped": true
+      },
+
+      "notes": "Hardest by cycles. Case split on vr==0 vs vr>0, fundamental_div_mod + nonlinear_arith to pin quotient to 1. More concise than GT (82 vs 103 LOC)."
+    },
+    {
+      "id": "S3",
+      "function": "lemma_reduce_bound_2p",
+      "file": "curve25519-dalek/src/lemmas/field_lemmas/reduce_lemmas.rs",
+      "layer": "L2 (field)",
+      "gt_loc": 119,
+      "has_in_file_sibling": false,
+      "nearest_cross_file_analogue": "pow2_51_lemmas.rs, shift_lemmas.rs (bit bound reasoning)",
+
+      "result": "pass",
+      "compile_fix_cycles": 4,
+      "loc_generated": 140,
+      "error_types": [],
+
+      "context_used": {
+        "read_imports": true,
+        "searched_codebase": true,
+        "found_cross_file_analogue": true,
+        "analogue_file": "curve25519-dalek/src/lemmas/field_lemmas/pow2_51_lemmas.rs",
+        "analogue_helped": true
+      },
+
+      "notes": "S3 redo (original was contaminated via cross-worktree GT access). Clean run took 4 cycles / 140 LOC vs contaminated run's 1 cycle / 114 LOC. Strategy: bound each reduced limb, multiply by positional weight, sum, show total < 2*p().",
+      "contamination_note": "Original S3 run INVALIDATED. Agent read GT from /tmp/exp16-S2/ and /tmp/exp16-S4/ worktrees. Redo run with other worktrees removed is the valid result."
+    },
+    {
+      "id": "S4",
+      "function": "lemma_rr_equals_radix_squared",
+      "file": "curve25519-dalek/src/lemmas/montgomery_lemmas.rs",
+      "layer": "L7 (scalar-montgomery)",
+      "gt_loc": 37,
+      "has_in_file_sibling": false,
+      "nearest_cross_file_analogue": "lemma_rr_equals_spec in scalar_lemmas.rs (identical postcondition)",
+
+      "result": "pass",
+      "compile_fix_cycles": 1,
+      "loc_generated": 1,
+      "error_types": [],
+
+      "context_used": {
+        "read_imports": true,
+        "searched_codebase": true,
+        "found_cross_file_analogue": true,
+        "analogue_file": "curve25519-dalek/src/lemmas/scalar_lemmas.rs",
+        "analogue_helped": true
+      },
+
+      "notes": "Found existing lemma_rr_equals_spec() with identical postcondition. 1 LOC delegation. Cross-file search completely solved this."
+    },
+    {
+      "id": "S5",
+      "function": "lemma_part2_carry_cancellation",
+      "file": "curve25519-dalek/src/lemmas/scalar_lemmas_/montgomery_reduce_part2_chain_lemmas.rs",
+      "layer": "L8 (scalar-reduce)",
+      "gt_loc": 195,
+      "has_in_file_sibling": false,
+      "nearest_cross_file_analogue": "montgomery_reduce_part1_chain_lemmas.rs (similar telescoping pattern)",
+
+      "result": "pass",
+      "compile_fix_cycles": 3,
+      "loc_generated": 178,
+      "error_types": [],
+
+      "context_used": {
+        "read_imports": true,
+        "searched_codebase": true,
+        "found_cross_file_analogue": true,
+        "analogue_file": "curve25519-dalek/src/lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs",
+        "analogue_helped": true
+      },
+
+      "notes": "Telescoping carry cancellation. Defined weighted sum W, showed it equals two expressions (intermediate + carry_sum from stages, carry4 + t_high + nl_high + carry_sum from definitions), carry_sum cancels. Key lemmas: pow2_adds, mul_is_distributive, mul_is_associative."
+    }
+  ],
+
+  "comparison_to_exp17": {
+    "exp17_first_in_file_avg_cycles": 1.0,
+    "exp17_overall_avg_cycles": 1.24,
+    "exp16_avg_cycles": 3.2,
+    "difference_significant": true,
+    "notes": "Sibling-less functions take ~2.6x more cycles than exp17's sibling-available functions. But all still pass within the 5-cycle budget. The extra cycles are spent on codebase exploration and iterative fixing, not fundamental inability."
+  },
+
+  "contamination_lessons": {
+    "issue": "Parallel worktrees in shared /tmp/ namespace allow cross-worktree GT leakage",
+    "detection": "grep agent transcripts for paths matching /tmp/exp16-S[^N]/ where N is the agent's own ID",
+    "evidence_of_impact": "Contaminated S3 passed in 1 cycle / 114 LOC. Clean S3 redo took 4 cycles / 140 LOC. The difference (3 extra cycles, 26 more LOC) is the measured cost of not having GT.",
+    "mitigation": "Either (a) run agents sequentially with only one worktree at a time, or (b) use filesystem-level isolation (containers, mount namespaces), or (c) add explicit path restriction rule AND remove other worktrees"
+  },
+
+  "verdict": "sibling_less_not_a_risk",
+  "pipeline_implications": "Cross-file search fully compensates for missing in-file siblings. All 5 functions proved, including a 217-LOC algebraic chain and a 195-LOC telescoping proof. The pipeline does NOT need to ensure every function has an in-file sibling before generation. However, sibling-less functions cost ~3x more compile-fix cycles, so the pipeline should prioritize sibling-rich files for throughput."
+}
