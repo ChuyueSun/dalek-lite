@@ -1,0 +1,67 @@
+{
+  "hole_id": "E",
+  "pair": 3,
+  "dimension_tested": "sub_lemma_composition",
+  "function": "lemma_field51_add",
+  "file": "add_lemmas.rs",
+  "layer": "L2",
+  "taxonomy": "representation_equivalence",
+  "gt_body_loc": 19,
+  "gt_patterns": [
+    "sub_lemma_call",
+    "vstd_lemma_call"
+  ],
+  "pre_assessment": {
+    "confidence": 4,
+    "planned_strategy": "two ensures: (1) lemma_u64_5_as_nat_add for limb sum, (2) lemma_add_mod_noop for canonical nat",
+    "planned_lemmas": [
+      "lemma_u64_5_as_nat_add",
+      "lemma_add_mod_noop",
+      "pow255_gt_19"
+    ],
+    "planned_verus_features": [],
+    "stated_uncertainties": [
+      "whether p() > 0 needs explicit assertion"
+    ]
+  },
+  "attempt_1": {
+    "code": "assert(u64_5_as_nat(spec_add_fe51_limbs(lhs, rhs).limbs) == u64_5_as_nat(lhs.limbs)\n    + u64_5_as_nat(rhs.limbs)) by {\n    lemma_u64_5_as_nat_add(lhs.limbs, rhs.limbs);\n}\nassert((u64_5_as_nat(lhs.limbs) + u64_5_as_nat(rhs.limbs)) % p() == (u64_5_as_nat(lhs.limbs)\n    % p() + u64_5_as_nat(rhs.limbs) % p()) % p()) by {\n    assert(p() > 0) by { pow255_gt_19(); }\n    lemma_add_mod_noop(u64_5_as_nat(lhs.limbs) as int, u64_5_as_nat(rhs.limbs) as int, p() as int);\n}",
+    "strategy_used": "sub_lemma",
+    "lemmas_called": [
+      "lemma_u64_5_as_nat_add",
+      "pow255_gt_19",
+      "lemma_add_mod_noop"
+    ],
+    "verus_features_used": [],
+    "verification_result": "pass",
+    "error_message": "",
+    "error_classified": ""
+  },
+  "attempt_2": null,
+  "post_assessment": {
+    "stated_surprises": "none",
+    "alternate_strategy": "n/a",
+    "confidence_after": 5
+  },
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "correctly split into 2 sub-goals",
+    "lemma_discovery": true,
+    "lemma_detail": "found lemma_u64_5_as_nat_add from imports",
+    "lemma_instantiation": true,
+    "instantiation_detail": "correct argument types",
+    "verus_pattern_correct": true,
+    "verus_detail": "n/a",
+    "intermediate_assertions": true,
+    "assertions_detail": "2 by blocks for 2 ensures clauses",
+    "over_engineered": false,
+    "over_detail": "",
+    "under_engineered": false,
+    "under_detail": "",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": 0,
+    "alternative_valid_proof": false
+  }
+}

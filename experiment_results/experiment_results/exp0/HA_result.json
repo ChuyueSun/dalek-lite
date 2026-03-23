@@ -1,0 +1,62 @@
+{
+  "hole_id": "A",
+  "pair": 1,
+  "dimension_tested": "verus_strategy_knowledge",
+  "function": "lemma_field_add_comm",
+  "file": "field_algebra_lemmas.rs",
+  "layer": "L3",
+  "taxonomy": "algebraic_rewrite",
+  "gt_body_loc": 5,
+  "gt_patterns": [
+    "pure_smt"
+  ],
+  "pre_assessment": {
+    "confidence": 5,
+    "planned_strategy": "field_add unfolds to (a+b)%p; integer addition is commutative, SMT handles it",
+    "planned_lemmas": [
+      "p_gt_2"
+    ],
+    "planned_verus_features": [],
+    "stated_uncertainties": [
+      "whether solver needs any hint about field_add definition"
+    ]
+  },
+  "attempt_1": {
+    "code": "let p = p();\np_gt_2();\nassert(field_add(a, b) == (a + b) % p);\nassert(field_add(b, a) == (b + a) % p);\nassert((a + b) as int == (b + a) as int);",
+    "strategy_used": "pure_smt",
+    "lemmas_called": [
+      "p_gt_2"
+    ],
+    "verus_features_used": [],
+    "verification_result": "pass",
+    "error_message": "",
+    "error_classified": ""
+  },
+  "attempt_2": null,
+  "post_assessment": {
+    "stated_surprises": "none - straightforward as expected",
+    "alternate_strategy": "could have tried even simpler - just empty body",
+    "confidence_after": 5
+  },
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "correctly identified pure SMT approach",
+    "lemma_discovery": true,
+    "lemma_detail": "only needed p_gt_2 for p definition",
+    "lemma_instantiation": true,
+    "instantiation_detail": "correct",
+    "verus_pattern_correct": true,
+    "verus_detail": "no special patterns needed",
+    "intermediate_assertions": true,
+    "assertions_detail": "3 simple assertions suffice",
+    "over_engineered": false,
+    "over_detail": "",
+    "under_engineered": false,
+    "under_detail": "",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": 0,
+    "alternative_valid_proof": false
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "hole_id": "J",
+  "pair": 5,
+  "dimension_tested": "scaling",
+  "function": "proof_reduce",
+  "file": "reduce_lemmas.rs",
+  "layer": "L2",
+  "taxonomy": "representation_equivalence",
+  "gt_body_loc": 106,
+  "gt_patterns": [
+    "sub_lemma_call",
+    "vstd_lemma_call",
+    "assert_forall_by",
+    "extensional_eq"
+  ],
+  "pre_assessment": {
+    "confidence": 2,
+    "planned_strategy": "4 ensures: (1) call lemma_reduce_boundaries, (2) small-limbs identity via mask/shift, (3) multi-step algebraic expansion showing nat(reduce) = nat(limbs) - p*a4, (4) mod_multiples_vanish",
+    "planned_lemmas": [
+      "lemma_reduce_boundaries",
+      "l51_bit_mask_lt",
+      "lemma_u64_low_bits_mask_is_mod",
+      "lemma_small_mod",
+      "lemma_u64_shr_is_div",
+      "lemma_basic_div",
+      "lemma_mul_is_distributive_add",
+      "lemma_u64_div_and_mod_51",
+      "lemma_two_factoring_51",
+      "lemma_mul_is_associative",
+      "lemma_pow2_adds",
+      "lemma_mul_is_distributive_sub_other_way",
+      "pow255_gt_19",
+      "lemma_mod_multiples_vanish"
+    ],
+    "planned_verus_features": [
+      "assert forall ... by",
+      "=~= extensional equality"
+    ],
+    "stated_uncertainties": [
+      "exact sequence of algebraic manipulation for nat identity",
+      "this is 93+ lines"
+    ]
+  },
+  "attempt_1": {
+    "code": "[full 100+ line proof with 4 phases: identity for small limbs, algebraic expansion with distribute/factor/regroup/div-mod-identity/collect-p, mod_multiples_vanish]",
+    "strategy_used": "mixed",
+    "lemmas_called": [
+      "lemma_reduce_boundaries",
+      "l51_bit_mask_lt",
+      "lemma_u64_shift_is_pow2",
+      "lemma_u64_low_bits_mask_is_mod",
+      "lemma_small_mod",
+      "lemma_u64_shr_is_div",
+      "lemma_basic_div",
+      "lemma_mul_is_distributive_add",
+      "lemma_u64_div_and_mod_51",
+      "lemma_two_factoring_51",
+      "lemma_mul_is_associative",
+      "lemma_pow2_adds",
+      "lemma_mul_is_distributive_sub_other_way",
+      "pow255_gt_19",
+      "lemma_mod_multiples_vanish"
+    ],
+    "verus_features_used": [
+      "assert forall ... by",
+      "=~= extensional equality"
+    ],
+    "verification_result": "pass",
+    "error_message": "",
+    "error_classified": ""
+  },
+  "attempt_2": null,
+  "post_assessment": {
+    "stated_surprises": "the algebraic manipulation chain is long but each step is mechanically clear",
+    "alternate_strategy": "could decompose into helper lemmas for each phase",
+    "confidence_after": 4
+  },
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "correctly identified 4-phase structure",
+    "lemma_discovery": true,
+    "lemma_detail": "found all 15 lemmas across 5 files",
+    "lemma_instantiation": true,
+    "instantiation_detail": "correct arguments throughout",
+    "verus_pattern_correct": true,
+    "verus_detail": "correct assert forall and =~= usage",
+    "intermediate_assertions": true,
+    "assertions_detail": "6 major intermediate assertions guiding algebraic chain",
+    "over_engineered": false,
+    "over_detail": "",
+    "under_engineered": false,
+    "under_detail": "",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": -2,
+    "alternative_valid_proof": false
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "hole_id": "B",
+  "pair": 1,
+  "dimension_tested": "verus_strategy_knowledge",
+  "function": "lemma_fe51_limbs_bounded_weaken",
+  "file": "add_lemmas.rs",
+  "layer": "L2",
+  "taxonomy": "bounds_weakening",
+  "gt_body_loc": 8,
+  "gt_patterns": [
+    "by_bit_vector",
+    "assert_forall_by"
+  ],
+  "pre_assessment": {
+    "confidence": 4,
+    "planned_strategy": "assert forall |i| ... by { by(bit_vector) } to show shift monotonicity",
+    "planned_lemmas": [],
+    "planned_verus_features": [
+      "assert forall ... by",
+      "by(bit_vector) with requires"
+    ],
+    "stated_uncertainties": [
+      "exact syntax of by(bit_vector) with requires inside assert forall"
+    ]
+  },
+  "attempt_1": {
+    "code": "assert forall|i: int| 0 <= i < 5 implies fe.limbs[i] < (1u64 << b) by {\n    assert(fe.limbs[i] < (1u64 << a));\n    assert((1u64 << a) < (1u64 << b)) by (bit_vector)\n        requires\n            a < b,\n            b <= 63,\n    ;\n}",
+    "strategy_used": "bitvec",
+    "lemmas_called": [],
+    "verus_features_used": [
+      "assert forall ... by",
+      "by(bit_vector) with requires"
+    ],
+    "verification_result": "pass",
+    "error_message": "",
+    "error_classified": ""
+  },
+  "attempt_2": null,
+  "post_assessment": {
+    "stated_surprises": "none",
+    "alternate_strategy": "could try manual arithmetic but by(bit_vector) is the right tool",
+    "confidence_after": 5
+  },
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "correctly used assert forall + by(bit_vector)",
+    "lemma_discovery": true,
+    "lemma_detail": "no external lemmas needed",
+    "lemma_instantiation": true,
+    "instantiation_detail": "n/a",
+    "verus_pattern_correct": true,
+    "verus_detail": "correct by(bit_vector) with requires syntax",
+    "intermediate_assertions": true,
+    "assertions_detail": "established fe.limbs[i] < (1u64 << a) as stepping stone",
+    "over_engineered": false,
+    "over_detail": "",
+    "under_engineered": false,
+    "under_detail": "",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": 0,
+    "alternative_valid_proof": false
+  }
+}

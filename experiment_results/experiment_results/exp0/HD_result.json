@@ -1,0 +1,66 @@
+{
+  "hole_id": "D",
+  "pair": 2,
+  "dimension_tested": "vstd_lemma_discovery",
+  "function": "lemma_field_mul_assoc",
+  "file": "field_algebra_lemmas.rs",
+  "layer": "L3",
+  "taxonomy": "algebraic_rewrite",
+  "gt_body_loc": 15,
+  "gt_patterns": [
+    "sub_lemma_call",
+    "vstd_lemma_call"
+  ],
+  "pre_assessment": {
+    "confidence": 5,
+    "planned_strategy": "both sides reduce to (a*b*c)%p via mod absorption (learned from C)",
+    "planned_lemmas": [
+      "lemma_mul_mod_noop_left",
+      "lemma_mul_mod_noop_right",
+      "lemma_mul_is_associative"
+    ],
+    "planned_verus_features": [],
+    "stated_uncertainties": []
+  },
+  "attempt_1": {
+    "code": "let p = p();\np_gt_2();\nlet ab = field_mul(a, b);\nlet bc = field_mul(b, c);\nassert(field_mul(ab, c) == field_mul(a, bc)) by {\n    lemma_mul_mod_noop_left((a * b) as int, c as int, p as int);\n    lemma_mul_mod_noop_right(a as int, (b * c) as int, p as int);\n    lemma_mul_is_associative(a as int, b as int, c as int);\n};",
+    "strategy_used": "sub_lemma",
+    "lemmas_called": [
+      "p_gt_2",
+      "lemma_mul_mod_noop_left",
+      "lemma_mul_mod_noop_right",
+      "lemma_mul_is_associative"
+    ],
+    "verus_features_used": [],
+    "verification_result": "pass",
+    "error_message": "",
+    "error_classified": ""
+  },
+  "attempt_2": null,
+  "post_assessment": {
+    "stated_surprises": "none - pattern transferred perfectly from C",
+    "alternate_strategy": "n/a",
+    "confidence_after": 5
+  },
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "correct mod absorption approach",
+    "lemma_discovery": true,
+    "lemma_detail": "found all vstd lemmas including _left variant",
+    "lemma_instantiation": true,
+    "instantiation_detail": "correct",
+    "verus_pattern_correct": true,
+    "verus_detail": "n/a",
+    "intermediate_assertions": true,
+    "assertions_detail": "clean single by block",
+    "over_engineered": false,
+    "over_detail": "",
+    "under_engineered": false,
+    "under_detail": "",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": 0,
+    "alternative_valid_proof": false
+  }
+}

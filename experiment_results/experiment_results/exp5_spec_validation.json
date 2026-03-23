@@ -1,0 +1,60 @@
+{
+  "experiment": "Experiment 5: Spec Validation Retroactive Test",
+  "description": "Test whether random property tests (proptests) would catch known spec bugs from git history, by simulating the arithmetic in Python.",
+  "theoretical_probability_counterexample": 0.9375,
+  "bug1_from_bytes_postcondition": {
+    "description": "Wrong postcondition: to_nat(&s.limbs) < group_order(). from_bytes faithfully represents all 256 bits without mod reduction, so any 256-bit value >= L (about 93.75% of inputs) is a counterexample.",
+    "counterexample_found": true,
+    "samples_to_first_counterexample": 1,
+    "counterexample_rate_per_10000": 9358.0,
+    "counterexample_bytes": "390c8c7d7247342cd8100f2f6f770d65d670e58e0351d8ae8e4f6eac342fc231",
+    "results_by_sample_size": {
+      "100": {
+        "counterexample_count": 91,
+        "first_counterexample_at_sample": 1,
+        "first_counterexample_bytes": "390c8c7d7247342cd8100f2f6f770d65d670e58e0351d8ae8e4f6eac342fc231",
+        "rate_per_10000": 9100.0
+      },
+      "1000": {
+        "counterexample_count": 915,
+        "first_counterexample_at_sample": 1,
+        "first_counterexample_bytes": "390c8c7d7247342cd8100f2f6f770d65d670e58e0351d8ae8e4f6eac342fc231",
+        "rate_per_10000": 9150.0
+      },
+      "10000": {
+        "counterexample_count": 9358,
+        "first_counterexample_at_sample": 1,
+        "first_counterexample_bytes": "390c8c7d7247342cd8100f2f6f770d65d670e58e0351d8ae8e4f6eac342fc231",
+        "rate_per_10000": 9358.0
+      }
+    }
+  },
+  "bug3_spec_scalar_vs_scalar_to_nat": {
+    "description": "Confusion between spec_scalar(s) = bytes_to_nat(s.bytes) % L and scalar_to_nat(s) = bytes_to_nat(s.bytes). They differ when bytes_to_nat >= L, which is about 93.75% of random 256-bit inputs.",
+    "counterexample_found": true,
+    "samples_to_first_counterexample": 1,
+    "counterexample_rate_per_10000": 9358.0,
+    "counterexample_bytes": "390c8c7d7247342cd8100f2f6f770d65d670e58e0351d8ae8e4f6eac342fc231",
+    "results_by_sample_size": {
+      "100": {
+        "counterexample_count": 91,
+        "first_counterexample_at_sample": 1,
+        "first_counterexample_bytes": "390c8c7d7247342cd8100f2f6f770d65d670e58e0351d8ae8e4f6eac342fc231",
+        "rate_per_10000": 9100.0
+      },
+      "1000": {
+        "counterexample_count": 915,
+        "first_counterexample_at_sample": 1,
+        "first_counterexample_bytes": "390c8c7d7247342cd8100f2f6f770d65d670e58e0351d8ae8e4f6eac342fc231",
+        "rate_per_10000": 9150.0
+      },
+      "10000": {
+        "counterexample_count": 9358,
+        "first_counterexample_at_sample": 1,
+        "first_counterexample_bytes": "390c8c7d7247342cd8100f2f6f770d65d670e58e0351d8ae8e4f6eac342fc231",
+        "rate_per_10000": 9358.0
+      }
+    }
+  },
+  "conclusion": "Both bugs are trivially caught by random testing. With ~93.75% of random 256-bit values exceeding the group order L (since L ~ 2^252 << 2^256), the very first random sample almost certainly provides a counterexample. Bug 1 (wrong postcondition claiming to_nat < L after from_bytes) and Bug 3 (confusing spec_scalar with scalar_to_nat) are both exposed on the first random input. A single random proptest has >93% chance of catching either bug. Formal verification is not needed for these particular bugs -- simple random testing suffices."
+}

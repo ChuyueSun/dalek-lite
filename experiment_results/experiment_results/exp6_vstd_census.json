@@ -1,0 +1,1316 @@
+{
+  "experiment": "Experiment 6: vstd Usage Census",
+  "source_root": "/root/dalek-lite/curve25519-dalek/src",
+  "total_rs_files_scanned": 118,
+  "vstd_modules_imported": [
+    {
+      "module": "vstd::prelude",
+      "imported_by_files": [
+        "backend/mod.rs",
+        "backend/serial/curve_models/mod.rs",
+        "backend/serial/scalar_mul/pippenger.rs",
+        "backend/serial/scalar_mul/straus.rs",
+        "backend/serial/scalar_mul/variable_base.rs",
+        "backend/serial/scalar_mul/vartime_double_base.rs",
+        "backend/serial/u64/constants.rs",
+        "backend/serial/u64/field.rs",
+        "backend/serial/u64/scalar.rs",
+        "backend/serial/u64/subtle_assumes.rs",
+        "constants.rs",
+        "core_assumes.rs",
+        "edwards.rs",
+        "field.rs",
+        "lemmas/common_lemmas/bit_lemmas.rs",
+        "lemmas/common_lemmas/bits_as_nat_lemmas.rs",
+        "lemmas/common_lemmas/div_mod_lemmas.rs",
+        "lemmas/common_lemmas/mask_lemmas.rs",
+        "lemmas/common_lemmas/mul_lemmas.rs",
+        "lemmas/common_lemmas/number_theory_lemmas.rs",
+        "lemmas/common_lemmas/pow_lemmas.rs",
+        "lemmas/common_lemmas/shift_lemmas.rs",
+        "lemmas/common_lemmas/sum_lemmas.rs",
+        "lemmas/common_lemmas/to_nat_lemmas.rs",
+        "lemmas/edwards_lemmas/constants_lemmas.rs",
+        "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+        "lemmas/edwards_lemmas/decompress_lemmas.rs",
+        "lemmas/edwards_lemmas/double_correctness.rs",
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs",
+        "lemmas/edwards_lemmas/niels_addition_correctness.rs",
+        "lemmas/edwards_lemmas/pippenger_lemmas.rs",
+        "lemmas/edwards_lemmas/step1_lemmas.rs",
+        "lemmas/edwards_lemmas/straus_lemmas.rs",
+        "lemmas/edwards_lemmas/vartime_double_base_lemmas.rs",
+        "lemmas/field_lemmas/add_lemmas.rs",
+        "lemmas/field_lemmas/as_bytes_lemmas.rs",
+        "lemmas/field_lemmas/batch_invert_lemmas.rs",
+        "lemmas/field_lemmas/compute_q_lemmas.rs",
+        "lemmas/field_lemmas/constants_lemmas.rs",
+        "lemmas/field_lemmas/field_algebra_lemmas.rs",
+        "lemmas/field_lemmas/from_bytes_lemmas.rs",
+        "lemmas/field_lemmas/invert_lemmas.rs",
+        "lemmas/field_lemmas/limbs_to_bytes_lemmas.rs",
+        "lemmas/field_lemmas/load8_lemmas.rs",
+        "lemmas/field_lemmas/mul_lemmas.rs",
+        "lemmas/field_lemmas/negate_lemmas.rs",
+        "lemmas/field_lemmas/pow22501_t19_lemma.rs",
+        "lemmas/field_lemmas/pow22501_t3_lemma.rs",
+        "lemmas/field_lemmas/pow2_51_lemmas.rs",
+        "lemmas/field_lemmas/pow2k_lemmas.rs",
+        "lemmas/field_lemmas/pow_chain_lemmas.rs",
+        "lemmas/field_lemmas/pow_p58_lemma.rs",
+        "lemmas/field_lemmas/reduce_lemmas.rs",
+        "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+        "lemmas/field_lemmas/sqrt_ratio_lemmas.rs",
+        "lemmas/field_lemmas/to_bytes_reduction_lemmas.rs",
+        "lemmas/field_lemmas/u64_5_as_nat_lemmas.rs",
+        "lemmas/montgomery_curve_lemmas.rs",
+        "lemmas/montgomery_lemmas.rs",
+        "lemmas/montgomery_pow_chain_lemmas.rs",
+        "lemmas/ristretto_lemmas/axioms.rs",
+        "lemmas/ristretto_lemmas/batch_compress_lemmas.rs",
+        "lemmas/ristretto_lemmas/elligator_lemmas.rs",
+        "lemmas/scalar_batch_invert_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/bytes_to_scalar_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/scalar_to_bytes_lemmas.rs",
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part2_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_/naf_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix16_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix_2w_lemmas.rs",
+        "lemmas/scalar_lemmas_extra.rs",
+        "lemmas/scalar_montgomery_lemmas.rs",
+        "lizard/jacobi_quartic.rs",
+        "lizard/lizard_ristretto.rs",
+        "lizard/u64_constants.rs",
+        "macros.rs",
+        "montgomery.rs",
+        "ristretto.rs",
+        "scalar.rs",
+        "scalar_helpers.rs",
+        "specs/arithm_trait_specs.rs",
+        "specs/core_specs.rs",
+        "specs/edwards_specs.rs",
+        "specs/field_specs.rs",
+        "specs/field_specs_u64.rs",
+        "specs/iterator_specs.rs",
+        "specs/lizard_specs.rs",
+        "specs/montgomery_reduce_specs.rs",
+        "specs/montgomery_specs.rs",
+        "specs/primality_specs.rs",
+        "specs/proba_specs.rs",
+        "specs/ristretto_specs.rs",
+        "specs/scalar52_specs.rs",
+        "specs/scalar_specs.rs",
+        "specs/window_specs.rs",
+        "traits.rs",
+        "window.rs"
+      ],
+      "count": 100
+    },
+    {
+      "module": "vstd::arithmetic::power2",
+      "imported_by_files": [
+        "backend/mod.rs",
+        "backend/serial/scalar_mul/pippenger.rs",
+        "backend/serial/scalar_mul/straus.rs",
+        "backend/serial/scalar_mul/variable_base.rs",
+        "backend/serial/scalar_mul/vartime_double_base.rs",
+        "backend/serial/u64/field.rs",
+        "backend/serial/u64/scalar.rs",
+        "edwards.rs",
+        "field.rs",
+        "lemmas/common_lemmas/bit_lemmas.rs",
+        "lemmas/common_lemmas/bits_as_nat_lemmas.rs",
+        "lemmas/common_lemmas/div_mod_lemmas.rs",
+        "lemmas/common_lemmas/mask_lemmas.rs",
+        "lemmas/common_lemmas/number_theory_lemmas.rs",
+        "lemmas/common_lemmas/pow_lemmas.rs",
+        "lemmas/common_lemmas/shift_lemmas.rs",
+        "lemmas/common_lemmas/sum_lemmas.rs",
+        "lemmas/common_lemmas/to_nat_lemmas.rs",
+        "lemmas/edwards_lemmas/constants_lemmas.rs",
+        "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+        "lemmas/edwards_lemmas/decompress_lemmas.rs",
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs",
+        "lemmas/edwards_lemmas/pippenger_lemmas.rs",
+        "lemmas/edwards_lemmas/step1_lemmas.rs",
+        "lemmas/edwards_lemmas/straus_lemmas.rs",
+        "lemmas/field_lemmas/as_bytes_lemmas.rs",
+        "lemmas/field_lemmas/batch_invert_lemmas.rs",
+        "lemmas/field_lemmas/compute_q_lemmas.rs",
+        "lemmas/field_lemmas/constants_lemmas.rs",
+        "lemmas/field_lemmas/from_bytes_lemmas.rs",
+        "lemmas/field_lemmas/invert_lemmas.rs",
+        "lemmas/field_lemmas/limbs_to_bytes_lemmas.rs",
+        "lemmas/field_lemmas/load8_lemmas.rs",
+        "lemmas/field_lemmas/mul_lemmas.rs",
+        "lemmas/field_lemmas/negate_lemmas.rs",
+        "lemmas/field_lemmas/pow22501_t19_lemma.rs",
+        "lemmas/field_lemmas/pow2_51_lemmas.rs",
+        "lemmas/field_lemmas/pow2k_lemmas.rs",
+        "lemmas/field_lemmas/pow_chain_lemmas.rs",
+        "lemmas/field_lemmas/pow_p58_lemma.rs",
+        "lemmas/field_lemmas/reduce_lemmas.rs",
+        "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+        "lemmas/field_lemmas/sqrt_ratio_lemmas.rs",
+        "lemmas/field_lemmas/to_bytes_reduction_lemmas.rs",
+        "lemmas/field_lemmas/u64_5_as_nat_lemmas.rs",
+        "lemmas/montgomery_lemmas.rs",
+        "lemmas/montgomery_pow_chain_lemmas.rs",
+        "lemmas/scalar_batch_invert_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/bytes_to_scalar_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/scalar_to_bytes_lemmas.rs",
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part2_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_/naf_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix16_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix_2w_lemmas.rs",
+        "lemmas/scalar_lemmas_extra.rs",
+        "montgomery.rs",
+        "ristretto.rs",
+        "scalar.rs",
+        "scalar_helpers.rs",
+        "specs/core_specs.rs",
+        "specs/edwards_specs.rs",
+        "specs/field_specs.rs",
+        "specs/field_specs_u64.rs",
+        "specs/montgomery_reduce_specs.rs",
+        "specs/montgomery_specs.rs",
+        "specs/proba_specs.rs",
+        "specs/scalar52_specs.rs",
+        "specs/scalar_specs.rs"
+      ],
+      "count": 71
+    },
+    {
+      "module": "vstd::arithmetic::div_mod",
+      "imported_by_files": [
+        "backend/serial/curve_models/mod.rs",
+        "backend/serial/scalar_mul/pippenger.rs",
+        "backend/serial/scalar_mul/variable_base.rs",
+        "backend/serial/u64/field.rs",
+        "backend/serial/u64/scalar.rs",
+        "edwards.rs",
+        "field.rs",
+        "lemmas/common_lemmas/bit_lemmas.rs",
+        "lemmas/common_lemmas/bits_as_nat_lemmas.rs",
+        "lemmas/common_lemmas/div_mod_lemmas.rs",
+        "lemmas/common_lemmas/mask_lemmas.rs",
+        "lemmas/common_lemmas/number_theory_lemmas.rs",
+        "lemmas/common_lemmas/pow_lemmas.rs",
+        "lemmas/common_lemmas/shift_lemmas.rs",
+        "lemmas/common_lemmas/sum_lemmas.rs",
+        "lemmas/common_lemmas/to_nat_lemmas.rs",
+        "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+        "lemmas/edwards_lemmas/decompress_lemmas.rs",
+        "lemmas/edwards_lemmas/double_correctness.rs",
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs",
+        "lemmas/edwards_lemmas/niels_addition_correctness.rs",
+        "lemmas/edwards_lemmas/pippenger_lemmas.rs",
+        "lemmas/edwards_lemmas/step1_lemmas.rs",
+        "lemmas/field_lemmas/add_lemmas.rs",
+        "lemmas/field_lemmas/as_bytes_lemmas.rs",
+        "lemmas/field_lemmas/batch_invert_lemmas.rs",
+        "lemmas/field_lemmas/compute_q_lemmas.rs",
+        "lemmas/field_lemmas/constants_lemmas.rs",
+        "lemmas/field_lemmas/field_algebra_lemmas.rs",
+        "lemmas/field_lemmas/from_bytes_lemmas.rs",
+        "lemmas/field_lemmas/invert_lemmas.rs",
+        "lemmas/field_lemmas/limbs_to_bytes_lemmas.rs",
+        "lemmas/field_lemmas/load8_lemmas.rs",
+        "lemmas/field_lemmas/mul_lemmas.rs",
+        "lemmas/field_lemmas/negate_lemmas.rs",
+        "lemmas/field_lemmas/pow22501_t19_lemma.rs",
+        "lemmas/field_lemmas/pow22501_t3_lemma.rs",
+        "lemmas/field_lemmas/pow2_51_lemmas.rs",
+        "lemmas/field_lemmas/pow2k_lemmas.rs",
+        "lemmas/field_lemmas/pow_chain_lemmas.rs",
+        "lemmas/field_lemmas/pow_p58_lemma.rs",
+        "lemmas/field_lemmas/reduce_lemmas.rs",
+        "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+        "lemmas/field_lemmas/sqrt_ratio_lemmas.rs",
+        "lemmas/field_lemmas/to_bytes_reduction_lemmas.rs",
+        "lemmas/field_lemmas/u64_5_as_nat_lemmas.rs",
+        "lemmas/montgomery_curve_lemmas.rs",
+        "lemmas/montgomery_lemmas.rs",
+        "lemmas/montgomery_pow_chain_lemmas.rs",
+        "lemmas/scalar_batch_invert_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/bytes_to_scalar_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/scalar_to_bytes_lemmas.rs",
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part2_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_/naf_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix16_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix_2w_lemmas.rs",
+        "lemmas/scalar_lemmas_extra.rs",
+        "montgomery.rs",
+        "ristretto.rs",
+        "scalar.rs",
+        "scalar_helpers.rs",
+        "specs/edwards_specs.rs",
+        "specs/field_specs.rs",
+        "specs/montgomery_specs.rs",
+        "specs/scalar_specs.rs"
+      ],
+      "count": 68
+    },
+    {
+      "module": "vstd::arithmetic::mul",
+      "imported_by_files": [
+        "backend/serial/scalar_mul/variable_base.rs",
+        "backend/serial/u64/field.rs",
+        "backend/serial/u64/scalar.rs",
+        "edwards.rs",
+        "field.rs",
+        "lemmas/common_lemmas/bit_lemmas.rs",
+        "lemmas/common_lemmas/bits_as_nat_lemmas.rs",
+        "lemmas/common_lemmas/div_mod_lemmas.rs",
+        "lemmas/common_lemmas/mul_lemmas.rs",
+        "lemmas/common_lemmas/number_theory_lemmas.rs",
+        "lemmas/common_lemmas/pow_lemmas.rs",
+        "lemmas/common_lemmas/shift_lemmas.rs",
+        "lemmas/common_lemmas/sum_lemmas.rs",
+        "lemmas/common_lemmas/to_nat_lemmas.rs",
+        "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+        "lemmas/edwards_lemmas/decompress_lemmas.rs",
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs",
+        "lemmas/edwards_lemmas/step1_lemmas.rs",
+        "lemmas/field_lemmas/add_lemmas.rs",
+        "lemmas/field_lemmas/as_bytes_lemmas.rs",
+        "lemmas/field_lemmas/batch_invert_lemmas.rs",
+        "lemmas/field_lemmas/compute_q_lemmas.rs",
+        "lemmas/field_lemmas/field_algebra_lemmas.rs",
+        "lemmas/field_lemmas/from_bytes_lemmas.rs",
+        "lemmas/field_lemmas/limbs_to_bytes_lemmas.rs",
+        "lemmas/field_lemmas/load8_lemmas.rs",
+        "lemmas/field_lemmas/mul_lemmas.rs",
+        "lemmas/field_lemmas/negate_lemmas.rs",
+        "lemmas/field_lemmas/pow22501_t19_lemma.rs",
+        "lemmas/field_lemmas/pow22501_t3_lemma.rs",
+        "lemmas/field_lemmas/pow2_51_lemmas.rs",
+        "lemmas/field_lemmas/pow2k_lemmas.rs",
+        "lemmas/field_lemmas/pow_chain_lemmas.rs",
+        "lemmas/field_lemmas/pow_p58_lemma.rs",
+        "lemmas/field_lemmas/reduce_lemmas.rs",
+        "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+        "lemmas/field_lemmas/sqrt_ratio_lemmas.rs",
+        "lemmas/field_lemmas/to_bytes_reduction_lemmas.rs",
+        "lemmas/field_lemmas/u64_5_as_nat_lemmas.rs",
+        "lemmas/montgomery_curve_lemmas.rs",
+        "lemmas/montgomery_lemmas.rs",
+        "lemmas/montgomery_pow_chain_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/bytes_to_scalar_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/scalar_to_bytes_lemmas.rs",
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part2_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_/naf_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix16_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix_2w_lemmas.rs",
+        "lemmas/scalar_lemmas_extra.rs",
+        "montgomery.rs",
+        "scalar.rs",
+        "scalar_helpers.rs",
+        "specs/field_specs.rs"
+      ],
+      "count": 56
+    },
+    {
+      "module": "vstd::bits",
+      "imported_by_files": [
+        "backend/serial/u64/field.rs",
+        "lemmas/common_lemmas/bit_lemmas.rs",
+        "lemmas/common_lemmas/bits_as_nat_lemmas.rs",
+        "lemmas/common_lemmas/div_mod_lemmas.rs",
+        "lemmas/common_lemmas/mask_lemmas.rs",
+        "lemmas/common_lemmas/shift_lemmas.rs",
+        "lemmas/field_lemmas/as_bytes_lemmas.rs",
+        "lemmas/field_lemmas/compute_q_lemmas.rs",
+        "lemmas/field_lemmas/from_bytes_lemmas.rs",
+        "lemmas/field_lemmas/limbs_to_bytes_lemmas.rs",
+        "lemmas/field_lemmas/load8_lemmas.rs",
+        "lemmas/field_lemmas/mul_lemmas.rs",
+        "lemmas/field_lemmas/negate_lemmas.rs",
+        "lemmas/field_lemmas/pow2_51_lemmas.rs",
+        "lemmas/field_lemmas/pow2k_lemmas.rs",
+        "lemmas/field_lemmas/reduce_lemmas.rs",
+        "lemmas/field_lemmas/to_bytes_reduction_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/bytes_to_scalar_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/scalar_to_bytes_lemmas.rs",
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_lemmas.rs",
+        "lemmas/scalar_lemmas_/naf_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix16_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix_2w_lemmas.rs",
+        "lemmas/scalar_lemmas_extra.rs",
+        "scalar.rs",
+        "specs/field_specs_u64.rs"
+      ],
+      "count": 27
+    },
+    {
+      "module": "vstd::arithmetic::power",
+      "imported_by_files": [
+        "backend/serial/curve_models/mod.rs",
+        "backend/serial/u64/field.rs",
+        "field.rs",
+        "lemmas/common_lemmas/number_theory_lemmas.rs",
+        "lemmas/common_lemmas/pow_lemmas.rs",
+        "lemmas/common_lemmas/sum_lemmas.rs",
+        "lemmas/edwards_lemmas/decompress_lemmas.rs",
+        "lemmas/edwards_lemmas/step1_lemmas.rs",
+        "lemmas/field_lemmas/field_algebra_lemmas.rs",
+        "lemmas/field_lemmas/invert_lemmas.rs",
+        "lemmas/field_lemmas/mul_lemmas.rs",
+        "lemmas/field_lemmas/pow22501_t19_lemma.rs",
+        "lemmas/field_lemmas/pow22501_t3_lemma.rs",
+        "lemmas/field_lemmas/pow2k_lemmas.rs",
+        "lemmas/field_lemmas/pow_chain_lemmas.rs",
+        "lemmas/field_lemmas/pow_p58_lemma.rs",
+        "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+        "lemmas/field_lemmas/sqrt_ratio_lemmas.rs",
+        "lemmas/field_lemmas/u64_5_as_nat_lemmas.rs",
+        "lemmas/montgomery_pow_chain_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/bytes_to_scalar_lemmas.rs",
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_extra.rs",
+        "montgomery.rs",
+        "scalar.rs",
+        "specs/field_specs.rs"
+      ],
+      "count": 26
+    },
+    {
+      "module": "vstd::calc",
+      "imported_by_files": [
+        "backend/serial/u64/scalar.rs",
+        "lemmas/common_lemmas/shift_lemmas.rs",
+        "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs",
+        "lemmas/field_lemmas/load8_lemmas.rs",
+        "lemmas/field_lemmas/to_bytes_reduction_lemmas.rs",
+        "lemmas/scalar_byte_lemmas/bytes_to_scalar_lemmas.rs",
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_extra.rs",
+        "montgomery.rs",
+        "scalar.rs"
+      ],
+      "count": 11
+    },
+    {
+      "module": "vstd::seq",
+      "imported_by_files": [
+        "lemmas/common_lemmas/pow_lemmas.rs",
+        "lemmas/common_lemmas/sum_lemmas.rs"
+      ],
+      "count": 2
+    },
+    {
+      "module": "vstd::seq_lib",
+      "imported_by_files": [
+        "lemmas/common_lemmas/sum_lemmas.rs"
+      ],
+      "count": 1
+    }
+  ],
+  "vstd_lemmas_called": [
+    {
+      "name": "lemma_pow2_adds",
+      "full_path": "vstd::arithmetic::power2::lemma_pow2_adds",
+      "module": "vstd::arithmetic::power2",
+      "call_count": 10,
+      "called_from_layers": [
+        "edwards_lemmas",
+        "exec_top",
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "edwards.rs",
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs",
+        "lemmas/montgomery_curve_lemmas.rs",
+        "lemmas/scalar_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma2_to64",
+      "full_path": "vstd::arithmetic::power2::lemma2_to64",
+      "module": "vstd::arithmetic::power2",
+      "call_count": 6,
+      "called_from_layers": [
+        "backend",
+        "edwards_lemmas",
+        "exec_top",
+        "scalar_lemmas_"
+      ],
+      "called_from_files": [
+        "backend/serial/scalar_mul/straus.rs",
+        "edwards.rs",
+        "lemmas/edwards_lemmas/straus_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix16_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_associative",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_associative",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 6,
+      "called_from_layers": [
+        "lemmas_other",
+        "scalar_lemmas_"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_extra.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_distributive_add_other_way",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_distributive_add_other_way",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 5,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_u64_mul_pow2_le_max_iff_max_shr",
+      "full_path": "vstd::bits::lemma_u64_mul_pow2_le_max_iff_max_shr",
+      "module": "vstd::bits",
+      "call_count": 4,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas_extra.rs"
+      ]
+    },
+    {
+      "name": "lemma_u64_shl_is_mul",
+      "full_path": "vstd::bits::lemma_u64_shl_is_mul",
+      "module": "vstd::bits",
+      "call_count": 4,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas_extra.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_commutative",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_commutative",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 4,
+      "called_from_layers": [
+        "backend",
+        "common_lemmas"
+      ],
+      "called_from_files": [
+        "backend/serial/u64/scalar.rs",
+        "lemmas/common_lemmas/to_nat_lemmas.rs"
+      ]
+    },
+    {
+      "name": "group_mul_is_distributive",
+      "full_path": "vstd::arithmetic::mul::group_mul_is_distributive",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 4,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas_extra.rs"
+      ]
+    },
+    {
+      "name": "lemma_small_mod",
+      "full_path": "vstd::arithmetic::div_mod::lemma_small_mod",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 3,
+      "called_from_layers": [
+        "exec_top"
+      ],
+      "called_from_files": [
+        "edwards.rs",
+        "scalar.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_basics_3",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_basics_3",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 3,
+      "called_from_layers": [
+        "edwards_lemmas",
+        "exec_top"
+      ],
+      "called_from_files": [
+        "edwards.rs",
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mod_multiples_vanish",
+      "full_path": "vstd::arithmetic::div_mod::lemma_mod_multiples_vanish",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 3,
+      "called_from_layers": [
+        "edwards_lemmas",
+        "exec_top"
+      ],
+      "called_from_files": [
+        "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+        "scalar.rs"
+      ]
+    },
+    {
+      "name": "group_mul_is_commutative_and_distributive",
+      "full_path": "vstd::arithmetic::mul::group_mul_is_commutative_and_distributive",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 3,
+      "called_from_layers": [
+        "lemmas_other",
+        "scalar_lemmas_"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_distributive_sub_other_way",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_distributive_sub_other_way",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 3,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_pow0",
+      "full_path": "vstd::arithmetic::power::lemma_pow0",
+      "module": "vstd::arithmetic::power",
+      "call_count": 2,
+      "called_from_layers": [
+        "exec_top"
+      ],
+      "called_from_files": [
+        "edwards.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_basics_2",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_basics_2",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 2,
+      "called_from_layers": [
+        "edwards_lemmas"
+      ],
+      "called_from_files": [
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mod_twice",
+      "full_path": "vstd::arithmetic::div_mod::lemma_mod_twice",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 2,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/montgomery_pow_chain_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_u64_shr_is_div",
+      "full_path": "vstd::bits::lemma_u64_shr_is_div",
+      "module": "vstd::bits",
+      "call_count": 2,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_basics_4",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_basics_4",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 1,
+      "called_from_layers": [
+        "exec_top"
+      ],
+      "called_from_files": [
+        "edwards.rs"
+      ]
+    },
+    {
+      "name": "lemma_mod_bound",
+      "full_path": "vstd::arithmetic::div_mod::lemma_mod_bound",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 1,
+      "called_from_layers": [
+        "common_lemmas"
+      ],
+      "called_from_files": [
+        "lemmas/common_lemmas/shift_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mod_self_0",
+      "full_path": "vstd::arithmetic::div_mod::lemma_mod_self_0",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 1,
+      "called_from_layers": [
+        "field_lemmas"
+      ],
+      "called_from_files": [
+        "lemmas/field_lemmas/field_algebra_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_pow2_strictly_increases",
+      "full_path": "vstd::arithmetic::power2::lemma_pow2_strictly_increases",
+      "module": "vstd::arithmetic::power2",
+      "call_count": 1,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_unary_negation",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_unary_negation",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 1,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_div_basics_2",
+      "full_path": "vstd::arithmetic::div_mod::lemma_div_basics_2",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 1,
+      "called_from_layers": [
+        "field_lemmas"
+      ],
+      "called_from_files": [
+        "lemmas/field_lemmas/load8_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_distributive_sub",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_distributive_sub",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 1,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs"
+      ]
+    }
+  ],
+  "vstd_type_usages": [
+    {
+      "trait_path": "vstd::std_specs::ops::MulSpecImpl",
+      "count": 30,
+      "files": [
+        "backend/serial/u64/field.rs",
+        "scalar.rs",
+        "specs/arithm_trait_specs.rs"
+      ],
+      "layers": [
+        "backend",
+        "exec_top",
+        "specs"
+      ]
+    },
+    {
+      "trait_path": "vstd::std_specs::convert::FromSpecImpl",
+      "count": 12,
+      "files": [
+        "ristretto.rs",
+        "scalar.rs",
+        "specs/window_specs.rs"
+      ],
+      "layers": [
+        "exec_top",
+        "specs"
+      ]
+    },
+    {
+      "trait_path": "vstd::std_specs::ops::AddSpecImpl",
+      "count": 9,
+      "files": [
+        "backend/serial/curve_models/mod.rs",
+        "backend/serial/u64/field.rs",
+        "edwards.rs",
+        "scalar.rs",
+        "specs/arithm_trait_specs.rs"
+      ],
+      "layers": [
+        "backend",
+        "exec_top",
+        "specs"
+      ]
+    },
+    {
+      "trait_path": "vstd::std_specs::ops::SubSpecImpl",
+      "count": 9,
+      "files": [
+        "backend/serial/curve_models/mod.rs",
+        "backend/serial/u64/field.rs",
+        "edwards.rs",
+        "scalar.rs",
+        "specs/arithm_trait_specs.rs"
+      ],
+      "layers": [
+        "backend",
+        "exec_top",
+        "specs"
+      ]
+    },
+    {
+      "trait_path": "vstd::std_specs::ops::NegSpecImpl",
+      "count": 9,
+      "files": [
+        "backend/serial/curve_models/mod.rs",
+        "backend/serial/u64/field.rs",
+        "edwards.rs",
+        "ristretto.rs",
+        "scalar.rs"
+      ],
+      "layers": [
+        "backend",
+        "exec_top"
+      ]
+    },
+    {
+      "trait_path": "vstd::std_specs::cmp::PartialEqSpecImpl",
+      "count": 5,
+      "files": [
+        "edwards.rs",
+        "field.rs",
+        "montgomery.rs",
+        "ristretto.rs",
+        "scalar.rs"
+      ],
+      "layers": [
+        "exec_top"
+      ]
+    },
+    {
+      "trait_path": "vstd::std_specs::convert::TryFromSpecImpl",
+      "count": 1,
+      "files": [
+        "edwards.rs"
+      ],
+      "layers": [
+        "exec_top"
+      ]
+    }
+  ],
+  "total_unique_vstd_lemmas_used": 24,
+  "total_vstd_calls": 73,
+  "top_20_most_used": [
+    {
+      "name": "lemma_pow2_adds",
+      "full_path": "vstd::arithmetic::power2::lemma_pow2_adds",
+      "module": "vstd::arithmetic::power2",
+      "call_count": 10,
+      "called_from_layers": [
+        "edwards_lemmas",
+        "exec_top",
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "edwards.rs",
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs",
+        "lemmas/montgomery_curve_lemmas.rs",
+        "lemmas/scalar_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma2_to64",
+      "full_path": "vstd::arithmetic::power2::lemma2_to64",
+      "module": "vstd::arithmetic::power2",
+      "call_count": 6,
+      "called_from_layers": [
+        "backend",
+        "edwards_lemmas",
+        "exec_top",
+        "scalar_lemmas_"
+      ],
+      "called_from_files": [
+        "backend/serial/scalar_mul/straus.rs",
+        "edwards.rs",
+        "lemmas/edwards_lemmas/straus_lemmas.rs",
+        "lemmas/scalar_lemmas_/radix16_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_associative",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_associative",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 6,
+      "called_from_layers": [
+        "lemmas_other",
+        "scalar_lemmas_"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_extra.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_distributive_add_other_way",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_distributive_add_other_way",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 5,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_u64_mul_pow2_le_max_iff_max_shr",
+      "full_path": "vstd::bits::lemma_u64_mul_pow2_le_max_iff_max_shr",
+      "module": "vstd::bits",
+      "call_count": 4,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas_extra.rs"
+      ]
+    },
+    {
+      "name": "lemma_u64_shl_is_mul",
+      "full_path": "vstd::bits::lemma_u64_shl_is_mul",
+      "module": "vstd::bits",
+      "call_count": 4,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas_extra.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_commutative",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_commutative",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 4,
+      "called_from_layers": [
+        "backend",
+        "common_lemmas"
+      ],
+      "called_from_files": [
+        "backend/serial/u64/scalar.rs",
+        "lemmas/common_lemmas/to_nat_lemmas.rs"
+      ]
+    },
+    {
+      "name": "group_mul_is_distributive",
+      "full_path": "vstd::arithmetic::mul::group_mul_is_distributive",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 4,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas_extra.rs"
+      ]
+    },
+    {
+      "name": "lemma_small_mod",
+      "full_path": "vstd::arithmetic::div_mod::lemma_small_mod",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 3,
+      "called_from_layers": [
+        "exec_top"
+      ],
+      "called_from_files": [
+        "edwards.rs",
+        "scalar.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_basics_3",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_basics_3",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 3,
+      "called_from_layers": [
+        "edwards_lemmas",
+        "exec_top"
+      ],
+      "called_from_files": [
+        "edwards.rs",
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mod_multiples_vanish",
+      "full_path": "vstd::arithmetic::div_mod::lemma_mod_multiples_vanish",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 3,
+      "called_from_layers": [
+        "edwards_lemmas",
+        "exec_top"
+      ],
+      "called_from_files": [
+        "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+        "scalar.rs"
+      ]
+    },
+    {
+      "name": "group_mul_is_commutative_and_distributive",
+      "full_path": "vstd::arithmetic::mul::group_mul_is_commutative_and_distributive",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 3,
+      "called_from_layers": [
+        "lemmas_other",
+        "scalar_lemmas_"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_distributive_sub_other_way",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_distributive_sub_other_way",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 3,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_pow0",
+      "full_path": "vstd::arithmetic::power::lemma_pow0",
+      "module": "vstd::arithmetic::power",
+      "call_count": 2,
+      "called_from_layers": [
+        "exec_top"
+      ],
+      "called_from_files": [
+        "edwards.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_basics_2",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_basics_2",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 2,
+      "called_from_layers": [
+        "edwards_lemmas"
+      ],
+      "called_from_files": [
+        "lemmas/edwards_lemmas/mul_base_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mod_twice",
+      "full_path": "vstd::arithmetic::div_mod::lemma_mod_twice",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 2,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/montgomery_pow_chain_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_u64_shr_is_div",
+      "full_path": "vstd::bits::lemma_u64_shr_is_div",
+      "module": "vstd::bits",
+      "call_count": 2,
+      "called_from_layers": [
+        "lemmas_other"
+      ],
+      "called_from_files": [
+        "lemmas/scalar_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mul_basics_4",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_basics_4",
+      "module": "vstd::arithmetic::mul",
+      "call_count": 1,
+      "called_from_layers": [
+        "exec_top"
+      ],
+      "called_from_files": [
+        "edwards.rs"
+      ]
+    },
+    {
+      "name": "lemma_mod_bound",
+      "full_path": "vstd::arithmetic::div_mod::lemma_mod_bound",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 1,
+      "called_from_layers": [
+        "common_lemmas"
+      ],
+      "called_from_files": [
+        "lemmas/common_lemmas/shift_lemmas.rs"
+      ]
+    },
+    {
+      "name": "lemma_mod_self_0",
+      "full_path": "vstd::arithmetic::div_mod::lemma_mod_self_0",
+      "module": "vstd::arithmetic::div_mod",
+      "call_count": 1,
+      "called_from_layers": [
+        "field_lemmas"
+      ],
+      "called_from_files": [
+        "lemmas/field_lemmas/field_algebra_lemmas.rs"
+      ]
+    }
+  ],
+  "vstd_usage_by_layer": {
+    "backend": {
+      "unique_vstd_lemmas": 2,
+      "total_calls": 6,
+      "lemma_names": [
+        "lemma2_to64",
+        "lemma_mul_is_commutative"
+      ]
+    },
+    "common_lemmas": {
+      "unique_vstd_lemmas": 2,
+      "total_calls": 2,
+      "lemma_names": [
+        "lemma_mod_bound",
+        "lemma_mul_is_commutative"
+      ]
+    },
+    "edwards_lemmas": {
+      "unique_vstd_lemmas": 5,
+      "total_calls": 10,
+      "lemma_names": [
+        "lemma2_to64",
+        "lemma_mod_multiples_vanish",
+        "lemma_mul_basics_2",
+        "lemma_mul_basics_3",
+        "lemma_pow2_adds"
+      ]
+    },
+    "exec_top": {
+      "unique_vstd_lemmas": 7,
+      "total_calls": 10,
+      "lemma_names": [
+        "lemma2_to64",
+        "lemma_mod_multiples_vanish",
+        "lemma_mul_basics_3",
+        "lemma_mul_basics_4",
+        "lemma_pow0",
+        "lemma_pow2_adds",
+        "lemma_small_mod"
+      ]
+    },
+    "field_lemmas": {
+      "unique_vstd_lemmas": 2,
+      "total_calls": 2,
+      "lemma_names": [
+        "lemma_div_basics_2",
+        "lemma_mod_self_0"
+      ]
+    },
+    "lemmas_other": {
+      "unique_vstd_lemmas": 13,
+      "total_calls": 40,
+      "lemma_names": [
+        "group_mul_is_commutative_and_distributive",
+        "group_mul_is_distributive",
+        "lemma_mod_twice",
+        "lemma_mul_is_associative",
+        "lemma_mul_is_distributive_add_other_way",
+        "lemma_mul_is_distributive_sub",
+        "lemma_mul_is_distributive_sub_other_way",
+        "lemma_mul_unary_negation",
+        "lemma_pow2_adds",
+        "lemma_pow2_strictly_increases",
+        "lemma_u64_mul_pow2_le_max_iff_max_shr",
+        "lemma_u64_shl_is_mul",
+        "lemma_u64_shr_is_div"
+      ]
+    },
+    "scalar_lemmas_": {
+      "unique_vstd_lemmas": 3,
+      "total_calls": 3,
+      "lemma_names": [
+        "group_mul_is_commutative_and_distributive",
+        "lemma2_to64",
+        "lemma_mul_is_associative"
+      ]
+    }
+  },
+  "broadcast_lemmas_from_vstd": [
+    {
+      "name": "lemma_mul_is_associative",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_associative",
+      "broadcast_count": 6,
+      "files": [
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs",
+        "lemmas/scalar_lemmas_extra.rs"
+      ],
+      "layers": [
+        "lemmas_other",
+        "scalar_lemmas_"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_distributive_add_other_way",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_distributive_add_other_way",
+      "broadcast_count": 5,
+      "files": [
+        "lemmas/scalar_lemmas.rs"
+      ],
+      "layers": [
+        "lemmas_other"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_commutative",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_commutative",
+      "broadcast_count": 4,
+      "files": [
+        "backend/serial/u64/scalar.rs",
+        "lemmas/common_lemmas/to_nat_lemmas.rs"
+      ],
+      "layers": [
+        "backend",
+        "common_lemmas"
+      ]
+    },
+    {
+      "name": "group_mul_is_distributive",
+      "full_path": "vstd::arithmetic::mul::group_mul_is_distributive",
+      "broadcast_count": 4,
+      "files": [
+        "lemmas/scalar_lemmas_extra.rs"
+      ],
+      "layers": [
+        "lemmas_other"
+      ]
+    },
+    {
+      "name": "group_mul_is_commutative_and_distributive",
+      "full_path": "vstd::arithmetic::mul::group_mul_is_commutative_and_distributive",
+      "broadcast_count": 3,
+      "files": [
+        "lemmas/scalar_lemmas.rs",
+        "lemmas/scalar_lemmas_/montgomery_reduce_part1_chain_lemmas.rs"
+      ],
+      "layers": [
+        "lemmas_other",
+        "scalar_lemmas_"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_distributive_sub_other_way",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_distributive_sub_other_way",
+      "broadcast_count": 3,
+      "files": [
+        "lemmas/scalar_lemmas.rs"
+      ],
+      "layers": [
+        "lemmas_other"
+      ]
+    },
+    {
+      "name": "lemma_pow2_adds",
+      "full_path": "vstd::arithmetic::power2::lemma_pow2_adds",
+      "broadcast_count": 3,
+      "files": [
+        "lemmas/scalar_lemmas.rs"
+      ],
+      "layers": [
+        "lemmas_other"
+      ]
+    },
+    {
+      "name": "lemma_u64_shr_is_div",
+      "full_path": "vstd::bits::lemma_u64_shr_is_div",
+      "broadcast_count": 2,
+      "files": [
+        "lemmas/scalar_lemmas.rs"
+      ],
+      "layers": [
+        "lemmas_other"
+      ]
+    },
+    {
+      "name": "lemma_div_basics_2",
+      "full_path": "vstd::arithmetic::div_mod::lemma_div_basics_2",
+      "broadcast_count": 1,
+      "files": [
+        "lemmas/field_lemmas/load8_lemmas.rs"
+      ],
+      "layers": [
+        "field_lemmas"
+      ]
+    },
+    {
+      "name": "lemma_mul_is_distributive_sub",
+      "full_path": "vstd::arithmetic::mul::lemma_mul_is_distributive_sub",
+      "broadcast_count": 1,
+      "files": [
+        "lemmas/scalar_lemmas.rs"
+      ],
+      "layers": [
+        "lemmas_other"
+      ]
+    }
+  ],
+  "summary": {
+    "total_vstd_modules_imported": 9,
+    "total_unique_vstd_lemmas_called": 24,
+    "total_vstd_lemma_calls": 73,
+    "total_type_trait_impls": 7,
+    "total_broadcast_vstd_lemmas": 10,
+    "layers_using_vstd": [
+      "backend",
+      "common_lemmas",
+      "edwards_lemmas",
+      "exec_top",
+      "field_lemmas",
+      "lemmas_other",
+      "scalar_lemmas_"
+    ]
+  }
+}

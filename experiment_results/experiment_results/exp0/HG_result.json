@@ -1,0 +1,62 @@
+{
+  "hole_id": "G",
+  "pair": 4,
+  "dimension_tested": "concrete_computation",
+  "function": "lemma_field_add_16p_no_overflow",
+  "file": "add_lemmas.rs",
+  "layer": "L2",
+  "taxonomy": "overflow_safety",
+  "gt_body_loc": 36,
+  "gt_patterns": [
+    "by_compute"
+  ],
+  "pre_assessment": {
+    "confidence": 4,
+    "planned_strategy": "10 by(compute) assertions, one per ensures clause",
+    "planned_lemmas": [],
+    "planned_verus_features": [
+      "assert(...) by (compute)"
+    ],
+    "stated_uncertainties": [
+      "whether batch computation works or needs per-limb"
+    ]
+  },
+  "attempt_1": {
+    "code": "[10 assert-by-compute blocks, one per limb bound]",
+    "strategy_used": "compute",
+    "lemmas_called": [],
+    "verus_features_used": [
+      "by (compute)"
+    ],
+    "verification_result": "pass",
+    "error_message": "",
+    "error_classified": ""
+  },
+  "attempt_2": null,
+  "post_assessment": {
+    "stated_surprises": "none - by(compute) handles constant arithmetic well",
+    "alternate_strategy": "could use by(bit_vector) for some checks",
+    "confidence_after": 5
+  },
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "correctly used by(compute) for constant verification",
+    "lemma_discovery": true,
+    "lemma_detail": "no external lemmas needed",
+    "lemma_instantiation": true,
+    "instantiation_detail": "n/a",
+    "verus_pattern_correct": true,
+    "verus_detail": "correct by (compute) syntax",
+    "intermediate_assertions": true,
+    "assertions_detail": "each uses (1u64 << 54) - 1 or (1u64 << 54) as bridge",
+    "over_engineered": false,
+    "over_detail": "",
+    "under_engineered": false,
+    "under_detail": "",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": 2,
+    "alternative_valid_proof": false
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "hole_id": "H",
+  "pair": 4,
+  "dimension_tested": "concrete_computation",
+  "function": "lemma_reduce_boundaries",
+  "file": "reduce_lemmas.rs",
+  "layer": "L2",
+  "taxonomy": "bounds_propagation",
+  "gt_body_loc": 31,
+  "gt_patterns": [
+    "by_bit_vector",
+    "sub_lemma_call"
+  ],
+  "pre_assessment": {
+    "confidence": 3,
+    "planned_strategy": "shift/mask lemmas for each limb, mul_lt for limb 0, by(bit_vector) for final bounds",
+    "planned_lemmas": [
+      "lemma_u64_shifted_lt",
+      "lemma_masked_lt_51",
+      "lemma_mul_lt",
+      "lemma_u64_shift_is_pow2",
+      "lemma_pow2_adds"
+    ],
+    "planned_verus_features": [
+      "by (bit_vector)"
+    ],
+    "stated_uncertainties": [
+      "exact names of shift/mask lemmas"
+    ]
+  },
+  "attempt_1": {
+    "code": "[shift/mask lemmas for all 5 limbs, mul_lt for limb 0 * 19, two by(bit_vector) for final bounds]",
+    "strategy_used": "mixed",
+    "lemmas_called": [
+      "lemma_u64_shifted_lt",
+      "lemma_masked_lt_51",
+      "lemma_u64_shift_is_pow2",
+      "lemma_pow2_adds",
+      "lemma_mul_lt"
+    ],
+    "verus_features_used": [
+      "by (bit_vector)"
+    ],
+    "verification_result": "pass",
+    "error_message": "",
+    "error_classified": ""
+  },
+  "attempt_2": null,
+  "post_assessment": {
+    "stated_surprises": "none - followed the structural pattern",
+    "alternate_strategy": "could try more by(bit_vector) but sub-lemma approach is cleaner",
+    "confidence_after": 5
+  },
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "correctly mixed sub-lemma + by(bit_vector)",
+    "lemma_discovery": true,
+    "lemma_detail": "found all 5 helper lemmas from imports",
+    "lemma_instantiation": true,
+    "instantiation_detail": "correct arguments including nat casts",
+    "verus_pattern_correct": true,
+    "verus_detail": "correct by(bit_vector) assertions",
+    "intermediate_assertions": true,
+    "assertions_detail": "mul_lt bridge for * 19 case",
+    "over_engineered": false,
+    "over_detail": "",
+    "under_engineered": false,
+    "under_detail": "",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": 1,
+    "alternative_valid_proof": false
+  }
+}

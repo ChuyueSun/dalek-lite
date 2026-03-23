@@ -1,0 +1,69 @@
+{
+  "hole_id": "F",
+  "pair": 3,
+  "dimension_tested": "sub_lemma_composition",
+  "function": "lemma_from_bytes_as_bytes_roundtrip",
+  "file": "as_bytes_lemmas.rs",
+  "layer": "L2",
+  "taxonomy": "serialization_roundtrip",
+  "gt_body_loc": 21,
+  "gt_patterns": [
+    "sub_lemma_call",
+    "vstd_lemma_call"
+  ],
+  "pre_assessment": {
+    "confidence": 4,
+    "planned_strategy": "4-step chain: as_bytes postcond, from_bytes postcond, small_mod, mod_twice",
+    "planned_lemmas": [
+      "pow255_gt_19",
+      "lemma_mod_bound",
+      "lemma_small_mod",
+      "lemma_mod_twice"
+    ],
+    "planned_verus_features": [],
+    "stated_uncertainties": [
+      "whether separate by blocks needed for each step"
+    ]
+  },
+  "attempt_1": {
+    "code": "let v = fe51_as_nat(fe_orig);\nassert(fe51_as_canonical_nat(fe_decoded) == fe51_as_canonical_nat(fe_orig)) by {\n    assert(0 < p() < pow2(255)) by { pow255_gt_19(); };\n    assert((v % p()) % pow2(255) == v % p()) by {\n        assert(v % p() < p()) by { lemma_mod_bound(v as int, p() as int); };\n        lemma_small_mod((v % p()) as nat, pow2(255));\n    };\n    assert((v % p()) % p() == v % p()) by {\n        lemma_mod_twice(v as int, p() as int);\n    };\n};",
+    "strategy_used": "sub_lemma",
+    "lemmas_called": [
+      "pow255_gt_19",
+      "lemma_mod_bound",
+      "lemma_small_mod",
+      "lemma_mod_twice"
+    ],
+    "verus_features_used": [],
+    "verification_result": "pass",
+    "error_message": "",
+    "error_classified": ""
+  },
+  "attempt_2": null,
+  "post_assessment": {
+    "stated_surprises": "none - doc comment provided the proof outline",
+    "alternate_strategy": "n/a",
+    "confidence_after": 5
+  },
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "followed the documented 4-step chain",
+    "lemma_discovery": true,
+    "lemma_detail": "found all 4 lemmas across different files",
+    "lemma_instantiation": true,
+    "instantiation_detail": "correct casts and argument order",
+    "verus_pattern_correct": true,
+    "verus_detail": "nested by blocks for sub-goals",
+    "intermediate_assertions": true,
+    "assertions_detail": "2 key intermediate assertions guiding solver",
+    "over_engineered": false,
+    "over_detail": "",
+    "under_engineered": false,
+    "under_detail": "",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": 0,
+    "alternative_valid_proof": false
+  }
+}

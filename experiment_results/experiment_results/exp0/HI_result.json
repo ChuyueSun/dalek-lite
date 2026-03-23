@@ -1,0 +1,87 @@
+{
+  "hole_id": "I",
+  "pair": 5,
+  "dimension_tested": "scaling",
+  "function": "lemma_as_nat_32_mod_255",
+  "file": "from_bytes_lemmas.rs",
+  "layer": "L2",
+  "taxonomy": "modular_arithmetic",
+  "gt_body_loc": 58,
+  "gt_patterns": [
+    "sub_lemma_call",
+    "vstd_lemma_call",
+    "reveal_fn",
+    "assert_forall_by"
+  ],
+  "pre_assessment": {
+    "confidence": 3,
+    "planned_strategy": "3-step: rewrite as pow2_sum + last byte, decompose mod, handle last byte mod 2^7",
+    "planned_lemmas": [
+      "lemma2_to64",
+      "lemma_mul_basics_3",
+      "pow2_sum_u8",
+      "lemma_binary_sum_mod_decomposition",
+      "lemma_pow2_sum_u8_bounds",
+      "lemma_small_mod",
+      "lemma_pow2_mul_mod",
+      "lemma_pow2_strictly_increases",
+      "lemma_u8_lt_pow2_8"
+    ],
+    "planned_verus_features": [
+      "reveal_with_fuel",
+      "assert forall ... by"
+    ],
+    "stated_uncertainties": [
+      "exact decomposition sequence",
+      "which helper functions exist"
+    ]
+  },
+  "attempt_1": {
+    "code": "[3-phase proof: reveal pow2_sum_u8, binary_sum_mod_decomposition, pow2_mul_mod]",
+    "strategy_used": "mixed",
+    "lemmas_called": [
+      "lemma2_to64",
+      "lemma_mul_basics_3",
+      "lemma_u8_lt_pow2_8",
+      "lemma_pow2_sum_u8_bounds",
+      "lemma_binary_sum_mod_decomposition",
+      "lemma_pow2_strictly_increases",
+      "lemma_small_mod",
+      "lemma_pow2_mul_mod"
+    ],
+    "verus_features_used": [
+      "reveal_with_fuel(pow2_sum_u8, 31)",
+      "assert forall ... by"
+    ],
+    "verification_result": "pass",
+    "error_message": "",
+    "error_classified": ""
+  },
+  "attempt_2": null,
+  "post_assessment": {
+    "stated_surprises": "complexity of the rewrite step with reveal_with_fuel",
+    "alternate_strategy": "n/a",
+    "confidence_after": 4
+  },
+  "diagnosis": {
+    "final_result": "pass_attempt_1",
+    "strategy_correct": true,
+    "strategy_detail": "correct 3-phase decomposition",
+    "lemma_discovery": true,
+    "lemma_detail": "found all helper lemmas including domain-specific ones",
+    "lemma_instantiation": true,
+    "instantiation_detail": "correct",
+    "verus_pattern_correct": true,
+    "verus_detail": "correct reveal_with_fuel usage",
+    "intermediate_assertions": true,
+    "assertions_detail": "key intermediate: pow2_sum < pow2(31*8)",
+    "over_engineered": false,
+    "over_detail": "",
+    "under_engineered": false,
+    "under_detail": "",
+    "matches_gt_strategy": true,
+    "matches_gt_lemmas": true,
+    "body_loc_delta": 2,
+    "alternative_valid_proof": false
+  }
+}

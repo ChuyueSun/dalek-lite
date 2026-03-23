@@ -1,0 +1,1029 @@
+{
+  "experiment": "exp7_admit_boundary_analysis",
+  "date": "2026-03-18",
+  "codebase": "dalek-lite/curve25519-dalek",
+  "total_admits": 45,
+  "by_file": {
+    "core_assumes.rs": 3,
+    "lemmas/edwards_lemmas/curve_equation_lemmas.rs": 3,
+    "lemmas/field_lemmas/sqrt_m1_lemmas.rs": 3,
+    "lemmas/montgomery_curve_lemmas.rs": 9,
+    "lemmas/ristretto_lemmas/axioms.rs": 8,
+    "lizard/jacobi_quartic.rs": 1,
+    "lizard/lizard_ristretto.rs": 6,
+    "specs/edwards_specs.rs": 1,
+    "specs/field_specs.rs": 1,
+    "specs/primality_specs.rs": 2,
+    "specs/proba_specs.rs": 7,
+    "specs/window_specs.rs": 1
+  },
+  "by_category": {
+    "algebraic_deep": {
+      "count": 11,
+      "examples": [
+        {
+          "file": "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+          "line": 780,
+          "function": "axiom_edwards_add_associative",
+          "ensures_summary": "edwards_double(0, 1) == (0nat, 1nat),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Group associativity requires degree-6 polynomial identity over F_p"
+        },
+        {
+          "file": "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+          "line": 1321,
+          "function": "axiom_add_neg_is_identity",
+          "ensures_summary": "edwards_scalar_mul(edwards_neg(P), n) == edwards_neg(edwards_scalar_mul(P, n)), decreases n,",
+          "comment": "requiring callers to prove their points are on the curve.",
+          "automatable": false,
+          "reason": "Point + negation = identity - requires algebraic simplification"
+        },
+        {
+          "file": "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+          "line": 3065,
+          "function": "axiom_edwards_add_complete",
+          "ensures_summary": "affine_niels_point_as_affine_edwards(niels) == edwards_point_as_affine(point),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Completeness of Edwards addition law - deep algebraic geometry result"
+        },
+        {
+          "file": "lemmas/montgomery_curve_lemmas.rs",
+          "line": 51,
+          "function": "axiom_montgomery_add_associative",
+          "ensures_summary": "montgomery_add(montgomery_add(P, Q), R) == montgomery_add(P, montgomery_add(Q, R)),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Group associativity requires degree-6 polynomial identity over F_p"
+        },
+        {
+          "file": "lemmas/montgomery_curve_lemmas.rs",
+          "line": 145,
+          "function": "axiom_xdbl_projective_correct",
+          "ensures_summary": "montgomery_add(montgomery_add(P, Q), R) == montgomery_add(P, montgomery_add(Q, R)),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Montgomery ladder formula correctness - requires algebraic verification"
+        },
+        {
+          "file": "lemmas/montgomery_curve_lemmas.rs",
+          "line": 278,
+          "function": "axiom_xadd_projective_correct",
+          "ensures_summary": "({ let (U2, W2) = spec_xdbl_projective(U, W); projective_represents_montgomery_or_infinity_nat(U2, W2, montgomery_add(P, P)) }),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Montgomery ladder formula correctness - requires algebraic verification"
+        },
+        {
+          "file": "lemmas/montgomery_curve_lemmas.rs",
+          "line": 1181,
+          "function": "axiom_edwards_to_montgomery_preserves_validity",
+          "ensures_summary": "is_valid_u_coordinate(montgomery_u_from_edwards_y(y)),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Edwards-Montgomery map commutativity - deep birational correspondence"
+        },
+        {
+          "file": "lemmas/montgomery_curve_lemmas.rs",
+          "line": 1203,
+          "function": "axiom_montgomery_valid_u_implies_edwards_y_valid",
+          "ensures_summary": "is_valid_u_coordinate(montgomery_u_from_edwards_y(y)),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Montgomery u-coordinate validity under birational map"
+        },
+        {
+          "file": "lemmas/montgomery_curve_lemmas.rs",
+          "line": 1435,
+          "function": "axiom_edwards_to_montgomery_commutes_with_scalar_mul",
+          "ensures_summary": "montgomery_u_from_edwards_y(spec_ed25519_basepoint().1) == spec_x25519_basepoint_u(),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Edwards-Montgomery map commutativity - deep birational correspondence"
+        },
+        {
+          "file": "lemmas/ristretto_lemmas/axioms.rs",
+          "line": 152,
+          "function": "axiom_elligator_nonzero_intermediates",
+          "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Elligator intermediate nonzero - algebraic property of the map"
+        },
+        {
+          "file": "specs/field_specs.rs",
+          "line": 648,
+          "function": "axiom_invsqrt_factors_over_square",
+          "ensures_summary": "nat_invsqrt(field_mul(a, field_square(b))) == field_abs( field_mul(nat_invsqrt(a), field_inv(b)), ),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Inverse square root factoring property - field arithmetic identity"
+        }
+      ]
+    },
+    "computational": {
+      "count": 5,
+      "examples": [
+        {
+          "file": "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+          "line": 93,
+          "function": "axiom_sqrt_m1_squared",
+          "ensures_summary": "fe51_limbs_bounded(&constants::SQRT_M1, 51), fe51_limbs_bounded(&constants::SQRT_M1, 54),",
+          "comment": "sqrt_m1() = fe51_as_canonical_nat(&SQRT_M1) = fe51_as_nat(&SQRT_M1) % p() | This is a 252-bit number; verifying i\u00b2 = -1 (mod p) requires big-number | multiplication far beyond SMT solver capacity. | V",
+          "automatable": false,
+          "reason": "sqrt(-1)^2 = -1 mod p - verifiable by 252-bit modular multiplication"
+        },
+        {
+          "file": "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+          "line": 111,
+          "function": "axiom_sqrt_m1_not_square",
+          "ensures_summary": "fe51_limbs_bounded(&constants::SQRT_M1, 51), fe51_limbs_bounded(&constants::SQRT_M1, 54),",
+          "comment": "Used in: lemma_no_square_root_when_times_i",
+          "automatable": false,
+          "reason": "sqrt(-1) or -sqrt(-1) not a QR - verifiable by Euler criterion computation"
+        },
+        {
+          "file": "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+          "line": 128,
+          "function": "axiom_neg_sqrt_m1_not_square",
+          "ensures_summary": "fe51_limbs_bounded(&constants::SQRT_M1, 51), fe51_limbs_bounded(&constants::SQRT_M1, 54),",
+          "comment": "Used in: lemma_no_square_root_when_times_i",
+          "automatable": false,
+          "reason": "sqrt(-1) or -sqrt(-1) not a QR - verifiable by Euler criterion computation"
+        },
+        {
+          "file": "lemmas/montgomery_curve_lemmas.rs",
+          "line": 736,
+          "function": "axiom_486660_not_quadratic_residue",
+          "ensures_summary": "({ let P = canonical_montgomery_lift(0); let R = montgomery_scalar_mul(P, n); R == MontgomeryAffine::Infinity || R == P }), decreases n,",
+          "comment": "Verified by runtime test `test_486660_not_qr`.",
+          "automatable": false,
+          "reason": "Quadratic residuosity of specific constants - verifiable by Euler criterion computation"
+        },
+        {
+          "file": "lemmas/montgomery_curve_lemmas.rs",
+          "line": 746,
+          "function": "axiom_2_times_486661_not_qr",
+          "ensures_summary": "({ let P = canonical_montgomery_lift(0); let R = montgomery_scalar_mul(P, n); R == MontgomeryAffine::Infinity || R == P }), decreases n,",
+          "comment": "Verified by runtime test `test_2_times_486661_not_qr`.",
+          "automatable": false,
+          "reason": "Quadratic residuosity of specific constants - verifiable by Euler criterion computation"
+        }
+      ]
+    },
+    "external_verification": {
+      "count": 2,
+      "examples": [
+        {
+          "file": "core_assumes.rs",
+          "line": 424,
+          "function": "axiom_sha512_output_length",
+          "ensures_summary": "(no ensures extracted)",
+          "comment": "Axiom: SHA-512 always produces exactly 64 bytes of output.",
+          "automatable": false,
+          "reason": "Hash function output length - property of the external hash implementation"
+        },
+        {
+          "file": "core_assumes.rs",
+          "line": 460,
+          "function": "axiom_sha256_output_length",
+          "ensures_summary": "forall|i: int| 0 <= i < 32 ==> #[trigger] bytes[i] == 0u8,",
+          "comment": "Axiom: SHA-256 always produces exactly 32 bytes of output.",
+          "automatable": false,
+          "reason": "Hash function output length - property of the external hash implementation"
+        }
+      ]
+    },
+    "incomplete_proof": {
+      "count": 7,
+      "examples": [
+        {
+          "file": "lizard/jacobi_quartic.rs",
+          "line": 64,
+          "function": "elligator_inv",
+          "ensures_summary": "fe51_limbs_bounded(&result.1, 54),",
+          "comment": "PROOF BYPASS: algebraic Elligator roundtrip + limb bound tracking",
+          "automatable": true,
+          "reason": "Proof bypass - could be completed with more proof effort"
+        },
+        {
+          "file": "lizard/lizard_ristretto.rs",
+          "line": 277,
+          "function": "lizard_decode_verus",
+          "ensures_summary": "match result { Some(bytes) => ({ let (x, y) = edwards_point_as_affine(self.0);",
+          "comment": "",
+          "automatable": true,
+          "reason": "Proof bypass - could be completed with more proof effort"
+        },
+        {
+          "file": "lizard/lizard_ristretto.rs",
+          "line": 477,
+          "function": "elligator_ristretto_flavor_inverse",
+          "ensures_summary": "(no ensures extracted)",
+          "comment": "",
+          "automatable": true,
+          "reason": "Limb bound tracking in loop - could be proven with invariant strengthening"
+        },
+        {
+          "file": "lizard/lizard_ristretto.rs",
+          "line": 478,
+          "function": "elligator_ristretto_flavor_inverse",
+          "ensures_summary": "(no ensures extracted)",
+          "comment": "",
+          "automatable": true,
+          "reason": "Limb bound tracking in loop - could be proven with invariant strengthening"
+        },
+        {
+          "file": "lizard/lizard_ristretto.rs",
+          "line": 504,
+          "function": "elligator_ristretto_flavor_inverse",
+          "ensures_summary": "(no ensures extracted)",
+          "comment": "PROOF BYPASS: limb bounds for all 8 elements (follows from",
+          "automatable": true,
+          "reason": "Proof bypass - could be completed with more proof effort"
+        },
+        {
+          "file": "lizard/lizard_ristretto.rs",
+          "line": 520,
+          "function": "elligator_ristretto_flavor_inverse",
+          "ensures_summary": "(no ensures extracted)",
+          "comment": "",
+          "automatable": true,
+          "reason": "Proof bypass - could be completed with more proof effort"
+        },
+        {
+          "file": "lizard/lizard_ristretto.rs",
+          "line": 574,
+          "function": "to_jacobi_quartic_ristretto",
+          "ensures_summary": "(no ensures extracted)",
+          "comment": "PROOF BYPASS: requires proving (1) limb bounds through ~30 field | operations and (2) algebraic correctness that the computed (S,T) | values satisfy jacobi_to_edwards_affine(S,T) == coset[i]. | The al",
+          "automatable": true,
+          "reason": "Proof bypass - could be completed with more proof effort"
+        }
+      ]
+    },
+    "mathematical_axiom": {
+      "count": 17,
+      "examples": [
+        {
+          "file": "core_assumes.rs",
+          "line": 304,
+          "function": "axiom_hash_is_canonical",
+          "ensures_summary": "bytes_as_nat_prefix(bytes@, 2) == x as nat,",
+          "comment": "Axiom: hashing depends only on the canonical field-element value.",
+          "automatable": false,
+          "reason": "Hash function property (deterministic, canonical)"
+        },
+        {
+          "file": "lemmas/montgomery_curve_lemmas.rs",
+          "line": 1189,
+          "function": "axiom_elligator_encode_outputs_valid_u",
+          "ensures_summary": "is_valid_u_coordinate(montgomery_u_from_edwards_y(y)),",
+          "comment": "Axiom: Elligator2 always outputs a valid Montgomery u-coordinate (on the curve, not the twist).",
+          "automatable": false,
+          "reason": "Elligator encode outputs valid u-coordinate - standard map property"
+        },
+        {
+          "file": "lemmas/ristretto_lemmas/axioms.rs",
+          "line": 33,
+          "function": "axiom_ristretto_decode_on_curve",
+          "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Ristretto decode property - follows from Decaf/Ristretto construction"
+        },
+        {
+          "file": "lemmas/ristretto_lemmas/axioms.rs",
+          "line": 57,
+          "function": "axiom_ristretto_decode_in_even_subgroup",
+          "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Ristretto decode property - follows from Decaf/Ristretto construction"
+        },
+        {
+          "file": "lemmas/ristretto_lemmas/axioms.rs",
+          "line": 109,
+          "function": "axiom_ristretto_cross_mul_iff_equivalent",
+          "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Ristretto equivalence via cross-multiplication - Decaf/Ristretto construction"
+        },
+        {
+          "file": "lemmas/ristretto_lemmas/axioms.rs",
+          "line": 127,
+          "function": "axiom_elligator_on_curve",
+          "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Elligator map produces on-curve points - standard Elligator result"
+        },
+        {
+          "file": "lemmas/ristretto_lemmas/axioms.rs",
+          "line": 169,
+          "function": "axiom_elligator_in_even_subgroup",
+          "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Elligator map produces even subgroup points - Decaf construction"
+        },
+        {
+          "file": "lemmas/ristretto_lemmas/axioms.rs",
+          "line": 194,
+          "function": "axiom_even_subgroup_closed_under_add",
+          "ensures_summary": "is_in_even_subgroup(point),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Even subgroup closed under addition - standard group theory"
+        },
+        {
+          "file": "specs/primality_specs.rs",
+          "line": 30,
+          "function": "axiom_p_is_prime",
+          "ensures_summary": "is_prime(p()),",
+          "comment": "Mathematical fact: 2^255 - 19 is prime | - Fermat's Little Theorem: x^(p-1) \u2261 1 (mod p) for x \u2262 0 (mod p)",
+          "automatable": false,
+          "reason": "Primality of large constants (2^255-19 or group order) - requires big-number computation"
+        },
+        {
+          "file": "specs/primality_specs.rs",
+          "line": 44,
+          "function": "axiom_group_order_is_prime",
+          "ensures_summary": "is_prime(p()),",
+          "comment": "Mathematical fact: L is prime | x^(L-1) \u2261 1 (mod L) for x \u2262 0 (mod L)",
+          "automatable": false,
+          "reason": "Primality of large constants (2^255-19 or group order) - requires big-number computation"
+        },
+        {
+          "file": "specs/proba_specs.rs",
+          "line": 129,
+          "function": "axiom_uniform_bytes_split",
+          "ensures_summary": "is_uniform_bytes(first), is_uniform_bytes(second), is_independent_uniform_bytes32(first, second),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+        },
+        {
+          "file": "specs/proba_specs.rs",
+          "line": 170,
+          "function": "axiom_from_bytes_independent",
+          "ensures_summary": "is_uniform_bytes(first), is_uniform_bytes(second), is_independent_uniform_bytes32(first, second),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+        },
+        {
+          "file": "specs/proba_specs.rs",
+          "line": 196,
+          "function": "axiom_uniform_elligator",
+          "ensures_summary": "is_uniform_bytes(first), is_uniform_bytes(second), is_independent_uniform_bytes32(first, second),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+        },
+        {
+          "file": "specs/proba_specs.rs",
+          "line": 220,
+          "function": "axiom_uniform_elligator_independent",
+          "ensures_summary": "is_uniform_bytes(first), is_uniform_bytes(second), is_independent_uniform_bytes32(first, second),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+        },
+        {
+          "file": "specs/proba_specs.rs",
+          "line": 253,
+          "function": "axiom_uniform_elligator_sum",
+          "ensures_summary": "is_uniform_bytes(first), is_uniform_bytes(second), is_independent_uniform_bytes32(first, second),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+        },
+        {
+          "file": "specs/proba_specs.rs",
+          "line": 279,
+          "function": "axiom_uniform_point_add",
+          "ensures_summary": "is_uniform_bytes(bytes) ==> is_uniform_field_element(fe),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+        },
+        {
+          "file": "specs/proba_specs.rs",
+          "line": 300,
+          "function": "axiom_uniform_mod_reduction",
+          "ensures_summary": "is_independent_uniform_field_elements(fe1, fe2),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+        }
+      ]
+    },
+    "trusted_constant": {
+      "count": 3,
+      "examples": [
+        {
+          "file": "lemmas/ristretto_lemmas/axioms.rs",
+          "line": 223,
+          "function": "axiom_invsqrt_a_minus_d",
+          "ensures_summary": "ristretto_equivalent(p1, p2) == (field_mul( fe51_as_canonical_nat(&edwards_x(p1)), fe51_as_canonical_nat(&edwards_y(p2)), ) == field_mul(fe51_as_canonical_nat(&edwards_y(p1)), fe51_as_canonical_nat(&e",
+          "comment": "",
+          "automatable": false,
+          "reason": "Specific numerical value of invsqrt(-1-d) - concrete constant"
+        },
+        {
+          "file": "specs/edwards_specs.rs",
+          "line": 163,
+          "function": "axiom_ed25519_basepoint_table_valid",
+          "ensures_summary": "spec_ed25519_basepoint().1 == u64_5_as_nat( [ 1801439850948184u64, 1351079888211148u64, 450359962737049u64, 900719925474099u64, 1801439850948198u64, ], ),",
+          "comment": "",
+          "automatable": false,
+          "reason": "Precomputed basepoint table validity - verified by construction/test"
+        },
+        {
+          "file": "specs/window_specs.rs",
+          "line": 217,
+          "function": "axiom_affine_odd_multiples_of_basepoint_valid",
+          "ensures_summary": "naf_lookup_table8_affine_limbs_bounded(AFFINE_ODD_MULTIPLES_OF_BASEPOINT.0), forall|j: int| 0 <= j < 64 ==> is_valid_affine_niels_point( #[trigger] AFFINE_ODD_MULTIPLES_OF_BASEPOINT.0[j], ), is_valid_",
+          "comment": "Hardcoded table data verified by construction",
+          "automatable": false,
+          "reason": "Precomputed basepoint table validity - verified by construction/test"
+        }
+      ]
+    }
+  },
+  "by_layer": {
+    "core_assumes": 3,
+    "exec/lizard": 7,
+    "lemmas/edwards": 3,
+    "lemmas/field": 3,
+    "lemmas/montgomery": 9,
+    "lemmas/ristretto": 8,
+    "specs/edwards": 1,
+    "specs/field": 1,
+    "specs/primality": 2,
+    "specs/probabilistic": 7,
+    "specs/window": 1
+  },
+  "automation_ceiling": {
+    "total_admits": 45,
+    "not_automatable": 30,
+    "not_automatable_categories": [
+      "mathematical_axiom",
+      "algebraic_deep",
+      "external_verification"
+    ],
+    "possibly_automatable": 15,
+    "possibly_automatable_categories": [
+      "incomplete_proof",
+      "computational",
+      "trusted_constant"
+    ],
+    "unknown": 0,
+    "percentage_possibly_automatable": 33.3
+  },
+  "detailed_entries": [
+    {
+      "file": "core_assumes.rs",
+      "line": 304,
+      "function": "axiom_hash_is_canonical",
+      "ensures_summary": "bytes_as_nat_prefix(bytes@, 2) == x as nat,",
+      "comment": "Axiom: hashing depends only on the canonical field-element value.",
+      "layer": "core_assumes",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Hash function property (deterministic, canonical)"
+    },
+    {
+      "file": "core_assumes.rs",
+      "line": 424,
+      "function": "axiom_sha512_output_length",
+      "ensures_summary": "(no ensures extracted)",
+      "comment": "Axiom: SHA-512 always produces exactly 64 bytes of output.",
+      "layer": "core_assumes",
+      "line_text": "admit();",
+      "category": "external_verification",
+      "automatable": false,
+      "reason": "Hash function output length - property of the external hash implementation"
+    },
+    {
+      "file": "core_assumes.rs",
+      "line": 460,
+      "function": "axiom_sha256_output_length",
+      "ensures_summary": "forall|i: int| 0 <= i < 32 ==> #[trigger] bytes[i] == 0u8,",
+      "comment": "Axiom: SHA-256 always produces exactly 32 bytes of output.",
+      "layer": "core_assumes",
+      "line_text": "admit();",
+      "category": "external_verification",
+      "automatable": false,
+      "reason": "Hash function output length - property of the external hash implementation"
+    },
+    {
+      "file": "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+      "line": 780,
+      "function": "axiom_edwards_add_associative",
+      "ensures_summary": "edwards_double(0, 1) == (0nat, 1nat),",
+      "comment": "",
+      "layer": "lemmas/edwards",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Group associativity requires degree-6 polynomial identity over F_p"
+    },
+    {
+      "file": "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+      "line": 1321,
+      "function": "axiom_add_neg_is_identity",
+      "ensures_summary": "edwards_scalar_mul(edwards_neg(P), n) == edwards_neg(edwards_scalar_mul(P, n)), decreases n,",
+      "comment": "requiring callers to prove their points are on the curve.",
+      "layer": "lemmas/edwards",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Point + negation = identity - requires algebraic simplification"
+    },
+    {
+      "file": "lemmas/edwards_lemmas/curve_equation_lemmas.rs",
+      "line": 3065,
+      "function": "axiom_edwards_add_complete",
+      "ensures_summary": "affine_niels_point_as_affine_edwards(niels) == edwards_point_as_affine(point),",
+      "comment": "",
+      "layer": "lemmas/edwards",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Completeness of Edwards addition law - deep algebraic geometry result"
+    },
+    {
+      "file": "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+      "line": 93,
+      "function": "axiom_sqrt_m1_squared",
+      "ensures_summary": "fe51_limbs_bounded(&constants::SQRT_M1, 51), fe51_limbs_bounded(&constants::SQRT_M1, 54),",
+      "comment": "sqrt_m1() = fe51_as_canonical_nat(&SQRT_M1) = fe51_as_nat(&SQRT_M1) % p() | This is a 252-bit number; verifying i\u00b2 = -1 (mod p) requires big-number | multiplication far beyond SMT solver capacity. | V",
+      "layer": "lemmas/field",
+      "line_text": "admit();",
+      "category": "computational",
+      "automatable": false,
+      "reason": "sqrt(-1)^2 = -1 mod p - verifiable by 252-bit modular multiplication"
+    },
+    {
+      "file": "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+      "line": 111,
+      "function": "axiom_sqrt_m1_not_square",
+      "ensures_summary": "fe51_limbs_bounded(&constants::SQRT_M1, 51), fe51_limbs_bounded(&constants::SQRT_M1, 54),",
+      "comment": "Used in: lemma_no_square_root_when_times_i",
+      "layer": "lemmas/field",
+      "line_text": "admit();",
+      "category": "computational",
+      "automatable": false,
+      "reason": "sqrt(-1) or -sqrt(-1) not a QR - verifiable by Euler criterion computation"
+    },
+    {
+      "file": "lemmas/field_lemmas/sqrt_m1_lemmas.rs",
+      "line": 128,
+      "function": "axiom_neg_sqrt_m1_not_square",
+      "ensures_summary": "fe51_limbs_bounded(&constants::SQRT_M1, 51), fe51_limbs_bounded(&constants::SQRT_M1, 54),",
+      "comment": "Used in: lemma_no_square_root_when_times_i",
+      "layer": "lemmas/field",
+      "line_text": "admit();",
+      "category": "computational",
+      "automatable": false,
+      "reason": "sqrt(-1) or -sqrt(-1) not a QR - verifiable by Euler criterion computation"
+    },
+    {
+      "file": "lemmas/montgomery_curve_lemmas.rs",
+      "line": 51,
+      "function": "axiom_montgomery_add_associative",
+      "ensures_summary": "montgomery_add(montgomery_add(P, Q), R) == montgomery_add(P, montgomery_add(Q, R)),",
+      "comment": "",
+      "layer": "lemmas/montgomery",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Group associativity requires degree-6 polynomial identity over F_p"
+    },
+    {
+      "file": "lemmas/montgomery_curve_lemmas.rs",
+      "line": 145,
+      "function": "axiom_xdbl_projective_correct",
+      "ensures_summary": "montgomery_add(montgomery_add(P, Q), R) == montgomery_add(P, montgomery_add(Q, R)),",
+      "comment": "",
+      "layer": "lemmas/montgomery",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Montgomery ladder formula correctness - requires algebraic verification"
+    },
+    {
+      "file": "lemmas/montgomery_curve_lemmas.rs",
+      "line": 278,
+      "function": "axiom_xadd_projective_correct",
+      "ensures_summary": "({ let (U2, W2) = spec_xdbl_projective(U, W); projective_represents_montgomery_or_infinity_nat(U2, W2, montgomery_add(P, P)) }),",
+      "comment": "",
+      "layer": "lemmas/montgomery",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Montgomery ladder formula correctness - requires algebraic verification"
+    },
+    {
+      "file": "lemmas/montgomery_curve_lemmas.rs",
+      "line": 736,
+      "function": "axiom_486660_not_quadratic_residue",
+      "ensures_summary": "({ let P = canonical_montgomery_lift(0); let R = montgomery_scalar_mul(P, n); R == MontgomeryAffine::Infinity || R == P }), decreases n,",
+      "comment": "Verified by runtime test `test_486660_not_qr`.",
+      "layer": "lemmas/montgomery",
+      "line_text": "admit();",
+      "category": "computational",
+      "automatable": false,
+      "reason": "Quadratic residuosity of specific constants - verifiable by Euler criterion computation"
+    },
+    {
+      "file": "lemmas/montgomery_curve_lemmas.rs",
+      "line": 746,
+      "function": "axiom_2_times_486661_not_qr",
+      "ensures_summary": "({ let P = canonical_montgomery_lift(0); let R = montgomery_scalar_mul(P, n); R == MontgomeryAffine::Infinity || R == P }), decreases n,",
+      "comment": "Verified by runtime test `test_2_times_486661_not_qr`.",
+      "layer": "lemmas/montgomery",
+      "line_text": "admit();",
+      "category": "computational",
+      "automatable": false,
+      "reason": "Quadratic residuosity of specific constants - verifiable by Euler criterion computation"
+    },
+    {
+      "file": "lemmas/montgomery_curve_lemmas.rs",
+      "line": 1181,
+      "function": "axiom_edwards_to_montgomery_preserves_validity",
+      "ensures_summary": "is_valid_u_coordinate(montgomery_u_from_edwards_y(y)),",
+      "comment": "",
+      "layer": "lemmas/montgomery",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Edwards-Montgomery map commutativity - deep birational correspondence"
+    },
+    {
+      "file": "lemmas/montgomery_curve_lemmas.rs",
+      "line": 1189,
+      "function": "axiom_elligator_encode_outputs_valid_u",
+      "ensures_summary": "is_valid_u_coordinate(montgomery_u_from_edwards_y(y)),",
+      "comment": "Axiom: Elligator2 always outputs a valid Montgomery u-coordinate (on the curve, not the twist).",
+      "layer": "lemmas/montgomery",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Elligator encode outputs valid u-coordinate - standard map property"
+    },
+    {
+      "file": "lemmas/montgomery_curve_lemmas.rs",
+      "line": 1203,
+      "function": "axiom_montgomery_valid_u_implies_edwards_y_valid",
+      "ensures_summary": "is_valid_u_coordinate(montgomery_u_from_edwards_y(y)),",
+      "comment": "",
+      "layer": "lemmas/montgomery",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Montgomery u-coordinate validity under birational map"
+    },
+    {
+      "file": "lemmas/montgomery_curve_lemmas.rs",
+      "line": 1435,
+      "function": "axiom_edwards_to_montgomery_commutes_with_scalar_mul",
+      "ensures_summary": "montgomery_u_from_edwards_y(spec_ed25519_basepoint().1) == spec_x25519_basepoint_u(),",
+      "comment": "",
+      "layer": "lemmas/montgomery",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Edwards-Montgomery map commutativity - deep birational correspondence"
+    },
+    {
+      "file": "lemmas/ristretto_lemmas/axioms.rs",
+      "line": 33,
+      "function": "axiom_ristretto_decode_on_curve",
+      "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+      "comment": "",
+      "layer": "lemmas/ristretto",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Ristretto decode property - follows from Decaf/Ristretto construction"
+    },
+    {
+      "file": "lemmas/ristretto_lemmas/axioms.rs",
+      "line": 57,
+      "function": "axiom_ristretto_decode_in_even_subgroup",
+      "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+      "comment": "",
+      "layer": "lemmas/ristretto",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Ristretto decode property - follows from Decaf/Ristretto construction"
+    },
+    {
+      "file": "lemmas/ristretto_lemmas/axioms.rs",
+      "line": 109,
+      "function": "axiom_ristretto_cross_mul_iff_equivalent",
+      "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+      "comment": "",
+      "layer": "lemmas/ristretto",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Ristretto equivalence via cross-multiplication - Decaf/Ristretto construction"
+    },
+    {
+      "file": "lemmas/ristretto_lemmas/axioms.rs",
+      "line": 127,
+      "function": "axiom_elligator_on_curve",
+      "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+      "comment": "",
+      "layer": "lemmas/ristretto",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Elligator map produces on-curve points - standard Elligator result"
+    },
+    {
+      "file": "lemmas/ristretto_lemmas/axioms.rs",
+      "line": 152,
+      "function": "axiom_elligator_nonzero_intermediates",
+      "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+      "comment": "",
+      "layer": "lemmas/ristretto",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Elligator intermediate nonzero - algebraic property of the map"
+    },
+    {
+      "file": "lemmas/ristretto_lemmas/axioms.rs",
+      "line": 169,
+      "function": "axiom_elligator_in_even_subgroup",
+      "ensures_summary": "is_on_edwards_curve(ristretto_decode_x(s), ristretto_decode_y(s)),",
+      "comment": "",
+      "layer": "lemmas/ristretto",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Elligator map produces even subgroup points - Decaf construction"
+    },
+    {
+      "file": "lemmas/ristretto_lemmas/axioms.rs",
+      "line": 194,
+      "function": "axiom_even_subgroup_closed_under_add",
+      "ensures_summary": "is_in_even_subgroup(point),",
+      "comment": "",
+      "layer": "lemmas/ristretto",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Even subgroup closed under addition - standard group theory"
+    },
+    {
+      "file": "lemmas/ristretto_lemmas/axioms.rs",
+      "line": 223,
+      "function": "axiom_invsqrt_a_minus_d",
+      "ensures_summary": "ristretto_equivalent(p1, p2) == (field_mul( fe51_as_canonical_nat(&edwards_x(p1)), fe51_as_canonical_nat(&edwards_y(p2)), ) == field_mul(fe51_as_canonical_nat(&edwards_y(p1)), fe51_as_canonical_nat(&e",
+      "comment": "",
+      "layer": "lemmas/ristretto",
+      "line_text": "admit();",
+      "category": "trusted_constant",
+      "automatable": false,
+      "reason": "Specific numerical value of invsqrt(-1-d) - concrete constant"
+    },
+    {
+      "file": "lizard/jacobi_quartic.rs",
+      "line": 64,
+      "function": "elligator_inv",
+      "ensures_summary": "fe51_limbs_bounded(&result.1, 54),",
+      "comment": "PROOF BYPASS: algebraic Elligator roundtrip + limb bound tracking",
+      "layer": "exec/lizard",
+      "line_text": "admit();  // PROOF BYPASS: algebraic Elligator roundtrip + limb bound tracking",
+      "category": "incomplete_proof",
+      "automatable": true,
+      "reason": "Proof bypass - could be completed with more proof effort"
+    },
+    {
+      "file": "lizard/lizard_ristretto.rs",
+      "line": 277,
+      "function": "lizard_decode_verus",
+      "ensures_summary": "match result { Some(bytes) => ({ let (x, y) = edwards_point_as_affine(self.0);",
+      "comment": "",
+      "layer": "exec/lizard",
+      "line_text": "admit();",
+      "category": "incomplete_proof",
+      "automatable": true,
+      "reason": "Proof bypass - could be completed with more proof effort"
+    },
+    {
+      "file": "lizard/lizard_ristretto.rs",
+      "line": 477,
+      "function": "elligator_ristretto_flavor_inverse",
+      "ensures_summary": "(no ensures extracted)",
+      "comment": "",
+      "layer": "exec/lizard",
+      "line_text": "assert(fe51_limbs_bounded(&jcs[i as int].S, 54)) by { admit() }",
+      "category": "incomplete_proof",
+      "automatable": true,
+      "reason": "Limb bound tracking in loop - could be proven with invariant strengthening"
+    },
+    {
+      "file": "lizard/lizard_ristretto.rs",
+      "line": 478,
+      "function": "elligator_ristretto_flavor_inverse",
+      "ensures_summary": "(no ensures extracted)",
+      "comment": "",
+      "layer": "exec/lizard",
+      "line_text": "assert(fe51_limbs_bounded(&jcs[i as int].T, 54)) by { admit() }",
+      "category": "incomplete_proof",
+      "automatable": true,
+      "reason": "Limb bound tracking in loop - could be proven with invariant strengthening"
+    },
+    {
+      "file": "lizard/lizard_ristretto.rs",
+      "line": 504,
+      "function": "elligator_ristretto_flavor_inverse",
+      "ensures_summary": "(no ensures extracted)",
+      "comment": "PROOF BYPASS: limb bounds for all 8 elements (follows from",
+      "layer": "exec/lizard",
+      "line_text": "by { admit() };",
+      "category": "incomplete_proof",
+      "automatable": true,
+      "reason": "Proof bypass - could be completed with more proof effort"
+    },
+    {
+      "file": "lizard/lizard_ristretto.rs",
+      "line": 520,
+      "function": "elligator_ristretto_flavor_inverse",
+      "ensures_summary": "(no ensures extracted)",
+      "comment": "",
+      "layer": "exec/lizard",
+      "line_text": "}) by { admit() };",
+      "category": "incomplete_proof",
+      "automatable": true,
+      "reason": "Proof bypass - could be completed with more proof effort"
+    },
+    {
+      "file": "lizard/lizard_ristretto.rs",
+      "line": 574,
+      "function": "to_jacobi_quartic_ristretto",
+      "ensures_summary": "(no ensures extracted)",
+      "comment": "PROOF BYPASS: requires proving (1) limb bounds through ~30 field | operations and (2) algebraic correctness that the computed (S,T) | values satisfy jacobi_to_edwards_affine(S,T) == coset[i]. | The al",
+      "layer": "exec/lizard",
+      "line_text": "admit();",
+      "category": "incomplete_proof",
+      "automatable": true,
+      "reason": "Proof bypass - could be completed with more proof effort"
+    },
+    {
+      "file": "specs/edwards_specs.rs",
+      "line": 163,
+      "function": "axiom_ed25519_basepoint_table_valid",
+      "ensures_summary": "spec_ed25519_basepoint().1 == u64_5_as_nat( [ 1801439850948184u64, 1351079888211148u64, 450359962737049u64, 900719925474099u64, 1801439850948198u64, ], ),",
+      "comment": "",
+      "layer": "specs/edwards",
+      "line_text": "admit();",
+      "category": "trusted_constant",
+      "automatable": false,
+      "reason": "Precomputed basepoint table validity - verified by construction/test"
+    },
+    {
+      "file": "specs/field_specs.rs",
+      "line": 648,
+      "function": "axiom_invsqrt_factors_over_square",
+      "ensures_summary": "nat_invsqrt(field_mul(a, field_square(b))) == field_abs( field_mul(nat_invsqrt(a), field_inv(b)), ),",
+      "comment": "",
+      "layer": "specs/field",
+      "line_text": "admit();",
+      "category": "algebraic_deep",
+      "automatable": false,
+      "reason": "Inverse square root factoring property - field arithmetic identity"
+    },
+    {
+      "file": "specs/primality_specs.rs",
+      "line": 30,
+      "function": "axiom_p_is_prime",
+      "ensures_summary": "is_prime(p()),",
+      "comment": "Mathematical fact: 2^255 - 19 is prime | - Fermat's Little Theorem: x^(p-1) \u2261 1 (mod p) for x \u2262 0 (mod p)",
+      "layer": "specs/primality",
+      "line_text": "admit();  // Mathematical fact: 2^255 - 19 is prime",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Primality of large constants (2^255-19 or group order) - requires big-number computation"
+    },
+    {
+      "file": "specs/primality_specs.rs",
+      "line": 44,
+      "function": "axiom_group_order_is_prime",
+      "ensures_summary": "is_prime(p()),",
+      "comment": "Mathematical fact: L is prime | x^(L-1) \u2261 1 (mod L) for x \u2262 0 (mod L)",
+      "layer": "specs/primality",
+      "line_text": "admit();  // Mathematical fact: L is prime",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Primality of large constants (2^255-19 or group order) - requires big-number computation"
+    },
+    {
+      "file": "specs/proba_specs.rs",
+      "line": 129,
+      "function": "axiom_uniform_bytes_split",
+      "ensures_summary": "is_uniform_bytes(first), is_uniform_bytes(second), is_independent_uniform_bytes32(first, second),",
+      "comment": "",
+      "layer": "specs/probabilistic",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+    },
+    {
+      "file": "specs/proba_specs.rs",
+      "line": 170,
+      "function": "axiom_from_bytes_independent",
+      "ensures_summary": "is_uniform_bytes(first), is_uniform_bytes(second), is_independent_uniform_bytes32(first, second),",
+      "comment": "",
+      "layer": "specs/probabilistic",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+    },
+    {
+      "file": "specs/proba_specs.rs",
+      "line": 196,
+      "function": "axiom_uniform_elligator",
+      "ensures_summary": "is_uniform_bytes(first), is_uniform_bytes(second), is_independent_uniform_bytes32(first, second),",
+      "comment": "",
+      "layer": "specs/probabilistic",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+    },
+    {
+      "file": "specs/proba_specs.rs",
+      "line": 220,
+      "function": "axiom_uniform_elligator_independent",
+      "ensures_summary": "is_uniform_bytes(first), is_uniform_bytes(second), is_independent_uniform_bytes32(first, second),",
+      "comment": "",
+      "layer": "specs/probabilistic",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+    },
+    {
+      "file": "specs/proba_specs.rs",
+      "line": 253,
+      "function": "axiom_uniform_elligator_sum",
+      "ensures_summary": "is_uniform_bytes(first), is_uniform_bytes(second), is_independent_uniform_bytes32(first, second),",
+      "comment": "",
+      "layer": "specs/probabilistic",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+    },
+    {
+      "file": "specs/proba_specs.rs",
+      "line": 279,
+      "function": "axiom_uniform_point_add",
+      "ensures_summary": "is_uniform_bytes(bytes) ==> is_uniform_field_element(fe),",
+      "comment": "",
+      "layer": "specs/probabilistic",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+    },
+    {
+      "file": "specs/proba_specs.rs",
+      "line": 300,
+      "function": "axiom_uniform_mod_reduction",
+      "ensures_summary": "is_independent_uniform_field_elements(fe1, fe2),",
+      "comment": "",
+      "layer": "specs/probabilistic",
+      "line_text": "admit();",
+      "category": "mathematical_axiom",
+      "automatable": false,
+      "reason": "Cryptographic/probabilistic axiom (uniform distribution, independence) - not provable in program logic"
+    },
+    {
+      "file": "specs/window_specs.rs",
+      "line": 217,
+      "function": "axiom_affine_odd_multiples_of_basepoint_valid",
+      "ensures_summary": "naf_lookup_table8_affine_limbs_bounded(AFFINE_ODD_MULTIPLES_OF_BASEPOINT.0), forall|j: int| 0 <= j < 64 ==> is_valid_affine_niels_point( #[trigger] AFFINE_ODD_MULTIPLES_OF_BASEPOINT.0[j], ), is_valid_",
+      "comment": "Hardcoded table data verified by construction",
+      "layer": "specs/window",
+      "line_text": "admit();  // Hardcoded table data verified by construction",
+      "category": "trusted_constant",
+      "automatable": false,
+      "reason": "Precomputed basepoint table validity - verified by construction/test"
+    }
+  ]
+}

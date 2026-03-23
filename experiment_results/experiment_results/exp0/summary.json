@@ -1,0 +1,107 @@
+{
+  "overview": {
+    "total_holes": 10,
+    "pass_attempt_1": 10,
+    "pass_attempt_2": 0,
+    "fail": 0
+  },
+  "by_pair": {
+    "pair_1_verus_strategies": {
+      "A_result": "pass_attempt_1",
+      "B_result": "pass_attempt_1",
+      "conclusion": "model knows both pure_smt and by(bit_vector) + assert forall patterns"
+    },
+    "pair_2_vstd_discovery": {
+      "C_result": "pass_attempt_1",
+      "D_result": "pass_attempt_1",
+      "learned_from_C_to_D": true,
+      "conclusion": "model knows vstd lemma names (mul_mod_noop_left/right, mul_is_distributive_add, add_mod_noop, mul_is_associative) and correct int cast patterns"
+    },
+    "pair_3_composition": {
+      "E_result": "pass_attempt_1",
+      "F_result": "pass_attempt_1",
+      "conclusion": "model composes 2 lemmas (E) and 4+ lemmas from different files (F) without difficulty"
+    },
+    "pair_4_computation": {
+      "G_result": "pass_attempt_1",
+      "H_result": "pass_attempt_1",
+      "conclusion": "model knows both by(compute) and mixed strategies (sub_lemma + by(bit_vector))"
+    },
+    "pair_5_scaling": {
+      "I_result": "pass_attempt_1",
+      "J_result": "pass_attempt_1",
+      "conclusion": "model handles both 55-line and 93-line proofs on first attempt. No complexity cliff observed in this range."
+    }
+  },
+  "struggle_dimensions": {
+    "verus_pattern_knowledge": {
+      "score": "strong",
+      "evidence": "A (pure_smt), B (by(bit_vector) + assert forall), G (by(compute)), H (mixed) all passed. Model knows all major Verus proof strategies.",
+      "pipeline_action": "Verus pattern templates are low priority - model already knows them"
+    },
+    "vstd_lemma_discovery": {
+      "score": "strong",
+      "evidence": "C and D both passed with correct vstd lemma names. Model knows lemma_mul_mod_noop_left/right, lemma_mul_is_distributive_add, lemma_add_mod_noop, lemma_mul_is_associative, lemma_mod_bound, lemma_small_mod, lemma_mod_twice, lemma_mod_multiples_vanish.",
+      "pipeline_action": "vstd pre-index is low priority for common arithmetic lemmas, but may be needed for obscure lemmas not tested here"
+    },
+    "sub_lemma_composition": {
+      "score": "strong",
+      "evidence": "E (2 lemmas), F (4 lemmas from different files), H (5+ lemmas), I (8 lemmas), J (15 lemmas from 5 files) all passed. Model chains sub-lemma calls with correct intermediate assertions.",
+      "pipeline_action": "Sub-lemma discovery/composition support is low priority"
+    },
+    "concrete_computation": {
+      "score": "strong",
+      "evidence": "G (pure by(compute) with magic constants) and H (mixed) both passed.",
+      "pipeline_action": "No special support needed for concrete computation proofs"
+    },
+    "scaling": {
+      "cliff_loc": null,
+      "evidence": "All holes up to 106 lines (J) passed on first attempt. No complexity cliff observed. Note: model had full file context and well-documented proof structures.",
+      "pipeline_action": "For proofs with good documentation and clear structure, scaling is not a bottleneck. Test with less-documented or more algebraically complex proofs."
+    }
+  },
+  "error_mode_frequency": {
+    "wrong_strategy": 0,
+    "wrong_lemma": 0,
+    "wrong_instantiation": 0,
+    "missing_intermediate": 0,
+    "missing_verus_pattern": 0,
+    "missing_reveal": 0,
+    "trigger_issue": 0,
+    "solver_timeout": 0,
+    "syntax_error": 0,
+    "type_error": 0,
+    "other": 0
+  },
+  "top_3_pipeline_priorities": [
+    {
+      "priority": 1,
+      "component": "harder_proof_targets",
+      "justification": "All 10 holes at field_lemmas layer (L2-L3) passed. Need to test higher layers (edwards L6-L7, ristretto L8-L9) and algebraically deeper proofs (e.g., curve equation, Edwards addition) to find actual failure modes."
+    },
+    {
+      "priority": 2,
+      "component": "proof_decomposition",
+      "justification": "Even J (106 lines) passed, but this had excellent documentation (ensures comments, doc comments). Undocumented large proofs may fail. The pipeline should provide structured decomposition hints."
+    },
+    {
+      "priority": 3,
+      "component": "novel_lemma_discovery",
+      "justification": "All tested lemmas used common vstd arithmetic lemmas. The pipeline should index domain-specific lemmas (e.g., lemma_binary_sum_mod_decomposition, lemma_two_factoring_51) that the model found by reading imports but might miss without file context."
+    }
+  ],
+  "confidence_calibration": {
+    "avg_pre_confidence": 3.9,
+    "avg_post_confidence": 4.8,
+    "overconfident_count": 0,
+    "underconfident_count": 5,
+    "calibrated_count": 5
+  },
+  "important_caveats": [
+    "Model (Claude Opus 4.6) had read the GT proof bodies earlier in this conversation before they were replaced with admit(). This inflates results.",
+    "All holes were at field_lemmas layer (L2-L3). Higher layers with deeper algebraic reasoning were not tested.",
+    "All target functions had good documentation (doc comments, proof outlines). Undocumented proofs may be harder.",
+    "The model had full file context (imports, sibling functions) which is realistic for the pipeline but makes lemma discovery easier.",
+    "All proofs use well-known patterns (mod arithmetic, bit bounds, div/mod identity). Novel proof structures were not tested."
+  ]
+}

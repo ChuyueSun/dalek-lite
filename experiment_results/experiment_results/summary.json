@@ -1,0 +1,102 @@
+{
+  "exp1_taxonomy_coverage": {
+    "total_proof_fns": 798,
+    "coverage_rate": 1.0,
+    "top_3": [
+      [
+        "algebraic_rewrite",
+        154,
+        19.3
+      ],
+      [
+        "overflow_safety",
+        140,
+        17.5
+      ],
+      [
+        "power_chain",
+        131,
+        16.4
+      ]
+    ]
+  },
+  "exp2_proof_patterns": {
+    "total_proof_fns": 634,
+    "top_5": [
+      [
+        "sub_lemma_call",
+        489,
+        77.1
+      ],
+      [
+        "vstd_lemma_call",
+        354,
+        55.8
+      ],
+      [
+        "reveal_fn",
+        65,
+        10.3
+      ],
+      [
+        "by_bit_vector",
+        54,
+        8.5
+      ],
+      [
+        "assert_forall_by",
+        32,
+        5.0
+      ]
+    ]
+  },
+  "exp3_analogue_search": {
+    "analyzed": 512,
+    "hit_rate": 0.3867,
+    "pairs": 1077,
+    "cross_domain": 463
+  },
+  "exp4_dependency_graph": {
+    "nodes": 61,
+    "edges": 170,
+    "cycles": 0,
+    "violations": 4
+  },
+  "exp5_spec_validation": {
+    "bug1": {
+      "found": true,
+      "first_at": 1,
+      "rate": 9358.0
+    },
+    "bug3": {
+      "found": true,
+      "first_at": 1,
+      "rate": 9358.0
+    }
+  },
+  "exp6_vstd_census": {
+    "unique_lemmas": 24,
+    "total_calls": 73,
+    "modules": 9
+  },
+  "exp7_admit_analysis": {
+    "total_admits": 45,
+    "ceiling": {
+      "total_admits": 45,
+      "not_automatable": 30,
+      "not_automatable_categories": [
+        "mathematical_axiom",
+        "algebraic_deep",
+        "external_verification"
+      ],
+      "possibly_automatable": 15,
+      "possibly_automatable_categories": [
+        "incomplete_proof",
+        "computational",
+        "trusted_constant"
+      ],
+      "unknown": 0,
+      "percentage_possibly_automatable": 33.3
+    }
+  }
+}
